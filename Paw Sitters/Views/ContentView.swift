@@ -34,23 +34,48 @@ struct ContentView: View {
                 } else {
                     List(listings) { listing in
                         NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId)) {
-                            HStack {
-                                if let imageUrl = listing.imageUrl, let url = URL(string: imageUrl) {
-                                    AsyncImage(url: url)
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(width: 50, height: 50)
-                                        .clipShape(Circle())
+                            VStack(alignment: .leading) {
+                                if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
+                                    AsyncImage(url: url) { phase in
+                                        switch phase {
+                                        case .empty:
+                                            ProgressView()
+                                                .frame(maxWidth: .infinity, maxHeight: 200)
+                                        case .success(let image):
+                                            image
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(maxWidth: .infinity, maxHeight: 200)
+                                                .clipped()
+                                        case .failure:
+                                            Image(systemName: "photo")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(maxWidth: .infinity, maxHeight: 200)
+                                        @unknown default:
+                                            EmptyView()
+                                        }
+                                    }
+                                    .cornerRadius(10)
                                 }
-                                Button(action: {
+
+                               Button(action: {
                                     didSelectNewUser(listing.ownerId)
                                 }) {
                                     Text(listing.title)
-                                }
+                                        .font(.headline)
+                                        .padding([.top, .leading, .trailing])
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                              }
                                 .buttonStyle(PlainButtonStyle())
-                            }
+                            
                         }
+                            .background(Rectangle().fill(Color.white).shadow(radius: 1))
+                            .cornerRadius(10)
+                            .padding(.vertical, 5)
                     }
                 }
+            }
                 
                 Spacer()
                 
@@ -274,10 +299,11 @@ extension DateFormatter {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService(), role: "Owner")
+        ContentView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService(), role: "Sitter")
             .environmentObject(AuthService())
             .environmentObject(UserProfileService(authService: AuthService()))
             .environmentObject(StorageService())
             .environmentObject(NavigationPathManager())
+            .environmentObject(FirestoreService())
     }
 }

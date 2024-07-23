@@ -106,6 +106,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C5EC0EC2C4FCE9C00A767F6 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				1C9E25B42C25F73600351632 /* NavigationPathManager.swift */,
+				1C448C3A2C30328A00E78668 /* NavigationDestination.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
 		1C786DF92C25B6860012A179 = {
 			isa = PBXGroup;
 			children = (
@@ -134,8 +143,6 @@
 				1C786E3C2C25C00B0012A179 /* ImagePicker.swift */,
 				1C786E092C25B6880012A179 /* Assets.xcassets */,
 				1C786E0B2C25B6880012A179 /* Preview Content */,
-				1C9E25B42C25F73600351632 /* NavigationPathManager.swift */,
-				1C448C3A2C30328A00E78668 /* NavigationDestination.swift */,
 			);
 			path = "Paw Sitters";
 			sourceTree = "<group>";
@@ -183,6 +190,7 @@
 		1C7F65212C4DAE2200E2EBE1 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				1C5EC0EC2C4FCE9C00A767F6 /* Navigation */,
 				1C9E25AF2C25E45500351632 /* UserProfile.swift */,
 				1C91A0B92C45CD1300B6C16D /* Message.swift */,
 				1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */,
