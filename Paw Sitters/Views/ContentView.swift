@@ -23,6 +23,11 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $navigationPathManager.path) {
             VStack {
+                Text("PAWSITTERS")
+                    .font(.headline)
+                    .padding(.top, -30)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .fontWeight(.bold)
                 if isLoading {
                     Text("Loading listings...")
                         .font(.headline)
@@ -35,6 +40,7 @@ struct ContentView: View {
                     List(listings) { listing in
                         NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId)) {
                             VStack(alignment: .leading) {
+                                
                                 if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
                                     AsyncImage(url: url) { phase in
                                         switch phase {
@@ -65,9 +71,27 @@ struct ContentView: View {
                                     Text(listing.title)
                                         .font(.headline)
                                         .padding([.top, .leading, .trailing])
-                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                               }
                                 .buttonStyle(PlainButtonStyle())
+                                Text("14 Jul - 30 Aug 2024")
+                                    .font(.headline)
+                                    .padding([.leading, .trailing])
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text(listing.location ?? "")
+                                    .font(.headline)
+                                    .padding([.leading, .trailing])
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                HStack {
+                                    Image(systemName: "bird.fill")
+                                    Text("1")
+                                    Image(systemName: "hare.fill")
+                                    Text("4")
+                                    Image(systemName: "fish.fill")
+                                    Text("2")
+                                }
+                                .padding([.leading, .trailing])
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             
                         }
                             .background(Rectangle().fill(Color.white).shadow(radius: 1))
@@ -95,7 +119,7 @@ struct ContentView: View {
                         .cornerRadius(8)
                 }
             }
-            .navigationBarTitle("PetSitterS")
+          //  .navigationBarTitle("PAWSITTERS")
             .navigationBarItems(
                 leading: HStack {
                     Image(systemName: "person.crop.circle")
@@ -286,14 +310,6 @@ struct ImageDetailView: View {
                     .foregroundColor(.white)
             }
         }
-    }
-}
-
-extension DateFormatter {
-    static var shortDate: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        return formatter
     }
 }
 

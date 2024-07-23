@@ -10,13 +10,15 @@ import SwiftUI
 struct CreateListingView: View {
     
     @State private var name: String = ""
-    @State private var age: String = ""
+    @State private var requiredDates: String = ""
     @State private var location: String = ""
+    @State private var startDate = Date()
+    @State private var endDate = Date()
     var role: String?
     @State private var description: String = ""
     @State private var title: String = ""
-    @State private var images: [UIImage] = []
     @State private var date = Date()
+    @State private var images: [UIImage] = []
     @State private var listings = PetSittingListing(title: "", description: "", name: "", date: Date(), role: "", ownerId: "")
     @State private var showingAlert = false
     @State private var showingImagePicker = false
@@ -39,8 +41,6 @@ struct CreateListingView: View {
                     TextField("Title", text: $title)
                     
                     TextField("Name&Surname", text: $name)
-                    
-                    TextField("Age", text: $age)
                     
                     TextField("Location", text: $location)
                     
@@ -106,6 +106,7 @@ struct CreateListingView: View {
             }
         }
     }
+    
     private func uploadImagesAndPublishListing() {
         var imageUrls: [String] = []
         let dispatchGroup = DispatchGroup()
@@ -160,7 +161,7 @@ struct CreateListingView: View {
 struct CreateListingView_Previews: PreviewProvider {
     static var previews: some View {
         CreateListingView(role: "Sitter")
-            .environmentObject(UserProfileService(authService: AuthService()))
+        .environmentObject(UserProfileService(authService: AuthService()))
         .environmentObject(AuthService())
         .environmentObject(FirestoreService())
         .environmentObject(NavigationPathManager())
