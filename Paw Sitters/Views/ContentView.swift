@@ -16,6 +16,7 @@ struct ContentView: View {
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @State private var listings: [PetSittingListing] = []
     @State private var isFullScreenCoverPresented = false
+    
     var didSelectNewUser: (String) -> () = { _ in }
 
     var role: String?
@@ -138,7 +139,9 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Button(action: {
-                        navigationPathManager.push(.createListingView)
+                        withAnimation(.snappy) {
+                            navigationPathManager.push(.createListingView)
+                        }
                     }) {
                         Text("Post Your Own Listing")
                             .padding(.horizontal)
@@ -247,8 +250,12 @@ struct ListingDetailView: View {
                 .padding()
             Text("Owner: \(listing.name)")
                 .padding()
-            Text("Date: \(listing.date, formatter: DateFormatter.shortDate)")
-                .padding()
+            if let dateRange = listing.dateRange {
+                Text("Date: \(formattedDateRange(dateRange))")
+                    .padding()
+            } else {
+                Text("No Date selected")
+            }
             // NavigationLink to MessagingView
             NavigationLink(destination: MessagingView(userId: $userId, receiverId: listing.ownerId)) {
                 
@@ -260,6 +267,16 @@ struct ListingDetailView: View {
             }
             .padding(.top, 10)
         }
+    }
+    private func formattedDateRange(_ range: ClosedRange<Date>) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        
+        let startDate = formatter.string(from: range.lowerBound)
+        let endDate = formatter.string(from: range.upperBound)
+        
+        return "\(startDate) - \(endDate)"
     }
 }
 

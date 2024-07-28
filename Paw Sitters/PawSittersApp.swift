@@ -26,6 +26,7 @@ struct PawSittersApp: App {
     
     var body: some Scene {
         WindowGroup {
+       
             MainAppView(isSignedUp: $isSignedUp, isLoading: $isLoading, userId: $userId, receiverId: $receiverId, messagingService: messagingService)
                 .environmentObject(authService)
                 .environmentObject(firestoreService)

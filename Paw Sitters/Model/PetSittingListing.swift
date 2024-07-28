@@ -13,7 +13,7 @@ struct PetSittingListing: Codable, Identifiable {
     var title: String
     var description: String
     var name: String
-    var date: Date
+    var dateRange: ClosedRange<Date>?
     var imageUrl: String?
     var imageUrls: [String]?
     var role: String

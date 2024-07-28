@@ -63,11 +63,12 @@ struct ProfileView: View {
                         .padding()
                     }
                 }
-                .frame(maxWidth: .infinity)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(15)
-                .padding()
+                .modifier(CollapsibleDestinationViewModifier())
+//                .frame(maxWidth: .infinity)
+//                .background(Color.blue)
+//                .foregroundColor(.white)
+//                .cornerRadius(15)
+//                .padding()
                 // Profile Details
             VStack(spacing: 20) {
                     TextField("Name", text: $name)
@@ -93,12 +94,15 @@ struct ProfileView: View {
                     showingEditForm = true
                 }) {
                     Text("Edit Profile")
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .shadow(radius: 5)
+                        .modifier(CollapsibleDestinationViewModifier())
+                        .foregroundStyle(.green)
+                        .fontWeight(.semibold)
+//                        .padding()
+//                        .frame(maxWidth: .infinity)
+//                        .background(Color.blue)
+//                        .foregroundColor(.white)
+//                        .cornerRadius(10)
+//                        .shadow(radius: 5)
                 }
                 .padding()
                 
