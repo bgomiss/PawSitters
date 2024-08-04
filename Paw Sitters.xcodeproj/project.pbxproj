@@ -45,6 +45,7 @@
 		1C851E542C53BB55009A93A9 /* HorizonCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 1C851E532C53BB55009A93A9 /* HorizonCalendar */; };
 		1C87697A2C50B1EB00703939 /* DatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8769792C50B1EB00703939 /* DatePicker.swift */; };
 		1C91A0BA2C45CD1300B6C16D /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C91A0B92C45CD1300B6C16D /* Message.swift */; };
+		1C9AFCFC2C5FBCD300612E6E /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9AFCFB2C5FBCD300612E6E /* ImageView.swift */; };
 		1C9E25AA2C25D2D400351632 /* RoleSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */; };
 		1C9E25AC2C25E2F100351632 /* OwnerListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25AB2C25E2F100351632 /* OwnerListingsView.swift */; };
 		1C9E25AE2C25E31C00351632 /* SitterListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25AD2C25E31C00351632 /* SitterListingsView.swift */; };
@@ -83,6 +84,7 @@
 		1C7F65222C4DAE6400E2EBE1 /* ChatUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUser.swift; sourceTree = "<group>"; };
 		1C8769792C50B1EB00703939 /* DatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePicker.swift; sourceTree = "<group>"; };
 		1C91A0B92C45CD1300B6C16D /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		1C9AFCFB2C5FBCD300612E6E /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 		1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleSelectionView.swift; sourceTree = "<group>"; };
 		1C9E25AB2C25E2F100351632 /* OwnerListingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnerListingsView.swift; sourceTree = "<group>"; };
 		1C9E25AD2C25E31C00351632 /* SitterListingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SitterListingsView.swift; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 				1C61A3D12C42C40C00AB9C7D /* ConversationsView.swift */,
 				1C61A3D32C42EF3D00AB9C7D /* CreateListingView.swift */,
 				1C783FFD2C550FCC00E6F325 /* HorizonCalendarView.swift */,
+				1C9AFCFB2C5FBCD300612E6E /* ImageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				1C786E3B2C25BF070012A179 /* ProfileView.swift in Sources */,
 				1C786E3F2C25C0EA0012A179 /* MessagingView.swift in Sources */,
 				1C786E2C2C25BBA60012A179 /* AuthService.swift in Sources */,
+				1C9AFCFC2C5FBCD300612E6E /* ImageView.swift in Sources */,
 				1C91A0BA2C45CD1300B6C16D /* Message.swift in Sources */,
 				1C786E342C25BD6F0012A179 /* MessagingService.swift in Sources */,
 				1C9E25B92C25FDAF00351632 /* PetSittingListing.swift in Sources */,

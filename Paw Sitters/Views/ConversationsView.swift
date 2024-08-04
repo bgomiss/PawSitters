@@ -13,64 +13,94 @@ struct ConversationsView: View {
     @EnvironmentObject var userProfileService: UserProfileService
     @EnvironmentObject var authService: AuthService
     @Environment(\.dismiss) private var dismiss
-    @Binding var userId: String // Örnek olarak currentUserId
-    @State private var conversations: [String] = []
-    @State private var receiverNames: [String] = []
+    @Binding var userId: String
     
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 10) {
-                    ForEach(messagingService.recentMessages) { user in
-                        HStack {
-//                            let url = URL(string: user.profileImageUrl ?? "")
-//                            AsyncImage(url: url)
-//                                .aspectRatio(contentMode: .fill)
-//                                .frame(width: 50, height: 50)
-//                                .clipShape(Circle())
-                            
-                            //                         Image(systemName: "person.crop.circle")
-                            //                               .resizable()
-                            //                               .frame(width: 64, height: 64)
-                            //                               .clipped()
-                            //                               .clipShape(.circle)
-                            
-                            Text(user.content)
-                                .font(.caption)
-                                .fontWeight(.bold)
-                            Spacer()
-                        }
-                        .padding()
-                    }
-                    //            List(receiverNames.indices, id: \.self) { index in
-                    //                let receiverId = conversations[index]
-                    //                let receiverName = receiverNames[index]
-                    //                NavigationLink(destination: MessagingView(userId: $userId, receiverId: receiverId)) {
-                }
-                .navigationBarTitle("MESSAGES")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 2)) {
-                                dismiss()
-                            }
-                        }) {
-                            HStack {
-                                Image(systemName: "chevron.left")
-                                Text("Back")
-                            }
+                conversationList
+                    .navigationBarTitle("MESSAGES")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            backButton
                         }
                     }
-                }
-            }
-        }
+               }
+          }
         .onAppear {
             messagingService.fetchRecentMessages()
         }
     }
-}
     
+    private var conversationList: some View {
+        VStack(spacing: 10) {
+            ForEach(messagingService.filteredMessages) { message in
+                HStack {
+                    ImageView.userImageView(for: message, for: nil)
+                    userMessagesView(for: message)
+                    Spacer()
+                }
+                .padding()
+            }
+        }
+    }
+    
+//    private func userImageView(for message: Message) -> some View {
+//        Group {
+//            if let url = URL(string: message.receiverProfileImageUrl ?? "") {
+//                AsyncImage(url: url) { phase in
+//                    switch phase {
+//                    case .empty:
+//                        ProgressView()
+//                            .frame(maxWidth: .infinity, maxHeight: 200)
+//                    case .success(let image):
+//                        image
+//                            .resizable()
+//                            .scaledToFit()
+//                            .frame(width: 50, height: 50)
+//                            .clipShape(Circle())
+//                    case .failure:
+//                        Image(systemName: "photo")
+//                            .resizable()
+//                            .scaledToFit()
+//                            .frame(width: 50, height: 50)
+//                            .clipShape(Circle())
+//                    @unknown default:
+//                        EmptyView()
+//                    }
+//                }
+//                .cornerRadius(10)
+//            }
+//        }
+//    }
+    
+    private func userMessagesView(for message: Message) -> some View {
+        VStack {
+            if userId == message.senderId {
+                Text(message.receiverName ?? "")
+            } else {
+                Text(message.senderName ?? "")
+            }
+        }
+    }
+        
+    
+    
+    private var backButton: some View {
+        Button(action: {
+            withAnimation(.snappy(duration: 2)) {
+                dismiss()
+            }
+        }) {
+            HStack {
+                Image(systemName: "chevron.left")
+                Text("Back")
+            }
+        }
+    }
+}
+
 
 
 struct ConversationView_Previews: PreviewProvider {

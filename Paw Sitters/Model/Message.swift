@@ -8,27 +8,29 @@
 import FirebaseFirestore
 
 struct Message: Codable, Identifiable {
-//    var id: String { documentId }
-//    let documentId: String?
-    @DocumentID var id: String?
+    var id: String { documentId }
+    let documentId: String
+    //@DocumentID var id: String?
     let senderId: String
     let receiverId: String
     let content: String
     let timestamp: Timestamp
-    let profileImageUrl: String?
+    let senderProfileImageUrl: String?
+    let receiverProfileImageUrl: String?
     var receiverName: String?
     var senderName: String?
     
-//    init(documentId: String, data: [String : Any]) {
-//        self.documentId = documentId
-//        self.senderId = data["senderId"] as? String ?? ""
-//        self.receiverId = data["receiverId"] as? String ?? ""
-//        self.content = data["content"] as? String ?? ""
-//        self.profileImageUrl = data["profileImageUrl"] as? String ?? ""
-//        self.timestamp = data["timestamp"] as? Timestamp ?? Timestamp(date: Date())
-//        self.receiverName = data["senderId"] as? String ?? ""
-//        self.senderName = data["senderId"] as? String ?? ""
-//    }
+    init(documentId: String, data: [String : Any]) {
+        self.documentId = documentId
+        self.senderId = data["senderId"] as? String ?? ""
+        self.receiverId = data["receiverId"] as? String ?? ""
+        self.content = data["content"] as? String ?? ""
+        self.senderProfileImageUrl = data["senderProfileImageUrl"] as? String ?? ""
+        self.receiverProfileImageUrl = data["receiverProfileImageUrl"] as? String ?? ""
+        self.timestamp = data["timestamp"] as? Timestamp ?? Timestamp(date: Date())
+        self.receiverName = data["receiverName"] as? String ?? ""
+        self.senderName = data["senderName"] as? String ?? ""
+    }
 }
 
 struct ChatMessage: Identifiable {
@@ -45,7 +47,7 @@ struct ChatMessage: Identifiable {
     }
 }
 
-struct RecentMessage: Identifiable {
+struct RecentMessage: Hashable, Identifiable {
     var id: String { documentId }
     let documentId: String
     let timestamp: Timestamp

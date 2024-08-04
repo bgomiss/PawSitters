@@ -39,7 +39,7 @@ struct ContentView: View {
                         .padding()
                 } else {
                     List(listings) { listing in
-                        NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId)) {
+                        NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService)) {
                             VStack(alignment: .leading) {
                                 
                                 if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
@@ -71,6 +71,7 @@ struct ContentView: View {
                                 }) {
                                     Text(listing.title)
                                         .font(.headline)
+                                        .background(Color.cyan)
                                         .padding([.top, .leading, .trailing])
                                         .frame(maxWidth: .infinity, alignment: .leading)
                               }
@@ -101,7 +102,7 @@ struct ContentView: View {
                     }
                 }
             }
-                
+               
                 Spacer()
                 
                 Button(action: {
@@ -201,6 +202,7 @@ struct ContentView: View {
 struct ListingDetailView: View {
     var listing: PetSittingListing
     @Binding var userId: String
+    @ObservedObject var messagingService: MessagingService
     @EnvironmentObject var authService: AuthService
     @State private var selectedImageIndex: Int? = nil
     @State private var showingImageDetail = false
@@ -257,7 +259,7 @@ struct ListingDetailView: View {
                 Text("No Date selected")
             }
             // NavigationLink to MessagingView
-            NavigationLink(destination: MessagingView(userId: $userId, receiverId: listing.ownerId)) {
+            NavigationLink(destination: MessagingView(messagingService: messagingService, userId: $userId, receiverId: listing.ownerId)) {
                 
                 Text("Contact")
                     .padding()

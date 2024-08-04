@@ -51,6 +51,7 @@ class UserProfileService: ObservableObject {
             }
         }
     
+    
     func fetchUserProfile(uid: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
             fetchUserProfile(uid: uid, from: "sitters") { result in
                 switch result {
@@ -72,6 +73,7 @@ class UserProfileService: ObservableObject {
      //   fetchAllUsers()
         }
     
+    
     private func fetchUserProfile(uid: String, from collection: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
         let docRef = db.collection(collection).document(uid)
         docRef.getDocument { document, error in
@@ -89,6 +91,7 @@ class UserProfileService: ObservableObject {
             }
         }
     }
+    
     
     func fetchUserProfiles(from collection: String, completion: @escaping (Result<[UserProfile], Error>) -> Void) {
             db.collection(collection).getDocuments { snapshot, error in
