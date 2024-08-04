@@ -34,20 +34,13 @@ class MessagingService: ObservableObject {
             .collection(toId)
             .document()
         
-        //        let messageData = [
-        //            "fromId": message.senderId,
-        //            "toId": message.receiverId,
-        //            "content": message.content,
-        //            "timestamp": message.timestamp,
-        //            "profileImageUrl": message.senderProfileImageUrl ?? "",
-        //            "name": message.senderName ?? ""] as [String : Any]
-        
-        document.setData(senderMessage) { error in
-            if let error = error {
-                print("ERROR SAVING MESSAGE INTO FIRESTORE \(error.localizedDescription)")
-                return
+        DispatchQueue.main.async {
+            document.setData(senderMessage) { error in
+                if let error = error {
+                    print("ERROR SAVING MESSAGE INTO FIRESTORE \(error.localizedDescription)")
+                    return
+                }
             }
-            
         }
         
         let recipientMessageDocument = db.collection("messages")
@@ -55,12 +48,12 @@ class MessagingService: ObservableObject {
             .collection(fromId)
             .document()
         
-        //        let receivermessageData = ["fromId": message.senderId, "toId": message.receiverId, "content": message.content, "timestamp": message.timestamp, "profileImageUrl": message.receiverProfileImageUrl ?? "", "name": message.receiverName ?? ""] as [String : Any]
-        
-        recipientMessageDocument.setData(senderMessage) { error in
-            if let error = error {
-                print("ERROR SAVING MESSAGE INTO FIRESTORE \(error.localizedDescription)")
-                return
+        DispatchQueue.main.async {
+            recipientMessageDocument.setData(senderMessage) { error in
+                if let error = error {
+                    print("ERROR SAVING MESSAGE INTO FIRESTORE \(error.localizedDescription)")
+                    return
+                }
             }
         }
     }
@@ -76,15 +69,6 @@ class MessagingService: ObservableObject {
             .collection("messages")
             .document(toId)
         
-        //        let senderdata = [
-        //            "timestamp": message.timestamp,
-        //            "content": message.content,
-        //            "fromId": message.senderId,
-        //            "toId": message.receiverId,
-        //            "profileImageUrl": message.senderProfileImageUrl ?? "",
-        //            "name": message.senderName ?? ""
-        //        ] as [String : Any]
-        
         document.setData(sentMessage) { error in
             if let error = error {
                 print("failed to save recent message: \(error.localizedDescription)")
@@ -97,15 +81,6 @@ class MessagingService: ObservableObject {
             .collection("messages")
             .document(fromId)
         
-        //        let receiverdata = [
-        //            "timestamp": message.timestamp,
-        //            "content": message.content,
-        //            "fromId": message.senderId,
-        //            "toId": message.receiverId,
-        //            "profileImageUrl": message.receiverProfileImageUrl ?? "",
-        //            "name": message.receiverName ?? ""
-        //        ] as [String : Any]
-        
         recipientRecentMessageDocument.setData(sentMessage) { error in
             if let error = error {
                 print("failed to save recent message: \(error.localizedDescription)")
@@ -116,9 +91,11 @@ class MessagingService: ObservableObject {
     
     func fetchMessages(_ toId: String) {
         guard let uid = authService.user?.uid else {return}
+        self.messages.removeAll()
         db.collection("messages")
             .document(uid)
             .collection(toId)
+            .order(by: "timestamp", descending: false)
             .addSnapshotListener { querySnapshot, error in
                 if let error = error {
                     print("FAILED TO LISTEM FOR MESSAGES: \(error.localizedDescription)")
@@ -129,12 +106,14 @@ class MessagingService: ObservableObject {
                     querySnapshot?.documentChanges.forEach({ change in
                         let docId = change.document.documentID
                         let data = change.document.data()
-
+                        
                         switch change.type {
                         case .added:
-                            let newMessage = Message(documentId: docId, data: data)
-                            self.messages.append(newMessage)
-                            print("MESSAGES: \(self.messages)")
+                            if !self.messages.contains(where: { $0.documentId == docId }) {
+                                let newMessage = Message(documentId: docId, data: data)
+                                self.messages.append(newMessage)
+                                print("MESSAGES: \(self.messages)")
+                            }
                         case .removed:
                             self.messages.removeAll() { $0.documentId == docId }
                         default:
@@ -143,7 +122,8 @@ class MessagingService: ObservableObject {
                     })
                 }
             }
-        }
+    }
+    
     
     func fetchRecentMessages() {
         
@@ -157,37 +137,43 @@ class MessagingService: ObservableObject {
                     return
                 }
                 DispatchQueue.main.async {
-                querySnapshot?.documentChanges.forEach { change in
-                    let docId = change.document.documentID
-                    let data = change.document.data()
-                    
-                    switch change.type {
-                    case .added:
-                        if !self.recentMessages.contains(where: { $0.documentId == docId }) {
-                            let newMessage = Message(documentId: docId, data: data)
-                            self.recentMessages.append(newMessage)
-                            print("RECENT MESSAGES: \(self.recentMessages)")
+                    querySnapshot?.documentChanges.forEach { change in
+                        let docId = change.document.documentID
+                        let data = change.document.data()
+                        
+                        switch change.type {
+                        case .added:
+                            if !self.recentMessages.contains(where: { $0.documentId == docId }) {
+                                let newMessage = Message(documentId: docId, data: data)
+                                self.recentMessages.append(newMessage)
+                                print("RECENT MESSAGES: \(self.recentMessages)")
+                                
+                            }
+                        case .removed:
                             
-                        }
-                    case .removed:
-                        
                             self.recentMessages.removeAll() { $0.documentId == docId }
-                        
-                    default: break
+                            
+                        default: break
+                        }
                     }
+                    self.filterMessages(for: uid)
+                    print("ALL PROFILES FETCHED")
+                    print("\(self.filteredMessages)")
                 }
-                self.filterMessages(for: uid)
-                print("ALL PROFILES FETCHED")
-                print("\(self.filteredMessages)")
             }
-        }
     }
     
     func filterMessages(for userId: String) {
-            self.filteredMessages = self.recentMessages.filter { $0.receiverId == userId || $0.senderId == userId }
+        self.filteredMessages = self.recentMessages.filter { $0.receiverId == userId || $0.senderId == userId }
+    }
+    
+    
+    func clearMessages() {
+        DispatchQueue.main.async {
+            self.messages.removeAll()
+        }
     }
 }
-    
     
 //    func addReceiverNamesToMessages(for userId: String, documentId: String, completion: @escaping () -> Void) {
 //            db.collection("recent_messages")

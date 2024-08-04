@@ -66,7 +66,11 @@ struct MessagingView: View {
             messagingService.fetchMessages(receiverId)
             fetchTheUser()
         }
-    }
+        .onChange(of: receiverId) { _, newReceiverId in
+                messagingService.clearMessages()
+                messagingService.fetchMessages(newReceiverId)
+            }
+        }
     
     
     private var chatBottomBar: some View {

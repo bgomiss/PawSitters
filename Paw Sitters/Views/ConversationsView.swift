@@ -46,35 +46,6 @@ struct ConversationsView: View {
         }
     }
     
-//    private func userImageView(for message: Message) -> some View {
-//        Group {
-//            if let url = URL(string: message.receiverProfileImageUrl ?? "") {
-//                AsyncImage(url: url) { phase in
-//                    switch phase {
-//                    case .empty:
-//                        ProgressView()
-//                            .frame(maxWidth: .infinity, maxHeight: 200)
-//                    case .success(let image):
-//                        image
-//                            .resizable()
-//                            .scaledToFit()
-//                            .frame(width: 50, height: 50)
-//                            .clipShape(Circle())
-//                    case .failure:
-//                        Image(systemName: "photo")
-//                            .resizable()
-//                            .scaledToFit()
-//                            .frame(width: 50, height: 50)
-//                            .clipShape(Circle())
-//                    @unknown default:
-//                        EmptyView()
-//                    }
-//                }
-//                .cornerRadius(10)
-//            }
-//        }
-//    }
-    
     private func userMessagesView(for message: Message) -> some View {
         VStack {
             if userId == message.senderId {
