@@ -57,6 +57,7 @@ struct MessagingView: View {
             HStack { Spacer() }
         }
         .background(Color(.init(white: 0.95, alpha: 1)))
+        .padding(.bottom, 5)
         .safeAreaInset(edge: .bottom) {
             chatBottomBar
         }

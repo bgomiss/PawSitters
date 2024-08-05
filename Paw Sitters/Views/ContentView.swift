@@ -261,7 +261,7 @@ struct ListingDetailView: View {
             // NavigationLink to MessagingView
             NavigationLink(destination: MessagingView(messagingService: messagingService, userId: $userId, receiverId: listing.ownerId)) {
                 
-                Text("Contact")
+                Text("Apply")
                     .padding()
                     .background(Color.blue)
                     .foregroundColor(.white)

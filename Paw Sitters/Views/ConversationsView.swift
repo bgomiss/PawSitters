@@ -14,6 +14,8 @@ struct ConversationsView: View {
     @EnvironmentObject var authService: AuthService
     @Environment(\.dismiss) private var dismiss
     @Binding var userId: String
+    @State private var receiverId: String?
+    @State private var isMessagingViewPresented = false
     
     var body: some View {
         NavigationView {
@@ -26,10 +28,13 @@ struct ConversationsView: View {
                             backButton
                         }
                     }
-               }
-          }
+            }
+        }
         .onAppear {
             messagingService.fetchRecentMessages()
+        }
+        .fullScreenCover(isPresented: $isMessagingViewPresented) {
+                MessagingView(messagingService: messagingService, userId: $userId, receiverId: $receiverId)
         }
     }
     
@@ -38,7 +43,13 @@ struct ConversationsView: View {
             ForEach(messagingService.filteredMessages) { message in
                 HStack {
                     ImageView.userImageView(for: message, for: nil)
+                        .onTapGesture {
+                            setReceiverAndShowMessagingView(message: message)
+                        }
                     userMessagesView(for: message)
+                        .onTapGesture {
+                           setReceiverAndShowMessagingView(message: message)
+                        }
                     Spacer()
                 }
                 .padding()
@@ -68,6 +79,17 @@ struct ConversationsView: View {
                 Image(systemName: "chevron.left")
                 Text("Back")
             }
+        }
+    }
+    
+    private func setReceiverAndShowMessagingView(message: Message) {
+        DispatchQueue.main.async {
+            if userId == message.senderId {
+                receiverId = message.receiverId
+            } else {
+                receiverId = message.senderId
+            }
+            isMessagingViewPresented = true
         }
     }
 }

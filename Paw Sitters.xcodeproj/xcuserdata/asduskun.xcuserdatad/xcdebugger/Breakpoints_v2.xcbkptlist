@@ -18,50 +18,22 @@
             endingLineNumber = "171"
             landmarkName = "clearMessages()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "716A3546-017A-4BC5-8834-A21439219F0C - 1628c6d1a461f7e3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Paw_Sitters.MessagingService.clearMessages() -&gt; ()"
-                  moduleName = "Paw Sitters"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/asduskun/Desktop/development/Paw%20Sitters/Paw%20Sitters/Services/MessagingService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "171"
-                  endingLineNumber = "171">
-               </Location>
-               <Location
-                  uuid = "716A3546-017A-4BC5-8834-A21439219F0C - 255e99f8aab6cc08"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in Paw_Sitters.MessagingService.clearMessages() -&gt; ()"
-                  moduleName = "Paw Sitters"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/asduskun/Desktop/development/Paw%20Sitters/Paw%20Sitters/Services/MessagingService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "172"
-                  endingLineNumber = "172">
-               </Location>
-               <Location
-                  uuid = "716A3546-017A-4BC5-8834-A21439219F0C - 1628c6d1a461f7c2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Paw_Sitters.MessagingService.clearMessages() -&gt; ()"
-                  moduleName = "Paw Sitters"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/asduskun/Desktop/development/Paw%20Sitters/Paw%20Sitters/Services/MessagingService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "172"
-                  endingLineNumber = "172">
-               </Location>
-            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D723E98E-E9DA-423A-B71B-BDE917D37179"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Paw Sitters/Views/ConversationsView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
