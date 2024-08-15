@@ -4,6 +4,7 @@
 //
 //  Created by aycan duskun on 14.08.2024.
 //
+
 import MapKit
 import SwiftUI
 
@@ -67,4 +68,3 @@ struct MapView: UIViewRepresentable {
         }
     }
 }
-
