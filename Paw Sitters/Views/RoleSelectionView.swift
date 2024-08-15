@@ -13,6 +13,7 @@ struct RoleSelectionView: View {
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @EnvironmentObject var userProfileService: UserProfileService
     @ObservedObject var messagingService: MessagingService
+    @ObservedObject var firestoreService: FirestoreService
     
     
     var body: some View {
@@ -65,14 +66,14 @@ struct RoleSelectionView: View {
             .navigationDestination(for: NavigationDestination.self) { destination in
                     switch destination {
                     case .sitterSignUp:
-                        SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, role: "Sitter")
+                        SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService, role: "Sitter")
                     case .ownerSignUp:
-                        SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, role: "Owner")
+                        SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService, role: "Owner")
                     case .signInView:
-                        SignInView(isLoading: $isLoading, userId: $userId, messagingService: messagingService)
+                        SignInView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService)
                     case .contentView:
                         if let role = userProfileService.userProfile?.role {
-                            ContentView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, role: role)
+                            ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, role: role)
                         }
                     default:
                         Text("roleSection")
@@ -84,7 +85,7 @@ struct RoleSelectionView: View {
 
 struct RoleSelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        RoleSelectionView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService())
+        RoleSelectionView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService(), firestoreService: FirestoreService())
             .environmentObject(NavigationPathManager())
             .environmentObject(UserProfileService(authService: AuthService()))
     }

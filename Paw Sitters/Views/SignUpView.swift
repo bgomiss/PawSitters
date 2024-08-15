@@ -25,6 +25,7 @@ struct SignUpView: View {
     @EnvironmentObject var storageService: StorageService
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @ObservedObject var messagingService: MessagingService
+    @ObservedObject var firestoreService: FirestoreService
     
     var role: String
     
@@ -102,7 +103,7 @@ struct SignUpView: View {
             print("ROLE IS: \(self.role)")
         }
         .fullScreenCover(isPresented: $isPresenting, content: {
-            ContentView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, role: self.role)
+            ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, role: self.role)
             .environmentObject(authService)
             .environmentObject(userProfileService)
             .environmentObject(storageService)
@@ -146,7 +147,7 @@ struct SignUpView: View {
 
 struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
-        SignUpView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService(), role: "Sitter")
+        SignUpView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService(), firestoreService: FirestoreService(), role: "Sitter")
             .environmentObject(AuthService())
             .environmentObject(UserProfileService(authService: AuthService()))
             .environmentObject(StorageService())

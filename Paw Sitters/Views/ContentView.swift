@@ -5,19 +5,26 @@
 //  Created by aycan duskun on 21.06.2024.
 //
 import SwiftUI
+import MapKit
 
 struct ContentView: View {
     @Binding var isLoading: Bool
     @Binding var userId: String
     @EnvironmentObject var authService: AuthService
-    @EnvironmentObject var firestoreService: FirestoreService
+    @ObservedObject var firestoreService: FirestoreService
     @EnvironmentObject var userProfileService: UserProfileService
     @ObservedObject var messagingService: MessagingService
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @State private var listings: [PetSittingListing] = []
     @State private var isFullScreenCoverPresented = false
+    @State private var isMapViewPresented = false
     
-    var didSelectNewUser: (String) -> () = { _ in }
+    @ObservedObject var viewModel = MapViewModel()
+        @State private var region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
+            span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
+        )
+    
 
     var role: String?
     
@@ -33,12 +40,12 @@ struct ContentView: View {
                     Text("Loading listings...")
                         .font(.headline)
                         .padding()
-                } else if listings.isEmpty {
+                } else if firestoreService.listings.isEmpty {
                     Text("No listings available.")
                         .font(.headline)
                         .padding()
                 } else {
-                    List(listings) { listing in
+                    List(firestoreService.listings) { listing in
                         NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService)) {
                             VStack(alignment: .leading) {
                                 
@@ -65,41 +72,66 @@ struct ContentView: View {
                                     }
                                     .cornerRadius(10)
                                 }
-
-                               Button(action: {
-                                    didSelectNewUser(listing.ownerId)
-                                }) {
                                     Text(listing.title)
                                         .font(.headline)
-                                        .background(Color.cyan)
                                         .padding([.top, .leading, .trailing])
                                         .frame(maxWidth: .infinity, alignment: .leading)
-                              }
-                                .buttonStyle(PlainButtonStyle())
-                                Text("14 Jul - 30 Aug 2024")
-                                    .font(.headline)
-                                    .padding([.leading, .trailing])
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                              
+                                if let dateRange = listing.dateRange {
+                                    Text("Date: \(dateRange)")
+                                        .font(.headline)
+                                        .padding([.leading, .trailing])
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                } else {
+                                    Text("No Date selected")
+                                }
+                                    
                                 Text(listing.location ?? "")
                                     .font(.headline)
                                     .padding([.leading, .trailing])
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 HStack {
-                                    Image(systemName: "bird.fill")
-                                    Text("1")
-                                    Image(systemName: "hare.fill")
-                                    Text("4")
-                                    Image(systemName: "fish.fill")
-                                    Text("2")
-                                }
+                                    if let pet = listing.pets {  // Eğer pets dizisinde ilk öğe varsa
+                                            if let dogs = pet.numDogs {
+                                                Image(systemName: "dog.fill")
+                                                Text(dogs)
+                                            }
+                                            if let hares = pet.numHares {
+                                                Image(systemName: "hare.fill")
+                                                Text(hares)
+                                            }
+                                            if let birds = pet.numBirds {
+                                                Image(systemName: "bird.fill")
+                                                Text(birds)
+                                            }
+                                            if let others = pet.numOthers {
+                                                Image(systemName: "pawprint.fill")
+                                                Text(others)
+                                            }
+                                        }
+                                    }
                                 .padding([.leading, .trailing])
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            
+                               
+                                }
                         }
                             .background(Rectangle().fill(Color.white).shadow(radius: 1))
                             .cornerRadius(10)
                             .padding(.vertical, 5)
-                    }
+                        
+                }
+                    ZStack {
+                        Button(action: {
+                            let zoomLevel = region.span.latitudeDelta
+                            viewModel.createAnnotations(from: firestoreService.listings, zoomLevel: zoomLevel)
+                            isMapViewPresented.toggle()
+                        }, label: {
+                            Image(systemName: "map.fill")
+                                .padding()
+                                .background(Color.black)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        })
                 }
             }
                
@@ -121,7 +153,6 @@ struct ContentView: View {
                         .cornerRadius(8)
                 }
             }
-          //  .navigationBarTitle("PAWSITTERS")
             .navigationBarItems(
                 leading: HStack {
                     Image(systemName: "person.crop.circle")
@@ -147,7 +178,7 @@ struct ContentView: View {
                         Text("Post Your Own Listing")
                             .padding(.horizontal)
                             .frame(height: 30)
-                            .background(Color.indigo)
+                            .background(Color.secondary)
                             .foregroundColor(.white)
                             .cornerRadius(8)
                     }
@@ -170,8 +201,10 @@ struct ContentView: View {
                     userProfileService.fetchUserProfile(uid: user.uid) { result in
                         switch result {
                         case .success(let profile):
-                            userProfileService.userProfile = profile
-                            fetchData(role: profile.role) // Use the role from the fetched profile
+                            DispatchQueue.main.async {
+                                userProfileService.userProfile = profile
+                                firestoreService.fetchListings(for: profile.role) // Use the role from the fetched profile
+                            }
                         case .failure(let error):
                             print("Error fetching user profile: \(error.localizedDescription)")
                             isLoading = false
@@ -182,21 +215,24 @@ struct ContentView: View {
             .fullScreenCover(isPresented: $isFullScreenCoverPresented) {
                 ConversationsView(messagingService: messagingService, userId: $userId)
             }
-        }
-    }
-    
-    func fetchData(role: String) {
-        firestoreService.fetchListings(for: role) { result in
-            switch result {
-            case .success(let fetchedListings):
-                self.listings = fetchedListings
-                self.isLoading = false
-            case .failure(let error):
-                self.isLoading = false
-                print("Error fetching listings: \(error.localizedDescription)")
+            .fullScreenCover(isPresented: $isMapViewPresented) {
+                MapContainerView(annotations: $viewModel.annotations, region: $region, listings: firestoreService.listings)
             }
         }
     }
+    
+//    func fetchData(role: String) {
+//        firestoreService.fetchListings(for: role) { result in
+//            switch result {
+//            case .success(let fetchedListings):
+//                self.listings = fetchedListings
+//                self.isLoading = false
+//            case .failure(let error):
+//                self.isLoading = false
+//                print("Error fetching listings: \(error.localizedDescription)")
+//            }
+//        }
+//    }
 }
 
 struct ListingDetailView: View {
@@ -206,6 +242,7 @@ struct ListingDetailView: View {
     @EnvironmentObject var authService: AuthService
     @State private var selectedImageIndex: Int? = nil
     @State private var showingImageDetail = false
+    @State private var isMessagingViewPresented = false
 
     var body: some View {
         VStack {
@@ -253,23 +290,28 @@ struct ListingDetailView: View {
             Text("Owner: \(listing.name)")
                 .padding()
             if let dateRange = listing.dateRange {
-                Text("Date: \(formattedDateRange(dateRange))")
+                Text("Date: \(dateRange)")
                     .padding()
             } else {
                 Text("No Date selected")
             }
-            // NavigationLink to MessagingView
-            NavigationLink(destination: MessagingView(messagingService: messagingService, userId: $userId, receiverId: listing.ownerId)) {
-                
-                Text("Apply")
+            
+            Button(action: {
+                    isMessagingViewPresented.toggle()
+                }, label: {
+                    Text("Apply")
                     .padding()
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(8)
+                })
             }
+        .fullScreenCover(isPresented: $isMessagingViewPresented) {
+            MessagingView(messagingService: messagingService, userId: $userId, receiverId: listing.ownerId)
+        }
             .padding(.top, 10)
         }
-    }
+    
     private func formattedDateRange(_ range: ClosedRange<Date>) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -334,7 +376,7 @@ struct ImageDetailView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService(), role: "Sitter")
+        ContentView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), firestoreService: FirestoreService(), messagingService: MessagingService(), role: "Sitter")
             .environmentObject(AuthService())
             .environmentObject(UserProfileService(authService: AuthService()))
             .environmentObject(StorageService())

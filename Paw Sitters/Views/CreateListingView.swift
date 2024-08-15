@@ -7,6 +7,7 @@
 
 import SwiftUI
 import HorizonCalendar
+import FirebaseFirestore
 
 enum ListingDetails {
     case title
@@ -27,12 +28,14 @@ struct CreateListingView: View {
     @State private var numBirds = 0
     @State private var numHares = 0
     @State private var numFish = 0
+    @State private var numDogs = 0
+    @State private var numOthers = 0
     @State private var selectedDateRange: ClosedRange<Date>?
     private let calendar = Calendar.current
     private let startDate: Date
     private let endDate: Date
     @State private var images: [UIImage] = []
-    @State private var listings = PetSittingListing(title: "", description: "", name: "", dateRange: ClosedRange<Date>(uncheckedBounds: (lower: Date(), upper: Date())), role: "", ownerId: "")
+    @State private var listings = PetSittingListing(documentId: "", data: [:])
     @State private var showingAlert = false
     @State private var showingImagePicker = false
     @State private var isPresenting = false
@@ -54,7 +57,6 @@ struct CreateListingView: View {
         self.endDate = calendar.date(from: DateComponents(year: 2026, month: 12, day: 31))!
         self.role = role
     }
-    
     
     var body: some View {
         VStack {
@@ -108,7 +110,6 @@ struct CreateListingView: View {
             VStack {
                 if selectedOption == .date {
                     HorizonCalendar(calendar: calendar, monthsLayout: .vertical, selectedDateRange: $selectedDateRange)
-                                           
                 } else {
                     CollapsedPickerView(headline: "When", placeholder: "Add Dates")
                 }
@@ -124,6 +125,17 @@ struct CreateListingView: View {
                    Text("What are the pets?")
                         .font(.title)
                         .fontWeight(.semibold)
+                    Stepper {
+                        HStack {
+                            Image(systemName: "dog.fill")
+                            Text("\(numDogs)")
+                        }
+                    } onIncrement: {
+                        numDogs += 1
+                    } onDecrement: {
+                        guard numDogs > 0 else { return }
+                        numDogs -= 1                    }
+                    
                     Stepper {
                         HStack {
                             Image(systemName: "bird.fill")
@@ -156,12 +168,24 @@ struct CreateListingView: View {
                         guard numFish > 0 else { return }
                         numFish -= 1                    }
                     
+                    Stepper {
+                        HStack {
+                            Image(systemName: "pawprint.fill")
+                            Text("\(numOthers)")
+                        }
+                    } onIncrement: {
+                        numOthers += 1
+                    } onDecrement: {
+                        guard numOthers > 0 else { return }
+                        numOthers -= 1                    }
+                    
                 } else {
                     CollapsedPickerView(headline: "Pets", placeholder: "Choose the pets")
                 }
             }
             .modifier(CollapsibleDestinationViewModifier())
-            .frame(height: selectedOption == .pets ? 190 : 64)
+            .frame(height: selectedOption == .pets ? 200 : 64)
+            .padding(EdgeInsets(top: selectedOption == .pets ? 40 : 0, leading: 0, bottom: selectedOption == .pets ? 40 : 0, trailing: 0))
             .onTapGesture {
                 withAnimation { selectedOption = .pets }
             }
@@ -210,21 +234,21 @@ struct CreateListingView: View {
                              .foregroundStyle(Color(.systemGray4))
                      }
                      if !viewModel.citySuggestions.isEmpty {
-                         List(viewModel.citySuggestions) { city in
-                             Text(city.name)
-                                 .onTapGesture {
-                                     viewModel.location = city.name
-                                     viewModel.citySuggestions = []
-                                 }
+                             List(viewModel.citySuggestions) { city in
+                                 Text(city.name)
+                                     .onTapGesture {
+                                         viewModel.location = city.name
+                                         viewModel.fetchCoordinates(for: city)
+                                         viewModel.citySuggestions = []                                     }
+                             }
+                             // .frame(height: 100)
                          }
-                        // .frame(height: 100)
-                     }
                  } else {
                      CollapsedPickerView(headline: "Location", placeholder: "Choose the Location")
                  }
              }
             .modifier(CollapsibleDestinationViewModifier())
-            .frame(height: selectedOption == .location ? 120 : 64)
+            .frame(height: selectedOption == .location ? 280 : 64)
             .padding(.bottom)
              .onTapGesture {
                  withAnimation(.snappy) { selectedOption = .location }
@@ -247,6 +271,7 @@ struct CreateListingView: View {
             Button("Choose Listing Images ") {
                 showingImagePicker = true
             }
+            .padding(.bottom, 18)
             
             Button("Publish") {
                 uploadImagesAndPublishListing()
@@ -303,17 +328,51 @@ private func uploadImagesAndPublishListing() {
 
 private func publishListing(imageUrls: [String]) {
     let ownerId = authService.user?.uid ?? ""
-    listings = PetSittingListing(
-        title: title,
-        description: description,
-        name: name,
-        dateRange: selectedDateRange,
-        imageUrls: imageUrls,
-        role: role ?? "Sitter",
-        ownerId: ownerId
-    )
+    let pets = [
+            "birds": numBirds,
+            "dogs": numDogs,
+            "hares": numHares,
+            "fish": numFish,
+            "others": numOthers
+    ] as [String : Any]
+    // selectedDateRange'i uygun bir formata dönüştürün
+        let dateRangeDict: [String: Any]?
+        if let dateRange = selectedDateRange {
+            dateRangeDict = [
+                "start": Timestamp(date: dateRange.lowerBound),
+                "end": Timestamp(date: dateRange.upperBound)
+            ]
+        } else {
+            dateRangeDict = nil
+        }
     
-    firestoreService.addListing(listings) { result in
+    let listingData = [
+        "title": title,
+        "description": description,
+        "name": name,
+        "timestamp": Timestamp(date: Date()),
+        "dateRange": dateRangeDict as Any,
+        "imageUrls": imageUrls,
+        "role": role ?? "Sitter",
+        "ownerId": ownerId,
+        "location": viewModel.location,
+        "latitude": viewModel.selectedCityCoordinates?.latitude as Any,
+        "longitude": viewModel.selectedCityCoordinates?.longitude as Any,
+        "pets": pets
+    ] as [String : Any]
+    
+    
+//    listings = PetSittingListing(
+//        title: title,
+//        description: description,
+//        name: name,
+//        dateRange: selectedDateRange,
+//        imageUrls: imageUrls,
+//        role: role ?? "Sitter",
+//        ownerId: ownerId
+//    )
+    
+    firestoreService.addListing(role ?? "Sitter", listingData: listingData) { result in
         switch result {
         case .success():
             alertTitle = "Success"

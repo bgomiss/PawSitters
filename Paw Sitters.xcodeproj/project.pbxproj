@@ -45,10 +45,11 @@
 		1C851E542C53BB55009A93A9 /* HorizonCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 1C851E532C53BB55009A93A9 /* HorizonCalendar */; };
 		1C87697A2C50B1EB00703939 /* DatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8769792C50B1EB00703939 /* DatePicker.swift */; };
 		1C91A0BA2C45CD1300B6C16D /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C91A0B92C45CD1300B6C16D /* Message.swift */; };
+		1C98E0CF2C6C8F4B00433753 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C98E0CE2C6C8F4B00433753 /* MapViewModel.swift */; };
+		1C98E0D12C6C8FCB00433753 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C98E0D02C6C8FCB00433753 /* MapView.swift */; };
+		1C98E0D32C6D465F00433753 /* MapContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C98E0D22C6D465F00433753 /* MapContainerView.swift */; };
 		1C9AFCFC2C5FBCD300612E6E /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9AFCFB2C5FBCD300612E6E /* ImageView.swift */; };
 		1C9E25AA2C25D2D400351632 /* RoleSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */; };
-		1C9E25AC2C25E2F100351632 /* OwnerListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25AB2C25E2F100351632 /* OwnerListingsView.swift */; };
-		1C9E25AE2C25E31C00351632 /* SitterListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25AD2C25E31C00351632 /* SitterListingsView.swift */; };
 		1C9E25B02C25E45500351632 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25AF2C25E45500351632 /* UserProfile.swift */; };
 		1C9E25B32C25ED2F00351632 /* UIImage+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B22C25ED2F00351632 /* UIImage+ext.swift */; };
 		1C9E25B52C25F73600351632 /* NavigationPathManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B42C25F73600351632 /* NavigationPathManager.swift */; };
@@ -84,10 +85,11 @@
 		1C7F65222C4DAE6400E2EBE1 /* ChatUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUser.swift; sourceTree = "<group>"; };
 		1C8769792C50B1EB00703939 /* DatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePicker.swift; sourceTree = "<group>"; };
 		1C91A0B92C45CD1300B6C16D /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		1C98E0CE2C6C8F4B00433753 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
+		1C98E0D02C6C8FCB00433753 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		1C98E0D22C6D465F00433753 /* MapContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapContainerView.swift; sourceTree = "<group>"; };
 		1C9AFCFB2C5FBCD300612E6E /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 		1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleSelectionView.swift; sourceTree = "<group>"; };
-		1C9E25AB2C25E2F100351632 /* OwnerListingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnerListingsView.swift; sourceTree = "<group>"; };
-		1C9E25AD2C25E31C00351632 /* SitterListingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SitterListingsView.swift; sourceTree = "<group>"; };
 		1C9E25AF2C25E45500351632 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		1C9E25B22C25ED2F00351632 /* UIImage+ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+ext.swift"; sourceTree = "<group>"; };
 		1C9E25B42C25F73600351632 /* NavigationPathManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationPathManager.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				1C7581D32C56F45C00BF884E /* LocationViewModel.swift */,
+				1C98E0CE2C6C8F4B00433753 /* MapViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -194,19 +197,19 @@
 			isa = PBXGroup;
 			children = (
 				1C786E072C25B6860012A179 /* ContentView.swift */,
-				1C786E362C25BDAE0012A179 /* SignUpView.swift */,
-				1C786E382C25BEDF0012A179 /* SignInView.swift */,
-				1C786E3A2C25BF070012A179 /* ProfileView.swift */,
-				1C786E3E2C25C0EA0012A179 /* MessagingView.swift */,
-				1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */,
-				1C9E25AB2C25E2F100351632 /* OwnerListingsView.swift */,
-				1C9E25AD2C25E31C00351632 /* SitterListingsView.swift */,
-				1C9E25B62C25FCE100351632 /* MainAppView.swift */,
-				1C448C3C2C305F3700E78668 /* EditProfileForm.swift */,
 				1C61A3D12C42C40C00AB9C7D /* ConversationsView.swift */,
 				1C61A3D32C42EF3D00AB9C7D /* CreateListingView.swift */,
+				1C448C3C2C305F3700E78668 /* EditProfileForm.swift */,
 				1C783FFD2C550FCC00E6F325 /* HorizonCalendarView.swift */,
 				1C9AFCFB2C5FBCD300612E6E /* ImageView.swift */,
+				1C9E25B62C25FCE100351632 /* MainAppView.swift */,
+				1C98E0D02C6C8FCB00433753 /* MapView.swift */,
+				1C786E3E2C25C0EA0012A179 /* MessagingView.swift */,
+				1C786E3A2C25BF070012A179 /* ProfileView.swift */,
+				1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */,
+				1C786E382C25BEDF0012A179 /* SignInView.swift */,
+				1C786E362C25BDAE0012A179 /* SignUpView.swift */,
+				1C98E0D22C6D465F00433753 /* MapContainerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -330,14 +333,17 @@
 				1C786E3F2C25C0EA0012A179 /* MessagingView.swift in Sources */,
 				1C786E2C2C25BBA60012A179 /* AuthService.swift in Sources */,
 				1C9AFCFC2C5FBCD300612E6E /* ImageView.swift in Sources */,
+				1C98E0D12C6C8FCB00433753 /* MapView.swift in Sources */,
 				1C91A0BA2C45CD1300B6C16D /* Message.swift in Sources */,
 				1C786E342C25BD6F0012A179 /* MessagingService.swift in Sources */,
+				1C98E0D32C6D465F00433753 /* MapContainerView.swift in Sources */,
 				1C9E25B92C25FDAF00351632 /* PetSittingListing.swift in Sources */,
 				1C786E322C25BD3D0012A179 /* UserProfileService.swift in Sources */,
 				1C9E25B72C25FCE100351632 /* MainAppView.swift in Sources */,
 				1C7581D42C56F45C00BF884E /* LocationViewModel.swift in Sources */,
 				1C7F65232C4DAE6400E2EBE1 /* ChatUser.swift in Sources */,
 				1C61A3D42C42EF3D00AB9C7D /* CreateListingView.swift in Sources */,
+				1C98E0CF2C6C8F4B00433753 /* MapViewModel.swift in Sources */,
 				1C61A3D22C42C40C00AB9C7D /* ConversationsView.swift in Sources */,
 				1C9E25AA2C25D2D400351632 /* RoleSelectionView.swift in Sources */,
 				1C786E372C25BDAE0012A179 /* SignUpView.swift in Sources */,
@@ -351,8 +357,6 @@
 				1C786E062C25B6860012A179 /* PawSittersApp.swift in Sources */,
 				1C7951092C504778001029CF /* DateFormatter.swift in Sources */,
 				1C448C3D2C305F3700E78668 /* EditProfileForm.swift in Sources */,
-				1C9E25AC2C25E2F100351632 /* OwnerListingsView.swift in Sources */,
-				1C9E25AE2C25E31C00351632 /* SitterListingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

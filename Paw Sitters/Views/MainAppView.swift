@@ -20,6 +20,7 @@ struct MainAppView: View {
     @EnvironmentObject var userProfileService: UserProfileService
     @EnvironmentObject var storageService: StorageService
     @ObservedObject var messagingService: MessagingService
+    @ObservedObject var firestoreService: FirestoreService
     @EnvironmentObject var navigationPathManager: NavigationPathManager
 
     var body: some View {
@@ -41,10 +42,10 @@ struct MainAppView: View {
                     self.animate = true
                 }
             } else if isSignedUp {
-                ContentView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, role: self.role)
+                ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, role: self.role)
                     .navigationBarBackButtonHidden(true)
             } else {
-                RoleSelectionView(isLoading: $isLoading, userId: $userId, messagingService: messagingService)
+                RoleSelectionView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService)
                 
             }
             
@@ -52,14 +53,14 @@ struct MainAppView: View {
         .navigationDestination(for: NavigationDestination.self) { destination in
             switch destination {
             case .sitterSignUp:
-                SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, role: "Sitter")
+                SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService, role: "Sitter")
             case .ownerSignUp:
-                SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, role: "Owner")
+                SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService, role: "Owner")
             case .signInView:
-                SignInView(isLoading: $isLoading, userId: $userId, messagingService: messagingService)
+                SignInView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService)
             case .contentView:
                 if let role = self.role {
-                    ContentView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, role: role)
+                    ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, role: role)
                 }
             default:
                 Text("roleSection")
@@ -117,7 +118,7 @@ struct MainAppView: View {
 
 struct MainAppView_Previews: PreviewProvider {
     static var previews: some View {
-        MainAppView(isSignedUp: .constant(false), isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), receiverId: .constant("HZHDnLPFWfftcb3e0Mjz4DIoYZn2"), messagingService: MessagingService())
+        MainAppView(isSignedUp: .constant(false), isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), receiverId: .constant("HZHDnLPFWfftcb3e0Mjz4DIoYZn2"), messagingService: MessagingService(), firestoreService: FirestoreService())
             .environmentObject(AuthService())
             .environmentObject(UserProfileService(authService: AuthService()))
             .environmentObject(StorageService())

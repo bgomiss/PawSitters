@@ -12,6 +12,8 @@ struct MessagingView: View {
     @EnvironmentObject var authService: AuthService
     @ObservedObject var messagingService: MessagingService
     @EnvironmentObject var userProfileService: UserProfileService
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.isPresented) var isPresented
     @Binding var userId: String
     @State var message: Message?
     @State private var newMessage: String = ""
@@ -61,6 +63,11 @@ struct MessagingView: View {
         .safeAreaInset(edge: .bottom) {
             chatBottomBar
         }
+        .safeAreaInset(edge: .top) {
+            if isPresented {
+                backButton
+            }
+        }
         .background(Color(.systemBackground)
             .ignoresSafeArea())
         .onAppear {
@@ -68,10 +75,25 @@ struct MessagingView: View {
             fetchTheUser()
         }
         .onChange(of: receiverId) { _, newReceiverId in
-                messagingService.clearMessages()
-                messagingService.fetchMessages(newReceiverId)
-            }
+            messagingService.clearMessages()
+            messagingService.fetchMessages(newReceiverId)
         }
+    }
+    
+    private var backButton: some View {
+        Button(action: {
+            withAnimation(.snappy(duration: 2)) {
+                dismiss()
+            }
+        }) {
+            HStack {
+                Image(systemName: "chevron.left")
+                Text("Back")
+                Spacer()
+            }
+            .padding()
+        }
+    }
     
     
     private var chatBottomBar: some View {

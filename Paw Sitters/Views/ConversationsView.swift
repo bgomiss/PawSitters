@@ -14,8 +14,10 @@ struct ConversationsView: View {
     @EnvironmentObject var authService: AuthService
     @Environment(\.dismiss) private var dismiss
     @Binding var userId: String
-    @State private var receiverId: String?
+    @State private var message: Message?
+    @State private var receiverId: String = ""
     @State private var isMessagingViewPresented = false
+    var didSelectNewUser: (String) -> () = { _ in }
     
     var body: some View {
         NavigationView {
@@ -28,13 +30,16 @@ struct ConversationsView: View {
                             backButton
                         }
                     }
-            }
+               }
         }
         .onAppear {
             messagingService.fetchRecentMessages()
         }
+        .onChange(of: receiverId) { _, newReceiverId in
+            receiverId = newReceiverId
+        }
         .fullScreenCover(isPresented: $isMessagingViewPresented) {
-                MessagingView(messagingService: messagingService, userId: $userId, receiverId: $receiverId)
+            MessagingView(messagingService: messagingService, userId: $userId, receiverId: receiverId)
         }
     }
     
@@ -44,15 +49,21 @@ struct ConversationsView: View {
                 HStack {
                     ImageView.userImageView(for: message, for: nil)
                         .onTapGesture {
-                            setReceiverAndShowMessagingView(message: message)
+                            self.message = message
+                            receiverId = userId == message.senderId ? message.receiverId : message.senderId
+                            isMessagingViewPresented.toggle()
                         }
                     userMessagesView(for: message)
                         .onTapGesture {
-                           setReceiverAndShowMessagingView(message: message)
+                            self.message = message
+                            receiverId = userId == message.senderId ? message.receiverId : message.senderId
+                            isMessagingViewPresented.toggle()
+
                         }
                     Spacer()
                 }
                 .padding()
+                Divider()
             }
         }
     }
@@ -66,7 +77,7 @@ struct ConversationsView: View {
             }
         }
     }
-        
+    
     
     
     private var backButton: some View {
@@ -82,22 +93,18 @@ struct ConversationsView: View {
         }
     }
     
-    private func setReceiverAndShowMessagingView(message: Message) {
-        DispatchQueue.main.async {
-            if userId == message.senderId {
-                receiverId = message.receiverId
-            } else {
-                receiverId = message.senderId
-            }
-            isMessagingViewPresented = true
-        }
+    private func handleUserSelection(message: Message) {
+        let selectedReceiverId = userId == message.senderId ? message.receiverId : message.senderId
+        didSelectNewUser(selectedReceiverId)
+        receiverId = selectedReceiverId
+//        DispatchQueue.main.async {
+//            isMessagingViewPresented.toggle()
+//        }
     }
 }
 
-
-
-struct ConversationView_Previews: PreviewProvider {
-    static var previews: some View {
+    struct ConversationView_Previews: PreviewProvider {
+        static var previews: some View {
         ConversationsView(messagingService: MessagingService(), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"))
             .environmentObject(MessagingService())
             .environmentObject(UserProfileService(authService: AuthService()))
