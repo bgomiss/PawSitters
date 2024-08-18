@@ -22,7 +22,7 @@ struct ContentView: View {
     @ObservedObject var viewModel = MapViewModel()
         @State private var region = MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
-            span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
+            span: MKCoordinateSpan(latitudeDelta: 60, longitudeDelta: 60)
         )
     
 
@@ -45,53 +45,59 @@ struct ContentView: View {
                         .font(.headline)
                         .padding()
                 } else {
-                    List(firestoreService.listings) { listing in
-                        NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService)) {
-                            VStack(alignment: .leading) {
-                                
-                                if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
-                                    AsyncImage(url: url) { phase in
-                                        switch phase {
-                                        case .empty:
-                                            ProgressView()
-                                                .frame(maxWidth: .infinity, maxHeight: 200)
-                                        case .success(let image):
-                                            image
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(maxWidth: .infinity, maxHeight: 200)
-                                                .clipped()
-                                        case .failure:
-                                            Image(systemName: "photo")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(maxWidth: .infinity, maxHeight: 200)
-                                        @unknown default:
-                                            EmptyView()
+                    ScrollView {
+                    ForEach(firestoreService.listings) { listing in
+                            NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService)) {
+                                VStack(alignment: .leading) {
+                                    
+                                    if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
+                                        AsyncImage(url: url) { phase in
+                                            switch phase {
+                                            case .empty:
+                                                ProgressView()
+                                                    .frame(maxWidth: .infinity, maxHeight: 200)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                    .padding()
+                                            case .success(let image):
+                                                image
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(maxWidth: .infinity, maxHeight: 200)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                    .padding()
+                                            case .failure:
+                                                Image(systemName: "photo")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(maxWidth: .infinity, maxHeight: 200)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                    .padding()
+                                            @unknown default:
+                                                EmptyView()
+                                            }
                                         }
+                                        .cornerRadius(10)
                                     }
-                                    .cornerRadius(10)
-                                }
                                     Text(listing.title)
                                         .font(.headline)
                                         .padding([.top, .leading, .trailing])
                                         .frame(maxWidth: .infinity, alignment: .leading)
-                              
-                                if let dateRange = listing.dateRange {
-                                    Text("Date: \(dateRange)")
+                                    
+                                    if let dateRange = listing.dateRange {
+                                        Text("Date: \(dateRange)")
+                                            .font(.headline)
+                                            .padding([.leading, .trailing])
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    } else {
+                                        Text("No Date selected")
+                                    }
+                                    
+                                    Text(listing.location ?? "")
                                         .font(.headline)
                                         .padding([.leading, .trailing])
                                         .frame(maxWidth: .infinity, alignment: .leading)
-                                } else {
-                                    Text("No Date selected")
-                                }
-                                    
-                                Text(listing.location ?? "")
-                                    .font(.headline)
-                                    .padding([.leading, .trailing])
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                HStack {
-                                    if let pet = listing.pets {  // Eğer pets dizisinde ilk öğe varsa
+                                    HStack {
+                                        if let pet = listing.pets {  // Eğer pets dizisinde ilk öğe varsa
                                             if let dogs = pet.numDogs {
                                                 Image(systemName: "dog.fill")
                                                 Text(dogs)
@@ -110,47 +116,32 @@ struct ContentView: View {
                                             }
                                         }
                                     }
-                                .padding([.leading, .trailing])
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                               
+                                    .padding([.leading, .trailing])
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    
                                 }
-                        }
+                            }
                             .background(Rectangle().fill(Color.white).shadow(radius: 1))
                             .cornerRadius(10)
                             .padding(.vertical, 5)
-                        
+                            
+                        }
+                    }
                 }
-                    ZStack {
-                        Button(action: {
-                            let zoomLevel = region.span.latitudeDelta
-                            viewModel.createAnnotations(from: firestoreService.listings, zoomLevel: zoomLevel)
-                            isMapViewPresented.toggle()
-                        }, label: {
-                            Image(systemName: "map.fill")
-                                .padding()
-                                .background(Color.black)
-                                .foregroundColor(.white)
-                                .cornerRadius(8)
-                        })
-                }
-            }
                
                 Spacer()
-                
-                Button(action: {
-                    do {
-                        try authService.signOut()
-                        navigationPathManager.popToRoot() // Clear the navigation stack
-                        isLoading = false
-                    } catch let error {
-                        print("Error signing out: \(error.localizedDescription)")
-                    }
-                }) {
-                    Text("Sign Out")
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                ZStack {
+                    Button(action: {
+                        let zoomLevel = region.span.latitudeDelta
+                        viewModel.createAnnotations(from: firestoreService.listings, zoomLevel: zoomLevel)
+                        isMapViewPresented.toggle()
+                    }, label: {
+                        Image(systemName: "map.fill")
+                            .padding()
+                            .background(Color.black)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    })
                 }
             }
             .navigationBarItems(
@@ -220,19 +211,6 @@ struct ContentView: View {
             }
         }
     }
-    
-//    func fetchData(role: String) {
-//        firestoreService.fetchListings(for: role) { result in
-//            switch result {
-//            case .success(let fetchedListings):
-//                self.listings = fetchedListings
-//                self.isLoading = false
-//            case .failure(let error):
-//                self.isLoading = false
-//                print("Error fetching listings: \(error.localizedDescription)")
-//            }
-//        }
-//    }
 }
 
 struct ListingDetailView: View {

@@ -49,30 +49,7 @@ class MapViewModel: ObservableObject {
         }
 
         group.notify(queue: .main) {
-            if zoomLevel < 0.1 {
-                self.annotations = self.clusterAnnotations(annotations: temporaryAnnotations)
-            } else {
-                self.annotations = temporaryAnnotations
-            }
+            self.annotations = temporaryAnnotations
         }
-    }
-    
-    private func clusterAnnotations(annotations: [MKPointAnnotation]) -> [MKPointAnnotation] {
-        var clusteredAnnotations: [MKPointAnnotation] = []
-        
-        let clusterRadius: Double = 0.5
-        
-        for annotation in annotations {
-            if let existingCluster = clusteredAnnotations.first(where: { existing in
-                let distance = sqrt(pow(existing.coordinate.latitude - annotation.coordinate.latitude, 2) +
-                                    pow(existing.coordinate.longitude - annotation.coordinate.longitude, 2))
-                return distance < clusterRadius
-            }) {
-                existingCluster.title = "\(Int(existingCluster.title ?? "1")! + 1) Listings"
-            } else {
-                clusteredAnnotations.append(annotation)
-            }
-        }
-        return clusteredAnnotations
     }
 }

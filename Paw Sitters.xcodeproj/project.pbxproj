@@ -11,6 +11,7 @@
 		1C448C3D2C305F3700E78668 /* EditProfileForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C448C3C2C305F3700E78668 /* EditProfileForm.swift */; };
 		1C61A3D22C42C40C00AB9C7D /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C61A3D12C42C40C00AB9C7D /* ConversationsView.swift */; };
 		1C61A3D42C42EF3D00AB9C7D /* CreateListingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C61A3D32C42EF3D00AB9C7D /* CreateListingView.swift */; };
+		1C6216932C70AD7A005ABBBA /* CustomAnnotationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6216922C70AD7A005ABBBA /* CustomAnnotationViews.swift */; };
 		1C7581D42C56F45C00BF884E /* LocationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7581D32C56F45C00BF884E /* LocationViewModel.swift */; };
 		1C7581D62C56F4B000BF884E /* City.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7581D52C56F4B000BF884E /* City.swift */; };
 		1C783FFE2C550FCC00E6F325 /* HorizonCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C783FFD2C550FCC00E6F325 /* HorizonCalendarView.swift */; };
@@ -62,6 +63,7 @@
 		1C448C3C2C305F3700E78668 /* EditProfileForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileForm.swift; sourceTree = "<group>"; };
 		1C61A3D12C42C40C00AB9C7D /* ConversationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsView.swift; sourceTree = "<group>"; };
 		1C61A3D32C42EF3D00AB9C7D /* CreateListingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateListingView.swift; sourceTree = "<group>"; };
+		1C6216922C70AD7A005ABBBA /* CustomAnnotationViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnnotationViews.swift; sourceTree = "<group>"; };
 		1C7581D32C56F45C00BF884E /* LocationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationViewModel.swift; sourceTree = "<group>"; };
 		1C7581D52C56F4B000BF884E /* City.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = City.swift; sourceTree = "<group>"; };
 		1C783FFD2C550FCC00E6F325 /* HorizonCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonCalendarView.swift; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 				1C786E382C25BEDF0012A179 /* SignInView.swift */,
 				1C786E362C25BDAE0012A179 /* SignUpView.swift */,
 				1C98E0D22C6D465F00433753 /* MapContainerView.swift */,
+				1C6216922C70AD7A005ABBBA /* CustomAnnotationViews.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 			files = (
 				1C783FFE2C550FCC00E6F325 /* HorizonCalendarView.swift in Sources */,
 				1C9E25B52C25F73600351632 /* NavigationPathManager.swift in Sources */,
+				1C6216932C70AD7A005ABBBA /* CustomAnnotationViews.swift in Sources */,
 				1C448C3B2C30328A00E78668 /* NavigationDestination.swift in Sources */,
 				1C786E392C25BEDF0012A179 /* SignInView.swift in Sources */,
 				1C786E302C25BC530012A179 /* StorageService.swift in Sources */,
