@@ -24,9 +24,10 @@ struct MessagingView: View {
     @State var receiverId: String
     
     var body: some View {
-        ScrollView {
-            ForEach(messagingService.messages) { message in
-                VStack {
+        ScrollViewReader { proxy in
+            List {
+                ForEach(messagingService.messages) { message in
+                    
                     if message.senderId == userId {
                         HStack {
                             Spacer()
@@ -53,11 +54,20 @@ struct MessagingView: View {
                         }
                     }
                 }
+                .id(message)
                 .padding(.horizontal)
                 .padding(.top, 8)
             }
             HStack { Spacer() }
-        }
+                .onChange(of: message) { _, newMessage in
+                    withAnimation {
+                        proxy.scrollTo(messagingService.messages.last)
+                    }
+                }
+                .onAppear {
+                    proxy.scrollTo(messagingService.messages.last, anchor: .bottom)
+                }
+            }
         .background(Color(.init(white: 0.95, alpha: 1)))
         .padding(.bottom, 5)
         .safeAreaInset(edge: .bottom) {
@@ -79,6 +89,7 @@ struct MessagingView: View {
             messagingService.fetchMessages(newReceiverId)
         }
     }
+
     
     private var backButton: some View {
         Button(action: {

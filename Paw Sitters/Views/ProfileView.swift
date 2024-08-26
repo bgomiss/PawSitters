@@ -10,6 +10,7 @@ import SwiftUI
 struct ProfileView: View {
     @EnvironmentObject var authService: AuthService
     @EnvironmentObject var userProfileService: UserProfileService
+    @EnvironmentObject var navigationPathManager: NavigationPathManager
     @State private var name: String = ""
     @State private var bio: String = ""
     @State private var age: String = ""
@@ -106,7 +107,20 @@ struct ProfileView: View {
                 }
                 .padding()
                 
-                Spacer()
+                Button(action: {
+                    do {
+                        try authService.signOut()
+                        navigationPathManager.popToRoot() // Clear the navigation stack
+                    } catch let error {
+                        print("Error signing out: \(error.localizedDescription)")
+                    }
+                }) {
+                    Text("Sign Out")
+                        .padding()
+                        .background(Color.clear)
+                        .foregroundColor(.red)
+                        .cornerRadius(8)
+                }
             }
             .onAppear {
                 if let user = authService.user {

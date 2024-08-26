@@ -25,6 +25,7 @@ struct PetSittingListing: Codable, Identifiable {
     var pets: Pets?
     var latitude: Double?
     var longitude: Double?
+    var isFavorite: Bool
     
     init(documentId: String, data: [String : Any]) {
         self.documentId = documentId
@@ -51,6 +52,7 @@ struct PetSittingListing: Codable, Identifiable {
             }
         self.latitude = data["latitude"] as? Double
         self.longitude = data["longitude"] as? Double
+        self.isFavorite = data["isFavorite"] as? Bool ?? false
         }
     }
 
