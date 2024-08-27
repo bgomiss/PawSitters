@@ -360,17 +360,7 @@ private func publishListing(imageUrls: [String]) {
         "longitude": viewModel.selectedCityCoordinates?.longitude as Any,
         "pets": pets
     ] as [String : Any]
-    
-    
-//    listings = PetSittingListing(
-//        title: title,
-//        description: description,
-//        name: name,
-//        dateRange: selectedDateRange,
-//        imageUrls: imageUrls,
-//        role: role ?? "Sitter",
-//        ownerId: ownerId
-//    )
+
     
     firestoreService.addListing(role ?? "Sitter", listingData: listingData) { result in
         switch result {
