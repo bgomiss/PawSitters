@@ -21,6 +21,7 @@ struct ProfileView: View {
     var role: String
     
     var body: some View {
+        ScrollView {
             VStack {
                 // Profile Header
                 VStack {
@@ -105,7 +106,7 @@ struct ProfileView: View {
 //                        .shadow(radius: 5)
                 }
                 .padding()
-    
+                
                 Button(action: {
                     do {
                         try authService.signOut()
@@ -137,7 +138,7 @@ struct ProfileView: View {
                     }
                 }
             }
-        
+        }
         .sheet(isPresented: $showingImagePicker) {
             ImagePicker(images: $images)
         }

@@ -2,7 +2,7 @@
 //  CustomAnnotationViews.swift
 //  Paw Sitters
 //
-//  Created by aycan duskun on 17.08.2024.
+//  Created by aycan duskun on 18.08.2024.
 //
 
 import MapKit
@@ -16,16 +16,17 @@ class CustomAnnotationView: MKAnnotationView {
     }
 }
 
+
 class ClusterAnnotationView: MKAnnotationView {
     private var countLabel: UILabel?
-    
+
     override var annotation: MKAnnotation? {
         didSet {
             displayPriority = .defaultHigh // Ensures that the cluster annotation is prioritized
-           // image = UIImage(systemName: "dog.fill") // Replace with your cluster image
             setupClusterView()
         }
     }
+
     private func setupClusterView() {
         if let clusterAnnotation = annotation as? MKClusterAnnotation {
             // Set the image for the cluster
@@ -33,7 +34,7 @@ class ClusterAnnotationView: MKAnnotationView {
             
             // Remove any existing label
             countLabel?.removeFromSuperview()
-            
+
             // Add a new label to show the count
             let count = clusterAnnotation.memberAnnotations.count
             let label = UILabel()
@@ -44,11 +45,11 @@ class ClusterAnnotationView: MKAnnotationView {
             label.font = UIFont.boldSystemFont(ofSize: 12)
             label.layer.cornerRadius = 15
             label.clipsToBounds = true
-            
+
             // Set the size and position of the label
             let size = 30
-            label.frame = CGRect(x: self.bounds.width - CGFloat(size / 2), y: self.bounds.height - CGFloat(size/2), width: CGFloat(size), height: CGFloat(size))
-            
+            label.frame = CGRect(x: self.bounds.width - CGFloat(size / 2), y: self.bounds.height - CGFloat(size / 2), width: CGFloat(size), height: CGFloat(size))
+
             addSubview(label)
             countLabel = label
         }

@@ -75,6 +75,20 @@ class FirestoreService: ObservableObject {
             }
         }
     }
+    
+    func updateFavoriteStatus(role: String, for listingId: String, isFavorite: Bool) {
+        let collection = role == "Sitter" ? "ownersListings" : "sittersListings"
+        let documentRef = db.collection(collection).document(listingId)
+            
+        documentRef.updateData(["isFavorite": isFavorite]) { error in
+            if let error = error {
+                print("Error updating favorite status: \(error.localizedDescription)")
+            } else {
+                print("Favorite status updated successfully.")
+            }
+        }
+    }
+
 }
 
 

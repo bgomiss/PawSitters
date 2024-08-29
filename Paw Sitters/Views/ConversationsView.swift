@@ -25,11 +25,7 @@ struct ConversationsView: View {
                 conversationList
                     .navigationBarTitle("MESSAGES")
                     .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            backButton
-                        }
-                    }
+
                }
         }
         .onAppear {
@@ -74,21 +70,6 @@ struct ConversationsView: View {
                 Text(message.receiverName ?? "")
             } else {
                 Text(message.senderName ?? "")
-            }
-        }
-    }
-    
-    
-    
-    private var backButton: some View {
-        Button(action: {
-            withAnimation(.snappy(duration: 2)) {
-                dismiss()
-            }
-        }) {
-            HStack {
-                Image(systemName: "chevron.left")
-                Text("Back")
             }
         }
     }

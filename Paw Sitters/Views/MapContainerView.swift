@@ -13,45 +13,66 @@ struct MapContainerView: View {
     @Binding var annotations: [MKPointAnnotation]
     @Binding var region: MKCoordinateRegion
     @StateObject private var viewModel = MapViewModel()
-    
+    @ObservedObject var firestoreService: FirestoreService
+    @State private var selectedListing: PetSittingListing?
     @State private var zoomLevel: Double = 0.0
+    let heights = stride(from: 0.1, through: 1.0, by: 0.1).map { PresentationDetent.fraction($0) }
     
     var listings: [PetSittingListing]
     
     var body: some View {
-        VStack {
-            HStack {
-                Image(systemName: "chevron.left")
-                    .onTapGesture {
-                        dismiss()
+            ZStack {
+                // MARK: - Map View
+                MapView(
+                    annotations: $viewModel.annotations,
+                    region: $region,
+                    firestoreService: firestoreService,
+                    onZoomChange: { newZoomLevel in
+                        zoomLevel = newZoomLevel
+                        viewModel.createAnnotations(from: listings, zoomLevel: newZoomLevel)
+                    }, onAnnotationSelect: { listing in
+                        selectedListing = listing
                     }
-                //  Text("Back")
-                Spacer()
-                Text(String(format: "Zoom Seviyesi: %.5f", zoomLevel))
-                    .font(.headline)
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(8)
-                    .shadow(radius: 2)
+                )
+                .ignoresSafeArea()
+                
+                // MARK: - Top Controls
+                VStack {
+                    HStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                        Spacer()
+                        Text(String(format: "Zoom Level: %.2f", zoomLevel))
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .background(Color.black.opacity(0.6))
+                            .cornerRadius(8)
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 50) // Adjust according to safe area
+
+                    Spacer()
+                }
+
+                // MARK: - Bottom Sheet View
+                .sheet(item: $selectedListing) { listing in
+                    BottomSheetView(listing: listing)
+                        .presentationDetents(Set(heights))
+                        .presentationDragIndicator(.hidden)
+                }
             }
-            .padding()
-            .foregroundColor(.blue)
-            .cornerRadius(8)
-            
-            Spacer()
-            
-            MapView(annotations: $annotations, region: $region, onZoomChange: { newZoomLevel in
-                zoomLevel = newZoomLevel
-                viewModel.createAnnotations(from: listings, zoomLevel: newZoomLevel)
-            })
-            .ignoresSafeArea(.all)
-        }
-        .onAppear {
-            viewModel.createAnnotations(from: listings, zoomLevel: region.span.latitudeDelta)
+            .onAppear {
+                viewModel.createAnnotations(from: listings, zoomLevel: region.span.latitudeDelta)
+            }
         }
     }
-    
-}
 //struct MapContainerView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        MapContainerView(

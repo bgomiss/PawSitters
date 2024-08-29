@@ -24,61 +24,35 @@ struct MessagingView: View {
     @State var receiverId: String
     
     var body: some View {
-        ScrollView {
-            ForEach(messagingService.messages) { message in
-                VStack {
-                    if message.senderId == userId {
-                        HStack {
-                            Spacer()
-                            HStack {
-                                Text(message.content)
-                                    .foregroundColor(.white)
-                                ImageView.userImageView(for: nil, for: message)
-                            }
-                            .padding()
-                            .background(Color.blue)
-                            .cornerRadius(8)
-                        }
-                    } else {
-                        HStack {
-                            HStack {
-                                ImageView.userImageView(for: message, for: nil)
-                                Text(message.content)
-                                    .foregroundColor(.black)
-                            }
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(8)
-                            Spacer()
-                        }
+        NavigationStack {
+            ZStack {
+                messagesView
+            }
+            //        .navigationBarItems(trailing: Button(action: {
+            //            messagingService.count += 1
+            //        }, label: {
+            //            Text("Count: \(messagingService.count)")
+            //        }))
+            .navigationBarTitle("MESSAGES")
+            .navigationBarTitleDisplayMode(.inline)
+            .background(Color(.systemBackground)
+                .ignoresSafeArea())
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    backButton
                     }
                 }
-                .padding(.horizontal)
-                .padding(.top, 8)
+            .onAppear {
+                messagingService.fetchMessages(receiverId)
+                fetchTheUser()
             }
-            HStack { Spacer() }
-        }
-        .background(Color(.init(white: 0.95, alpha: 1)))
-        .padding(.bottom, 5)
-        .safeAreaInset(edge: .bottom) {
-            chatBottomBar
-        }
-        .safeAreaInset(edge: .top) {
-            if isPresented {
-                backButton
+            .onChange(of: receiverId) { _, newReceiverId in
+                messagingService.clearMessages()
+                messagingService.fetchMessages(newReceiverId)
             }
-        }
-        .background(Color(.systemBackground)
-            .ignoresSafeArea())
-        .onAppear {
-            messagingService.fetchMessages(receiverId)
-            fetchTheUser()
-        }
-        .onChange(of: receiverId) { _, newReceiverId in
-            messagingService.clearMessages()
-            messagingService.fetchMessages(newReceiverId)
         }
     }
+
     
     private var backButton: some View {
         Button(action: {
@@ -86,8 +60,11 @@ struct MessagingView: View {
                 dismiss()
             }
         }) {
-            HStack {
+            HStack(spacing: 1) {
                 Image(systemName: "chevron.left")
+                    .foregroundColor(.blue)
+                    .padding(.leading, 5)
+                    //.background(Color.black.opacity(0.6))
                 Text("Back")
                 Spacer()
             }
@@ -95,14 +72,94 @@ struct MessagingView: View {
         }
     }
     
+    struct MessageView: View {
+        
+        let message: Message
+        @EnvironmentObject var authService: AuthService
+        
+        var body: some View {
+            VStack {
+                if message.senderId == authService.user?.uid {
+                HStack {
+                    Spacer()
+                    HStack {
+                        Text(message.content)
+                            .foregroundColor(.white)
+                        ImageView.userImageView(for: nil, for: message)
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(8)
+                }
+            } else {
+                HStack {
+                    HStack {
+                        ImageView.userImageView(for: message, for: nil)
+                        Text(message.content)
+                            .foregroundColor(.black)
+                    }
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(8)
+                    Spacer()
+                }
+            }
+        }
+        .padding(.horizontal)
+        .padding(.top, 8)
+        }
+    }
+    
+    static let emptyScrollToString = "Empty"
+    
+    private var messagesView: some View {
+        VStack {
+            ScrollView {
+                ScrollViewReader { ScrollViewProxy in
+                    VStack {
+                        ForEach(messagingService.messages) { message in
+                            MessageView(message: message)
+                        }
+                        HStack { Spacer() }
+                        .id(Self.emptyScrollToString)
+                    }
+                    .onReceive(messagingService.$count) { _ in
+                        withAnimation(.easeOut(duration: 0.5)) {
+                            ScrollViewProxy.scrollTo(Self.emptyScrollToString, anchor: .bottom)
+                        }
+                    }
+                }
+                
+                    //                .onChange(of: message) { _, newMessage in
+                    //                    withAnimation {
+                    //                        proxy.scrollTo(messagingService.messages.last)
+                    //                    }
+                    //                }
+                    //                .onAppear {
+                    //                    proxy.scrollTo(messagingService.messages.last, anchor: .bottom)
+                    //                }
+                }
+                .background(Color(.init(white: 0.95, alpha: 1)))
+                .safeAreaInset(edge: .bottom) {
+                    chatBottomBar
+                        .background(Color(.systemBackground)
+                            .ignoresSafeArea())
+                }
+             }
+        }
+    
     
     private var chatBottomBar: some View {
         HStack(spacing: 16) {
             Image(systemName: "photo.on.rectangle")
                 .font(.system(size: 24))
                 .foregroundColor(Color(.darkGray))
-            TextField("Enter Message", text: $newMessage)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+            ZStack {
+                DescriptionPlaceholder()
+                TextEditor(text: $newMessage)
+                    .opacity(newMessage.isEmpty ? 0.5 : 1)
+            }
+            .frame(height: 40)
             Button(action: sendMessage) {
                 Text("Send")
                     .padding(.horizontal)
@@ -114,6 +171,19 @@ struct MessagingView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
+    }
+    
+    private struct DescriptionPlaceholder: View {
+        var body: some View {
+            HStack {
+                Text("Enter Message")
+                    .foregroundColor(Color(.gray))
+                    .font(.system(size: 17))
+                    .padding(.leading, 5)
+                    .padding(.top, -4)
+                Spacer()
+            }
+        }
     }
     
     

@@ -72,8 +72,6 @@ struct MainAppView: View {
         .onAppear {
             if let user = authService.user {
                 fetchUserProfile(for: user)
-//                isSignedUp = true
-//                isLoading = false
             } else {
                 isLoading = false
                 isSignedUp = false
@@ -84,8 +82,6 @@ struct MainAppView: View {
             if let user = user {
                 userId = user.uid
                 fetchUserProfile(for: user)
-//                isLoading = true
-//                isSignedUp = true
             } else {
                 isSignedUp = false
                 isLoading = false
@@ -93,6 +89,7 @@ struct MainAppView: View {
         }
         
     }
+    
     private func fetchUserProfile(for user: User) {
             isLoading = true
         DispatchQueue.global().asyncAfter(deadline: .now() + 5) {
@@ -109,7 +106,6 @@ struct MainAppView: View {
                     isSignedUp = false
                 }
                 isLoading = false
-//                userProfileService.fetchAllUsers()
             }
          }
       }
@@ -125,9 +121,4 @@ struct MainAppView_Previews: PreviewProvider {
             .environmentObject(NavigationPathManager())
     }
 }
-
-
-
-
-
 

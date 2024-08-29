@@ -11,23 +11,21 @@ import SwiftUI
 struct MapView: UIViewRepresentable {
     @Binding var annotations: [MKPointAnnotation]
     @Binding var region: MKCoordinateRegion
+    @ObservedObject var firestoreService: FirestoreService
     var onZoomChange: ((Double) -> Void)?
+    var onAnnotationSelect: ((PetSittingListing) -> Void)?
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
         mapView.delegate = context.coordinator
         mapView.region = region
-        
-        // Register custom annotation and cluster views
         mapView.register(CustomAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
         mapView.register(ClusterAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultClusterAnnotationViewReuseIdentifier)
-
         mapView.showsUserLocation = true
         mapView.isZoomEnabled = true
         mapView.isScrollEnabled = true
         mapView.isPitchEnabled = true
         mapView.isRotateEnabled = true
-        
         mapView.addAnnotations(annotations)
         return mapView
     }
@@ -38,16 +36,20 @@ struct MapView: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(self, onZoomChange: onZoomChange)
+        return Coordinator(self, onZoomChange: onZoomChange, onAnnotationSelect: onAnnotationSelect, fireStoreService: firestoreService)
     }
 
     class Coordinator: NSObject, MKMapViewDelegate {
         var parent: MapView
         var onZoomChange: ((Double) -> Void)?
+        var onAnnotationSelect: ((PetSittingListing) -> Void)?
+        @ObservedObject var firestoreService: FirestoreService
 
-        init(_ parent: MapView, onZoomChange: ((Double) -> Void)?) {
+        init(_ parent: MapView, onZoomChange: ((Double) -> Void)?, onAnnotationSelect: ((PetSittingListing) -> Void)?, fireStoreService: FirestoreService) {
             self.parent = parent
             self.onZoomChange = onZoomChange
+            self.onAnnotationSelect = onAnnotationSelect
+            self.firestoreService = fireStoreService
         }
         
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
@@ -67,5 +69,15 @@ struct MapView: UIViewRepresentable {
                 return view
             }
         }
+        
+        func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+            if let annotation = view.annotation as? MKPointAnnotation {
+                    // Listing'i bulun ve seçili listing olarak ayarlayın
+                    if let selectedListing = firestoreService.listings.first(where: { $0.title == annotation.title }) {
+                        parent.onAnnotationSelect?(selectedListing)
+                    }
+                }
+        }
+
     }
 }

@@ -19,6 +19,7 @@ class MessagingService: ObservableObject {
     @Published var recentMessages: [Message] = []
     // Add a new published property to hold filtered messages
     @Published var filteredMessages: [Message] = []
+    @Published var count = 0
     
     //        init(userProfileService: UserProfileService) {
     //            self.userProfileService = userProfileService
@@ -41,6 +42,7 @@ class MessagingService: ObservableObject {
                     return
                 }
             }
+            self.count += 1
         }
         
         let recipientMessageDocument = db.collection("messages")
@@ -112,7 +114,9 @@ class MessagingService: ObservableObject {
                             if !self.messages.contains(where: { $0.documentId == docId }) {
                                 let newMessage = Message(documentId: docId, data: data)
                                 self.messages.append(newMessage)
-                                print("MESSAGES: \(self.messages)")
+                                DispatchQueue.main.async {
+                                    self.count += 1
+                                }
                             }
                         case .removed:
                             self.messages.removeAll() { $0.documentId == docId }
@@ -122,7 +126,7 @@ class MessagingService: ObservableObject {
                     })
                 }
             }
-    }
+        }
     
     
     func fetchRecentMessages() {
@@ -175,98 +179,3 @@ class MessagingService: ObservableObject {
     }
 }
     
-//    func addReceiverNamesToMessages(for userId: String, documentId: String, completion: @escaping () -> Void) {
-//            db.collection("recent_messages")
-//                .document(userId)
-//                .collection("messages")
-//                .document(documentId)
-//                .getDocument { documentSnapshot, error in
-//                    if let error = error {
-//                        print(error.localizedDescription)
-//                        completion()
-//                        return
-//                    }
-//
-//                    if let documentSnapshot = documentSnapshot, let data = documentSnapshot.data() {
-//                        if let senderId = data["fromId"] as? String, !self.chatUser.contains(where: { $0.id == userId }) {
-//                            self.userProfileService.fetchUserProfile(uid: senderId) { result in
-//                                switch result {
-//                                case .success(let profile):
-//                                    DispatchQueue.main.async {
-//                                        self.chatUser.append(profile)
-//                                    }
-//                                case .failure:
-//                                    break
-//                                }
-//                                completion()
-//                            }
-//                        } else {
-//                            completion()
-//                        }
-//                    } else {
-//                        completion()
-//                    }
-//                }
-//        }
-    // Update filteredMessages based on the current recentMessages
-//       func updateFilteredMessages() {
-//           DispatchQueue.main.async {
-//               self.filteredMessages = self.recentMessages
-//           }
-//       }
-
-       // New function to filter messages for a specific user
-       
-    
-
-
-
-//    }
-//                if let document = querySnapshot {
-//                    if let data = document.documents {
-//                        let receiverIds = Array(data.indices)
-//                        
-//                        for receiverId in receiverIds {
-//                            group.enter()
-//                            self.userProfileService.fetchUserProfile(uid: receiverId) { result in
-//                                switch result {
-//                                case .success(let profile):
-//                                    DispatchQueue.main.async {
-//                                        self.chatUser.append(profile)
-//                                    }
-//                                case .failure:
-//                                    break
-//                                }
-//                                group.leave()
-//                            }
-//                        }
-//                        
-//                        group.notify(queue: .main) {
-//                            print("All profiles fetched")
-//                        }
-//                    }
-//                } else {
-//                    print("Document does not exist")
-//                }
-//            }
-//    }
-//}
-//
-//    func fetchConversations(for userId: String, completion: @escaping (Result<[String], Error>) -> Void) {
-//            db.collection("messages")
-//            .document(userId)
-//            .collection(receiverId)
-//                .getDocuments { snapshot, error in
-//                    if let error = error {
-//                        completion(.failure(error))
-//                    } else if let snapshot = snapshot {
-//                        let senders = snapshot.documents.compactMap { document -> String? in
-//                            let data = document.data()
-//                            return data["senderId"] as? String
-//                        }
-//                        completion(.success(Array(Set(senders))))
-//                    }
-//                }
-//        }
-    
-    //.environmentObject(MessagingService(userProfileService: UserProfileService(authService: AuthService())))

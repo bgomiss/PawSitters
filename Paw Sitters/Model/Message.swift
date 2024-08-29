@@ -7,7 +7,7 @@
 
 import FirebaseFirestore
 
-struct Message: Codable, Identifiable {
+struct Message: Codable, Identifiable, Hashable {
     var id: String { documentId }
     let documentId: String
     //@DocumentID var id: String?
