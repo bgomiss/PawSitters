@@ -245,6 +245,7 @@ struct ContentView: View {
     @Binding var userId: String
     @EnvironmentObject var authService: AuthService
     @ObservedObject var firestoreService: FirestoreService
+    @StateObject private var imageCache = ImageCacheViewModel()
     @EnvironmentObject var userProfileService: UserProfileService
     @ObservedObject var messagingService: MessagingService
     @EnvironmentObject var navigationPathManager: NavigationPathManager
@@ -257,13 +258,13 @@ struct ContentView: View {
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
         span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
     )
-    @State private var favoriteListings: Set<String> = []
     
     var role: String?
 
     var body: some View {
         TabView(selection: $selectedTab) {
             homeView
+                .environmentObject(imageCache)
                 .tabItem {
                     Image(systemName: "house")
                     Text("Home")
@@ -314,53 +315,12 @@ struct ContentView: View {
                     ScrollView {
                         ForEach(firestoreService.listings) { listing in
                             NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService)) {
-                                VStack(alignment: .leading) {
-                                        if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
-                                            AsyncImage(url: url) { phase in
-                                                switch phase {
-                                                case .empty:
-                                                    ProgressView()
-                                                        .frame(maxWidth: .infinity, maxHeight: 200)
-                                                case .success(let image):
-                                                    ZStack(alignment: .topTrailing) {
-                                                    image
-                                                        .resizable()
-                                                        .scaledToFill()
-                                                        .frame(maxWidth: .infinity, maxHeight: 200)
-                                                        .clipped()
-                                                        ZStack {
-                                                            Circle()
-                                                                .fill(Color.white)
-                                                                .frame(width: 30, height: 30)
-                                                                .shadow(color: .black.opacity(0.7), radius: 5, x: 0, y: 0)
-                                                            Image(systemName: favoriteListings.contains(listing.id) ? "bolt.heart.fill" : "bolt.heart")
-                                                                .resizable()
-                                                                .foregroundStyle(favoriteListings.contains(listing.id) ? .pink : .black)
-                                                                .frame(width: 15, height: 15)
-                                                                .scaleEffect(favoriteListings.contains(listing.id) ? 1.2 : 1.0)
-                                                                .animation(.easeInOut(duration: 0.3), value: favoriteListings.contains(listing.id))
-                                                                .padding()
-                                                        }
-                                                        .onTapGesture {
-                                                            toggleFavorite(for: listing)                                         }
-                                                            }
-                                                case .failure:
-                                                    Image(systemName: "photo")
-                                                        .resizable()
-                                                        .scaledToFit()
-                                                        .frame(maxWidth: .infinity, maxHeight: 200)
-                                                @unknown default:
-                                                    EmptyView()
-                                                }
-                                            }
-                                            .cornerRadius(10)
-                                        }
-                                    
-                                    
-                                    Text(listing.title)
-                                        .font(.headline)
-                                        .padding([.top, .leading, .trailing])
-                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                ImagesView(listing: listing, role: self.role, firestoreService: firestoreService, imageCache: imageCache)
+                            }
+                            Text(listing.title)
+                                    .font(.headline)
+                                    .padding([.top, .leading, .trailing])
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                     
                                     if let dateRange = listing.dateRange {
                                         Text("Date: \(dateRange)")
@@ -417,7 +377,6 @@ struct ContentView: View {
                             .cornerRadius(8)
                     })
                 }
-            }
             .navigationBarItems(
                 leading: HStack {
                     Image(systemName: "person.crop.circle")
@@ -477,9 +436,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .onReceive(firestoreService.$listings) { _ in
-                syncFavoritesWithFirestore()
-            }
+            
             
             .fullScreenCover(isPresented: $isFullScreenCoverPresented) {
                 ConversationsView(messagingService: messagingService, userId: $userId)
@@ -487,6 +444,61 @@ struct ContentView: View {
             .fullScreenCover(isPresented: $isMapViewPresented) {
                 MapContainerView(annotations: $viewModel.annotations, region: $region, firestoreService: firestoreService, listings: firestoreService.listings)
             }
+        }
+}
+
+struct ImagesView: View {
+    
+    let listing: PetSittingListing
+    var role: String?
+    @State private var favoriteListings: Set<String> = []
+    @ObservedObject var firestoreService: FirestoreService
+    @ObservedObject var imageCache: ImageCacheViewModel
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
+                if let image = imageCache.images[imageUrl] {
+                    ZStack(alignment: .topTrailing) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity, maxHeight: 200)
+                            .clipped()
+                        ZStack {
+                            Circle()
+                                .fill(Color.white)
+                                .frame(width: 30, height: 30)
+                                .shadow(color: .black.opacity(0.7), radius: 5, x: 0, y: 0)
+                            Image(systemName: favoriteListings.contains(listing.id) ? "bolt.heart.fill" : "bolt.heart")
+                                .resizable()
+                                .foregroundStyle(favoriteListings.contains(listing.id) ? .pink : .black)
+                                .frame(width: 15, height: 15)
+                                .scaleEffect(favoriteListings.contains(listing.id) ? 1.2 : 1.0)
+                                .animation(.easeInOut(duration: 0.3), value: favoriteListings.contains(listing.id))
+                                .padding()
+                        }
+                        .onTapGesture {
+                            toggleFavorite(for: listing)
+                        }
+                    }
+                } else {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: 200)
+                        .onAppear {
+                            imageCache.loadImage(from: url, for: imageUrl)
+                        }
+                    }
+            } else {
+                Image(systemName: "dog")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: 200)
+            }
+            
+        }
+        .onReceive(firestoreService.$listings) { _ in
+            syncFavoritesWithFirestore()
         }
     }
     private func toggleFavorite(for listing: PetSittingListing) {
@@ -498,7 +510,8 @@ struct ContentView: View {
             firestoreService.updateFavoriteStatus(role: self.role ?? "Sitter", for: listing.id, isFavorite: true)
         }
     }
-
+    
+    
     private func syncFavoritesWithFirestore() {
         for listing in firestoreService.listings {
             if listing.isFavorite {
@@ -509,7 +522,6 @@ struct ContentView: View {
         }
     }
 }
-
 
 struct ListingDetailView: View {
     var listing: PetSittingListing

@@ -16,6 +16,7 @@
 		1C7581D42C56F45C00BF884E /* LocationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7581D32C56F45C00BF884E /* LocationViewModel.swift */; };
 		1C7581D62C56F4B000BF884E /* City.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7581D52C56F4B000BF884E /* City.swift */; };
 		1C75F5812C80B26F00BB54DA /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C75F5802C80B26F00BB54DA /* BottomSheetView.swift */; };
+		1C780EB22C82829600B9A936 /* ImageCacheViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C780EB12C82829600B9A936 /* ImageCacheViewModel.swift */; };
 		1C783FFE2C550FCC00E6F325 /* HorizonCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C783FFD2C550FCC00E6F325 /* HorizonCalendarView.swift */; };
 		1C786E062C25B6860012A179 /* PawSittersApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C786E052C25B6860012A179 /* PawSittersApp.swift */; };
 		1C786E082C25B6860012A179 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C786E072C25B6860012A179 /* ContentView.swift */; };
@@ -71,6 +72,7 @@
 		1C7581D32C56F45C00BF884E /* LocationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationViewModel.swift; sourceTree = "<group>"; };
 		1C7581D52C56F4B000BF884E /* City.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = City.swift; sourceTree = "<group>"; };
 		1C75F5802C80B26F00BB54DA /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
+		1C780EB12C82829600B9A936 /* ImageCacheViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCacheViewModel.swift; sourceTree = "<group>"; };
 		1C783FFD2C550FCC00E6F325 /* HorizonCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizonCalendarView.swift; sourceTree = "<group>"; };
 		1C786E022C25B6860012A179 /* Paw Sitters.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Paw Sitters.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C786E052C25B6860012A179 /* PawSittersApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PawSittersApp.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 			children = (
 				1C7581D32C56F45C00BF884E /* LocationViewModel.swift */,
 				1C98E0CE2C6C8F4B00433753 /* MapViewModel.swift */,
+				1C780EB12C82829600B9A936 /* ImageCacheViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 				1C786E392C25BEDF0012A179 /* SignInView.swift in Sources */,
 				1C786E302C25BC530012A179 /* StorageService.swift in Sources */,
 				1C786E3B2C25BF070012A179 /* ProfileView.swift in Sources */,
+				1C780EB22C82829600B9A936 /* ImageCacheViewModel.swift in Sources */,
 				1C786E3F2C25C0EA0012A179 /* MessagingView.swift in Sources */,
 				1C5DE4892C7CCDE000FF8835 /* FavoritesView.swift in Sources */,
 				1C786E2C2C25BBA60012A179 /* AuthService.swift in Sources */,
