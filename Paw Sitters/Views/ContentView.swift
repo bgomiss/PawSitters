@@ -262,6 +262,13 @@ struct ContentView: View {
     var role: String?
 
     var body: some View {
+        tabView
+    }
+    
+    
+    // MARK: - TabView
+    
+    private var tabView: some View {
         TabView(selection: $selectedTab) {
             homeView
                 .environmentObject(imageCache)
@@ -293,7 +300,8 @@ struct ContentView: View {
             .tag(3)
         }
     }
-
+    
+    // MARK: - HomeView
     private var homeView: some View {
         NavigationStack(path: $navigationPathManager.path) {
             VStack {
@@ -446,7 +454,7 @@ struct ContentView: View {
             }
         }
 }
-
+// MARK: - ImageView
 struct ImagesView: View {
     
     let listing: PetSittingListing
@@ -465,6 +473,7 @@ struct ImagesView: View {
                             .scaledToFill()
                             .frame(maxWidth: .infinity, maxHeight: 200)
                             .clipped()
+                            .cornerRadius(10)
                         ZStack {
                             Circle()
                                 .fill(Color.white)
@@ -493,7 +502,9 @@ struct ImagesView: View {
                 Image(systemName: "dog")
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: .infinity, maxHeight: 200)
+                    .frame(width: 100, height: 100) // Adjust the size here
+                    .foregroundColor(.gray) // Set the color to gray
+                    .font(.system(size: 20, weight: .thin))
             }
             
         }
@@ -664,11 +675,18 @@ struct ImageDetailView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), firestoreService: FirestoreService(), messagingService: MessagingService(), role: "Sitter")
-            .environmentObject(AuthService())
-            .environmentObject(UserProfileService(authService: AuthService()))
-            .environmentObject(StorageService())
-            .environmentObject(NavigationPathManager())
-            .environmentObject(FirestoreService())
+        ContentView(
+            isLoading: .constant(false),
+            userId: .constant("49WVp3v9rjMtZr4wYmD6A1yfDKc2"),
+            firestoreService: FirestoreService(),
+            messagingService: MessagingService(),
+            role: "Sitter"
+        )
+        .environmentObject(AuthService())
+        .environmentObject(UserProfileService(authService: AuthService()))
+        .environmentObject(StorageService())
+        .environmentObject(NavigationPathManager())
+        .environmentObject(FirestoreService())
+        .environmentObject(ImageCacheViewModel())  // Include the ImageCacheViewModel
     }
 }

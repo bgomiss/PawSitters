@@ -11,11 +11,15 @@ struct FavoritesView: View {
     
     @Binding var userId: String
     @State private var favoriteListings: Set<String> = []
+    @EnvironmentObject var navigationPathManager: NavigationPathManager
     @ObservedObject var firestoreService: FirestoreService
     @ObservedObject var messagingService: MessagingService
+    @StateObject private var imageCache = ImageCacheViewModel()
     var role: String?
 
     var body: some View {
+        NavigationStack(path: $navigationPathManager.path) {
+
         VStack {
             Text("FAVORITES")
                 .font(.headline)
@@ -27,46 +31,46 @@ struct FavoritesView: View {
                     NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService)) {
                         VStack(alignment: .leading) {
                             if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
-                                AsyncImage(url: url) { phase in
-                                    switch phase {
-                                    case .empty:
-                                        ProgressView()
-                                            .frame(maxWidth: .infinity, maxHeight: 200)
-                                    case .success(let image):
-                                        ZStack(alignment: .topTrailing) {
-                                            image
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(maxWidth: .infinity, maxHeight: 200)
-                                                .clipped()
-                                            ZStack {
-                                                Circle()
-                                                    .fill(Color.white)
-                                                    .frame(width: 30, height: 30)
-                                                    .shadow(color: .black.opacity(0.7), radius: 5, x: 0, y: 0)
-                                                Image(systemName: favoriteListings.contains(listing.id) ? "bolt.heart.fill" : "bolt.heart")
-                                                    .resizable()
-                                                    .foregroundStyle(favoriteListings.contains(listing.id) ? .pink : .black)
-                                                    .frame(width: 15, height: 15)
-                                                    .scaleEffect(favoriteListings.contains(listing.id) ? 1.2 : 1.0)
-                                                    .animation(.easeInOut(duration: 0.3), value: favoriteListings.contains(listing.id))
-                                                    .padding()
-                                            }
-                                            .onTapGesture {
-                                                toggleFavorite(for: listing)                                         }
-                                        }
-                                    case .failure:
-                                        Image(systemName: "photo")
+                                if let image = imageCache.images[imageUrl] {
+                                    ZStack(alignment: .topTrailing) {
+                                        Image(uiImage: image)
                                             .resizable()
-                                            .scaledToFit()
+                                            .scaledToFill()
                                             .frame(maxWidth: .infinity, maxHeight: 200)
-                                    @unknown default:
-                                        EmptyView()
+                                            .clipped()
+                                        ZStack {
+                                            Circle()
+                                                .fill(Color.white)
+                                                .frame(width: 30, height: 30)
+                                                .shadow(color: .black.opacity(0.7), radius: 5, x: 0, y: 0)
+                                            Image(systemName: favoriteListings.contains(listing.id) ? "bolt.heart.fill" : "bolt.heart")
+                                                .resizable()
+                                                .foregroundStyle(favoriteListings.contains(listing.id) ? .pink : .black)
+                                                .frame(width: 15, height: 15)
+                                                .scaleEffect(favoriteListings.contains(listing.id) ? 1.2 : 1.0)
+                                                .animation(.easeInOut(duration: 0.3), value: favoriteListings.contains(listing.id))
+                                                .padding()
+                                        }
+                                        .onTapGesture {
+                                            toggleFavorite(for: listing)                                         }
                                     }
-                                }
-                                .cornerRadius(10)
+                                } else {
+                                ProgressView()
+                                    .frame(maxWidth: .infinity, maxHeight: 200)
+                                    .onAppear {
+                                        imageCache.loadImage(from: url, for: imageUrl)
+                                    }
                             }
-                            
+                        } else {
+                            Image(systemName: "dog")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 100) // Adjust the size here
+                                .foregroundColor(.gray) // Set the color to gray
+                                .font(.system(size: 20, weight: .thin))
+                            // .cornerRadius(10)
+                        }
+                    
                             
                             Text(listing.title)
                                 .font(.headline)
@@ -121,6 +125,7 @@ struct FavoritesView: View {
             }
         }
     }
+}
 //            .onAppear {
 //                if let user = authService.user {
 //                    userProfileService.fetchUserProfile(uid: user.uid) { result in
