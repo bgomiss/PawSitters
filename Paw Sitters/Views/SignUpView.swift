@@ -110,7 +110,7 @@ struct SignUpView: View {
     })
         .padding()
         .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(images: $images)
+            ImagePicker(images: $images, isForMessaging: false)
         }
     }
     

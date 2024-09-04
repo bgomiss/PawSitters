@@ -11,16 +11,19 @@ import Firebase
 struct MessagingView: View {
     @EnvironmentObject var authService: AuthService
     @ObservedObject var messagingService: MessagingService
+    @ObservedObject var storageService: StorageService
     @EnvironmentObject var userProfileService: UserProfileService
     @Environment(\.dismiss) private var dismiss
     @Environment(\.isPresented) var isPresented
     @Binding var userId: String
     @State var message: Message?
+    @State private var images: [UIImage] = []
     @State private var newMessage: String = ""
     @State private var senderProfileImageUrl: String = ""
     @State private var senderName: String = ""
     @State private var receiverProfileImageUrl: String = ""
     @State private var receiverName: String = ""
+    @State private var showingImagePicker = false
     @State var receiverId: String
     
     var body: some View {
@@ -51,8 +54,38 @@ struct MessagingView: View {
                 messagingService.fetchMessages(newReceiverId)
             }
         }
+        .sheet(isPresented: $showingImagePicker) {
+            ImagePicker(images: $images, isForMessaging: true)
+        }
+        .onChange(of: images) {_, newImages in
+            if let selectedImage = newImages.first {
+                storageService.uploadImageToFirestore(image: selectedImage) { imageURL in
+                    if let imageURL = imageURL {
+                        sendImageMessage(imageURL: imageURL) // Resim yüklendikten sonra mesaj gönder
+                        } else {
+                            print("Failed to upload image")
+                    }
+                }
+            }
+        }
     }
 
+    private func sendImageMessage(imageURL: String) {
+        let sentMessage = [
+            "senderId": userId,
+            "receiverId": receiverId,
+            "content": imageURL, // Send image URL instead of text
+            "timestamp": Timestamp(date: Date()),
+            "senderProfileImageUrl": self.senderProfileImageUrl,
+            "receiverProfileImageUrl": self.receiverProfileImageUrl,
+            "receiverName": self.receiverName,
+            "senderName": self.senderName,
+            "messageType": "image" // Add a message type to differentiate image and text
+        ] as [String : Any]
+
+        messagingService.sendMessage(sentMessage)
+        messagingService.persistRecentMessage(sentMessage)
+    }
     
     private var backButton: some View {
         Button(action: {
@@ -80,29 +113,52 @@ struct MessagingView: View {
         var body: some View {
             VStack {
                 if message.senderId == authService.user?.uid {
-                HStack {
-                    Spacer()
                     HStack {
-                        Text(message.content)
-                            .foregroundColor(.white)
-                        //ImageView.userImageView(for: nil, for: message)
+                        Spacer()
+                        HStack {
+                            if message.messageType == "image" {
+                                // Display image from URL
+                                AsyncImage(url: URL(string: message.content)) { image in
+                                    image.resizable()
+                                         .scaledToFit()
+                                } placeholder: {
+                                    ProgressView()
+                                }
+                                .frame(width: 200, height: 200)
+                            } else {
+                                Text(message.content)
+                                    .foregroundColor(.white)
+                                //ImageView.userImageView(for: nil, for: message)
+                            }
+                                .padding()
+                                .background(Color.blue)
+                                .cornerRadius(8)
+                        }
                     }
-                    .padding()
-                    .background(Color.blue)
-                    .cornerRadius(8)
-                }
             } else {
                 HStack {
                     HStack {
-                      //  ImageView.userImageView(for: message, for: nil)
-                        Text(message.content)
-                            .foregroundColor(.black)
+                        if message.messageType == "image" {
+                            if message.messageType == "image" {
+                                // Display image from URL
+                                AsyncImage(url: URL(string: message.content)) { image in
+                                    image.resizable()
+                                        .scaledToFit()
+                                } placeholder: {
+                                    ProgressView()
+                                }
+                                .frame(width: 200, height: 200)
+                            } else {
+                                //  ImageView.userImageView(for: message, for: nil)
+                                Text(message.content)
+                                    .foregroundColor(.black)
+                            }
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(8)
+                            Spacer()
+                        }
                     }
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(8)
-                    Spacer()
-                }
             }
         }
         .padding(.horizontal)
@@ -154,6 +210,9 @@ struct MessagingView: View {
             Image(systemName: "photo.on.rectangle")
                 .font(.system(size: 24))
                 .foregroundColor(Color(.darkGray))
+                .onTapGesture {
+                    showingImagePicker = true
+                }
             ZStack {
                 DescriptionPlaceholder()
                 TextEditor(text: $newMessage)

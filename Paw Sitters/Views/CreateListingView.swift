@@ -296,7 +296,7 @@ struct CreateListingView: View {
                 presentationMode.wrappedValue.dismiss()
             })
             .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(images: $images)
+                ImagePicker(images: $images, isForMessaging: false)
             }
             Spacer()
         }

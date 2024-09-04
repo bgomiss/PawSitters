@@ -152,6 +152,10 @@
 		1C75F57F2C80B26100BB54DA /* Custom Views */ = {
 			isa = PBXGroup;
 			children = (
+				1C783FFD2C550FCC00E6F325 /* HorizonCalendarView.swift */,
+				1C7E88752C72601A00CA5476 /* CustomAnnotationViews.swift */,
+				1C98E0D22C6D465F00433753 /* MapContainerView.swift */,
+				1C9AFCFB2C5FBCD300612E6E /* ImageView.swift */,
 				1C75F5802C80B26F00BB54DA /* BottomSheetView.swift */,
 			);
 			path = "Custom Views";
@@ -221,8 +225,6 @@
 				1C61A3D12C42C40C00AB9C7D /* ConversationsView.swift */,
 				1C61A3D32C42EF3D00AB9C7D /* CreateListingView.swift */,
 				1C448C3C2C305F3700E78668 /* EditProfileForm.swift */,
-				1C783FFD2C550FCC00E6F325 /* HorizonCalendarView.swift */,
-				1C9AFCFB2C5FBCD300612E6E /* ImageView.swift */,
 				1C9E25B62C25FCE100351632 /* MainAppView.swift */,
 				1C98E0D02C6C8FCB00433753 /* MapView.swift */,
 				1C786E3E2C25C0EA0012A179 /* MessagingView.swift */,
@@ -230,8 +232,6 @@
 				1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */,
 				1C786E382C25BEDF0012A179 /* SignInView.swift */,
 				1C786E362C25BDAE0012A179 /* SignUpView.swift */,
-				1C98E0D22C6D465F00433753 /* MapContainerView.swift */,
-				1C7E88752C72601A00CA5476 /* CustomAnnotationViews.swift */,
 				1C5DE4882C7CCDE000FF8835 /* FavoritesView.swift */,
 			);
 			path = Views;

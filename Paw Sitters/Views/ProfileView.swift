@@ -140,7 +140,7 @@ struct ProfileView: View {
             }
         }
         .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(images: $images)
+            ImagePicker(images: $images, isForMessaging: false)
         }
         .sheet(isPresented: $showingEditForm) {
             EditProfileForm(name: $name, bio: $bio, age: $age, location: $location, role: role)

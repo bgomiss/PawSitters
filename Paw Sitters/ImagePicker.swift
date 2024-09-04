@@ -10,11 +10,12 @@ import PhotosUI
 
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var images: [UIImage]
-
+    var isForMessaging: Bool
+    
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var configuration = PHPickerConfiguration()
         configuration.filter = .images
-        configuration.selectionLimit = 0 // 0 means no limit
+        configuration.selectionLimit = isForMessaging ? 1 : 0
 
         let picker = PHPickerViewController(configuration: configuration)
         picker.delegate = context.coordinator
@@ -50,6 +51,17 @@ struct ImagePicker: UIViewControllerRepresentable {
                 }
             }
         }
+        // This method is called before the picker view is displayed
+            func pickerViewControllerDidPresent(_ picker: PHPickerViewController) {
+                // Changing the button text dynamically
+                DispatchQueue.main.async {
+                    if self.parent.isForMessaging {
+                        picker.navigationItem.rightBarButtonItem?.title = "Send" // Set to "Send" for MessagingView
+                    } else {
+                        picker.navigationItem.rightBarButtonItem?.title = "Add"  // Set to "Add" for other views
+                    }
+                }
+            }
     }
 }
 

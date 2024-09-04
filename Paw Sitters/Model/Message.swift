@@ -19,6 +19,7 @@ struct Message: Codable, Identifiable, Hashable {
     let receiverProfileImageUrl: String?
     var receiverName: String?
     var senderName: String?
+    var messageType: String?
     
     init(documentId: String, data: [String : Any]) {
         self.documentId = documentId
@@ -30,6 +31,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.timestamp = data["timestamp"] as? Timestamp ?? Timestamp(date: Date())
         self.receiverName = data["receiverName"] as? String ?? ""
         self.senderName = data["senderName"] as? String ?? ""
+        self.messageType = data["messageType"] as? String ?? ""
     }
 }
 
