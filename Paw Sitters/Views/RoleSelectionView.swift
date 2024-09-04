@@ -13,6 +13,7 @@ struct RoleSelectionView: View {
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @EnvironmentObject var userProfileService: UserProfileService
     @ObservedObject var messagingService: MessagingService
+    @ObservedObject var storageService: StorageService
     @ObservedObject var firestoreService: FirestoreService
     
     
@@ -70,10 +71,10 @@ struct RoleSelectionView: View {
                     case .ownerSignUp:
                         SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService, role: "Owner")
                     case .signInView:
-                        SignInView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService)
+                        SignInView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, storageService: storageService, firestoreService: firestoreService)
                     case .contentView:
                         if let role = userProfileService.userProfile?.role {
-                            ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, role: role)
+                            ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, storageService: storageService, role: role)
                         }
                     default:
                         Text("roleSection")
@@ -85,7 +86,7 @@ struct RoleSelectionView: View {
 
 struct RoleSelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        RoleSelectionView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService(), firestoreService: FirestoreService())
+        RoleSelectionView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService(), storageService: StorageService(), firestoreService: FirestoreService())
             .environmentObject(NavigationPathManager())
             .environmentObject(UserProfileService(authService: AuthService()))
     }

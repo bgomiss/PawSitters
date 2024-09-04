@@ -43,8 +43,8 @@ struct MessagingView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     backButton
-                    }
                 }
+            }
             .onAppear {
                 messagingService.fetchMessages(receiverId)
                 fetchTheUser()
@@ -62,8 +62,8 @@ struct MessagingView: View {
                 storageService.uploadImageToFirestore(image: selectedImage) { imageURL in
                     if let imageURL = imageURL {
                         sendImageMessage(imageURL: imageURL) // Resim yüklendikten sonra mesaj gönder
-                        } else {
-                            print("Failed to upload image")
+                    } else {
+                        print("Failed to upload image")
                     }
                 }
             }
@@ -120,7 +120,8 @@ struct MessagingView: View {
                                 // Display image from URL
                                 AsyncImage(url: URL(string: message.content)) { image in
                                     image.resizable()
-                                         .scaledToFit()
+                                         .scaledToFill()
+                                         .background(Color.clear)
                                 } placeholder: {
                                     ProgressView()
                                 }
@@ -128,22 +129,23 @@ struct MessagingView: View {
                             } else {
                                 Text(message.content)
                                     .foregroundColor(.white)
+                                    .background(Color.blue)
                                 //ImageView.userImageView(for: nil, for: message)
                             }
-                                .padding()
-                                .background(Color.blue)
-                                .cornerRadius(8)
+
                         }
+                        .padding()
+                        .cornerRadius(8)
                     }
             } else {
                 HStack {
                     HStack {
-                        if message.messageType == "image" {
                             if message.messageType == "image" {
                                 // Display image from URL
                                 AsyncImage(url: URL(string: message.content)) { image in
                                     image.resizable()
-                                        .scaledToFit()
+                                        .scaledToFill()
+                                        .background(Color.clear)
                                 } placeholder: {
                                     ProgressView()
                                 }
@@ -152,15 +154,17 @@ struct MessagingView: View {
                                 //  ImageView.userImageView(for: message, for: nil)
                                 Text(message.content)
                                     .foregroundColor(.black)
+                                    .background(Color.white)
+                                    
                             }
-                                .padding()
-                                .background(Color.white)
-                                .cornerRadius(8)
-                            Spacer()
+                                
                         }
+                    .padding()
+                    .cornerRadius(8)
+                    Spacer()
                     }
+                }
             }
-        }
         .padding(.horizontal)
         .padding(.top, 8)
         }
@@ -288,7 +292,7 @@ struct MessagingView: View {
 
 struct MessagesView_Previews: PreviewProvider {
     static var previews: some View {
-        MessagingView(messagingService: MessagingService(), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), receiverId: "HZHDnLPFWfftcb3e0Mjz4DIoYZn2")
+        MessagingView(messagingService: MessagingService(), storageService: StorageService(), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), receiverId: "HZHDnLPFWfftcb3e0Mjz4DIoYZn2")
             .environmentObject(MessagingService())
             .environmentObject(AuthService())
             .environmentObject(UserProfileService(authService: AuthService()))

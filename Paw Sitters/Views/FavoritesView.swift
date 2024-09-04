@@ -13,6 +13,7 @@ struct FavoritesView: View {
     @State private var favoriteListings: Set<String> = []
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @ObservedObject var firestoreService: FirestoreService
+    @ObservedObject var storageService: StorageService
     @ObservedObject var messagingService: MessagingService
     @StateObject private var imageCache = ImageCacheViewModel()
     var role: String?
@@ -28,7 +29,7 @@ struct FavoritesView: View {
             
             ScrollView {
                 ForEach(firestoreService.listings.filter { $0.isFavorite }) { listing in
-                    NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService)) {
+                    NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService, storageService: storageService)) {
                         VStack(alignment: .leading) {
                             if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
                                 if let image = imageCache.images[imageUrl] {
@@ -167,5 +168,5 @@ struct FavoritesView: View {
     
 
 #Preview {
-    FavoritesView(userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), firestoreService: FirestoreService(), messagingService: MessagingService())
+    FavoritesView(userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), firestoreService: FirestoreService(), storageService: StorageService(), messagingService: MessagingService())
 }

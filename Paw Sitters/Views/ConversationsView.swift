@@ -12,6 +12,7 @@ struct ConversationsView: View {
     @ObservedObject var messagingService: MessagingService
     @EnvironmentObject var userProfileService: UserProfileService
     @EnvironmentObject var authService: AuthService
+    @ObservedObject var storageService: StorageService
     @Environment(\.dismiss) private var dismiss
     @Binding var userId: String
     @State private var message: Message?
@@ -35,7 +36,7 @@ struct ConversationsView: View {
             receiverId = newReceiverId
         }
         .fullScreenCover(isPresented: $isMessagingViewPresented) {
-            MessagingView(messagingService: messagingService, userId: $userId, receiverId: receiverId)
+            MessagingView(messagingService: messagingService, storageService: storageService, userId: $userId, receiverId: receiverId)
         }
     }
     
@@ -86,7 +87,7 @@ struct ConversationsView: View {
 
     struct ConversationView_Previews: PreviewProvider {
         static var previews: some View {
-        ConversationsView(messagingService: MessagingService(), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"))
+            ConversationsView(messagingService: MessagingService(), storageService: StorageService(), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"))
             .environmentObject(MessagingService())
             .environmentObject(UserProfileService(authService: AuthService()))
             .environmentObject(AuthService())

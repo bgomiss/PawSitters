@@ -18,6 +18,7 @@ struct SignInView: View {
     @EnvironmentObject var authService: AuthService
     @EnvironmentObject var userProfileService: UserProfileService
     @ObservedObject var messagingService: MessagingService
+    @ObservedObject var storageService: StorageService
     @ObservedObject var firestoreService: FirestoreService
     @EnvironmentObject var navigationPathManager: NavigationPathManager
 
@@ -62,7 +63,7 @@ struct SignInView: View {
                 switch destination {
                 case .contentView:
                     if let role = self.role {
-                        ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, role: role)
+                        ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, storageService: storageService, role: role)
                     }
                 default:
                     Text("Guimel2")
@@ -118,7 +119,7 @@ struct SignInView: View {
 
 struct SignInView_Previews: PreviewProvider {
     static var previews: some View {
-        SignInView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService(), firestoreService: FirestoreService())
+        SignInView(isLoading: .constant(false), userId: .constant("9FFPiZroJ2Nb9zneZer9NDleUpM2"), messagingService: MessagingService(), storageService: StorageService(), firestoreService: FirestoreService())
             .environmentObject(AuthService())
             .environmentObject(UserProfileService(authService: AuthService()))
             .environmentObject(NavigationPathManager())

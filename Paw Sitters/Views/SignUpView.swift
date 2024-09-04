@@ -103,7 +103,7 @@ struct SignUpView: View {
             print("ROLE IS: \(self.role)")
         }
         .fullScreenCover(isPresented: $isPresenting, content: {
-            ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, role: self.role)
+            ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, storageService: storageService, role: self.role)
             .environmentObject(authService)
             .environmentObject(userProfileService)
             .environmentObject(storageService)

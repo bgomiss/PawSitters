@@ -248,6 +248,7 @@ struct ContentView: View {
     @StateObject private var imageCache = ImageCacheViewModel()
     @EnvironmentObject var userProfileService: UserProfileService
     @ObservedObject var messagingService: MessagingService
+    @ObservedObject var storageService: StorageService
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @State private var listings: [PetSittingListing] = []
     @State private var isFullScreenCoverPresented = false
@@ -278,14 +279,14 @@ struct ContentView: View {
                 }
                 .tag(0)
             
-            FavoritesView(userId: $userId, firestoreService: firestoreService, messagingService: messagingService, role: self.role)
+            FavoritesView(userId: $userId, firestoreService: firestoreService, storageService: storageService, messagingService: messagingService, role: self.role)
                     .tabItem {
                         Image(systemName: "heart")
                         Text("Favorites")
                     }
                     .tag(1)
             
-            ConversationsView(messagingService: messagingService, userId: $userId)
+            ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
             .tabItem {
                 Image(systemName: "message")
                 Text("Messages")
@@ -322,7 +323,7 @@ struct ContentView: View {
                 } else {
                     ScrollView {
                         ForEach(firestoreService.listings) { listing in
-                            NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService)) {
+                            NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService, storageService: storageService)) {
                                 ImagesView(listing: listing, role: self.role, firestoreService: firestoreService, imageCache: imageCache)
                             }
                             Text(listing.title)
@@ -421,7 +422,7 @@ struct ContentView: View {
                 case .profileView:
                     ProfileView(role: role ?? "Sitter")
                 case .conversationsView:
-                    ConversationsView(messagingService: messagingService, userId: $userId)
+                    ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
                 case .createListingView:
                     CreateListingView(role: role)
                 default:
@@ -447,7 +448,7 @@ struct ContentView: View {
             
             
             .fullScreenCover(isPresented: $isFullScreenCoverPresented) {
-                ConversationsView(messagingService: messagingService, userId: $userId)
+                ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
             }
             .fullScreenCover(isPresented: $isMapViewPresented) {
                 MapContainerView(annotations: $viewModel.annotations, region: $region, firestoreService: firestoreService, listings: firestoreService.listings)
@@ -538,6 +539,7 @@ struct ListingDetailView: View {
     var listing: PetSittingListing
     @Binding var userId: String
     @ObservedObject var messagingService: MessagingService
+    @ObservedObject var storageService: StorageService
     @EnvironmentObject var authService: AuthService
     @State private var selectedImageIndex: Int? = nil
     @State private var showingImageDetail = false
@@ -606,7 +608,7 @@ struct ListingDetailView: View {
                 })
             }
         .fullScreenCover(isPresented: $isMessagingViewPresented) {
-            MessagingView(messagingService: messagingService, userId: $userId, receiverId: listing.ownerId)
+            MessagingView(messagingService: messagingService, storageService: storageService, userId: $userId, receiverId: listing.ownerId)
         }
             .padding(.top, 10)
         }
@@ -680,7 +682,7 @@ struct ContentView_Previews: PreviewProvider {
             userId: .constant("49WVp3v9rjMtZr4wYmD6A1yfDKc2"),
             firestoreService: FirestoreService(),
             messagingService: MessagingService(),
-            role: "Sitter"
+            storageService: StorageService(), role: "Sitter"
         )
         .environmentObject(AuthService())
         .environmentObject(UserProfileService(authService: AuthService()))

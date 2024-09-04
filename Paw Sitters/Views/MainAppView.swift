@@ -42,10 +42,10 @@ struct MainAppView: View {
                     self.animate = true
                 }
             } else if isSignedUp {
-                ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, role: self.role)
+                ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, storageService: storageService, role: self.role)
                     .navigationBarBackButtonHidden(true)
             } else {
-                RoleSelectionView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService)
+                RoleSelectionView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, storageService: storageService, firestoreService: firestoreService)
                 
             }
             
@@ -57,10 +57,10 @@ struct MainAppView: View {
             case .ownerSignUp:
                 SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService, role: "Owner")
             case .signInView:
-                SignInView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService)
+                SignInView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, storageService: storageService, firestoreService: firestoreService)
             case .contentView:
                 if let role = self.role {
-                    ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, role: role)
+                    ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, storageService: storageService, role: role)
                 }
             default:
                 Text("roleSection")
