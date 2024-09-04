@@ -85,7 +85,7 @@ struct MessagingView: View {
                     HStack {
                         Text(message.content)
                             .foregroundColor(.white)
-                        ImageView.userImageView(for: nil, for: message)
+                        //ImageView.userImageView(for: nil, for: message)
                     }
                     .padding()
                     .background(Color.blue)
@@ -94,7 +94,7 @@ struct MessagingView: View {
             } else {
                 HStack {
                     HStack {
-                        ImageView.userImageView(for: message, for: nil)
+                      //  ImageView.userImageView(for: message, for: nil)
                         Text(message.content)
                             .foregroundColor(.black)
                     }
