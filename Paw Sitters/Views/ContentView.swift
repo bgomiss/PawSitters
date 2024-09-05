@@ -339,28 +339,44 @@ struct ContentView: View {
                                     } else {
                                         Text("No Date selected")
                                     }
-                                    
-                                    Text(listing.location ?? "")
-                                        .font(.headline)
-                                        .padding([.leading, .trailing])
-                                        .frame(maxWidth: .infinity, alignment: .leading)
+                            HStack {
+                                Text(listing.location ?? "")
+                                    .font(.subheadline)
+                                    .fontWeight(.light)
+                                    .foregroundColor(Color(white: 0.7))
+                                    .padding([.leading])
+                                    .frame(alignment: .leading)
+                                ZStack {
+                                        Image(systemName: "mappin.and.ellipse")
+                                            .foregroundColor(.black)  // Çubuk için siyah
+                                        Image(systemName: "circle.fill")
+                                            .foregroundColor(Color(red: 0.7, green: 0, blue: 0.3))  // Üstteki yuvarlak için vişne rengi
+                                            .offset(y: -10)  // Çubuğun üst kısmındaki yuvarlağı hizalıyoruz
+                                            .scaleEffect(0.5)  // Yuvarlağı uygun boyuta getiriyoruz
+                                    }
+                                Spacer()
+                            }
                                     HStack {
                                         if let pet = listing.pets {
-                                            if let dogs = pet.numDogs {
+                                            if let dogsString = pet.numDogs, let dogs = Int(dogsString), dogs > 0  {
                                                 Image(systemName: "dog.fill")
-                                                Text(dogs)
+                                                Text(dogsString)
                                             }
-                                            if let hares = pet.numHares {
+                                            if let haresString = pet.numHares, let hares = Int(haresString), hares > 0  {
                                                 Image(systemName: "hare.fill")
-                                                Text(hares)
+                                                Text(haresString)
                                             }
-                                            if let birds = pet.numBirds {
+                                            if let birdsString = pet.numBirds, let birds = Int(birdsString), birds > 0  {
                                                 Image(systemName: "bird.fill")
-                                                Text(birds)
+                                                Text(birdsString)
                                             }
-                                            if let others = pet.numOthers {
+                                            if let catsString = pet.numCats, let cats = Int(catsString), cats > 0  {
+                                                Image(systemName: "bird.fill")
+                                                Text(catsString)
+                                            }
+                                            if let othersString = pet.numOthers, let others = Int(othersString), others > 0  {
                                                 Image(systemName: "pawprint.fill")
-                                                Text(others)
+                                                Text(othersString)
                                             }
                                         }
                                     }
@@ -385,7 +401,7 @@ struct ContentView: View {
                             .foregroundColor(.white)
                             .cornerRadius(8)
                     })
-                }
+               
             .navigationBarItems(
                 leading: HStack {
                     Image(systemName: "person.crop.circle")
@@ -417,18 +433,19 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationDestination(for: NavigationDestination.self) { destination in
-                switch destination {
-                case .profileView:
-                    ProfileView(role: role ?? "Sitter")
-                case .conversationsView:
-                    ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
-                case .createListingView:
-                    CreateListingView(role: role)
-                default:
-                    Text("GuimelContentView")
-                }
-            }
+        }
+//            .navigationDestination(for: NavigationDestination.self) { destination in
+//                switch destination {
+//                case .profileView:
+//                    ProfileView(role: role ?? "Sitter")
+//                case .conversationsView:
+//                    ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
+//                case .createListingView:
+//                    CreateListingView(role: role)
+//                default:
+//                    Text("GuimelContentView")
+//                }
+//            }
             .onAppear {
                 if let user = authService.user {
                     userProfileService.fetchUserProfile(uid: user.uid) { result in

@@ -92,7 +92,7 @@ struct MainAppView: View {
     
     private func fetchUserProfile(for user: User) {
             isLoading = true
-        DispatchQueue.global().asyncAfter(deadline: .now() + 5) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
             userProfileService.fetchUserProfile(uid: user.uid) { result in
                 switch result {
                 case .success(let profile):
