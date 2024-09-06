@@ -327,18 +327,18 @@ struct ContentView: View {
                                 ImagesView(listing: listing, role: self.role, firestoreService: firestoreService, imageCache: imageCache)
                             }
                             Text(listing.title)
+                                .font(.headline)
+                                .padding([.top, .leading, .trailing])
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            if let dateRange = listing.dateRange {
+                                Text("Date: \(dateRange)")
                                     .font(.headline)
-                                    .padding([.top, .leading, .trailing])
+                                    .padding([.leading, .trailing])
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                    
-                                    if let dateRange = listing.dateRange {
-                                        Text("Date: \(dateRange)")
-                                            .font(.headline)
-                                            .padding([.leading, .trailing])
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                    } else {
-                                        Text("No Date selected")
-                                    }
+                            } else {
+                                Text("No Date selected")
+                            }
                             HStack {
                                 Text(listing.location ?? "")
                                     .font(.subheadline)
@@ -347,93 +347,95 @@ struct ContentView: View {
                                     .padding([.leading])
                                     .frame(alignment: .leading)
                                 ZStack {
-                                        Image(systemName: "mappin.and.ellipse")
-                                            .foregroundColor(.black)  // Çubuk için siyah
-                                        Image(systemName: "circle.fill")
-                                            .foregroundColor(Color(red: 0.7, green: 0, blue: 0.3))  // Üstteki yuvarlak için vişne rengi
-                                            .offset(y: -10)  // Çubuğun üst kısmındaki yuvarlağı hizalıyoruz
-                                            .scaleEffect(0.5)  // Yuvarlağı uygun boyuta getiriyoruz
-                                    }
+                                    Image(systemName: "mappin.and.ellipse")
+                                        .foregroundColor(.black)  // Çubuk için siyah
+                                    Image(systemName: "circle.fill")
+                                        .foregroundColor(Color(red: 0.7, green: 0, blue: 0.3))  // Üstteki yuvarlak için vişne rengi
+                                        .offset(y: -10)  // Çubuğun üst kısmındaki yuvarlağı hizalıyoruz
+                                        .scaleEffect(0.5)  // Yuvarlağı uygun boyuta getiriyoruz
+                                }
                                 Spacer()
                             }
-                                    HStack {
-                                        if let pet = listing.pets {
-                                            if let dogsString = pet.numDogs, let dogs = Int(dogsString), dogs > 0  {
-                                                Image(systemName: "dog.fill")
-                                                Text(dogsString)
-                                            }
-                                            if let haresString = pet.numHares, let hares = Int(haresString), hares > 0  {
-                                                Image(systemName: "hare.fill")
-                                                Text(haresString)
-                                            }
-                                            if let birdsString = pet.numBirds, let birds = Int(birdsString), birds > 0  {
-                                                Image(systemName: "bird.fill")
-                                                Text(birdsString)
-                                            }
-                                            if let catsString = pet.numCats, let cats = Int(catsString), cats > 0  {
-                                                Image(systemName: "bird.fill")
-                                                Text(catsString)
-                                            }
-                                            if let othersString = pet.numOthers, let others = Int(othersString), others > 0  {
-                                                Image(systemName: "pawprint.fill")
-                                                Text(othersString)
-                                            }
-                                        }
+                            HStack {
+                                if let pet = listing.pets {
+                                    if let dogsString = pet.numDogs, let dogs = Int(dogsString), dogs > 0  {
+                                        Image(systemName: "dog.fill")
+                                        Text(dogsString)
                                     }
-                                    .padding([.leading, .trailing])
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    if let haresString = pet.numHares, let hares = Int(haresString), hares > 0  {
+                                        Image(systemName: "hare.fill")
+                                        Text(haresString)
+                                    }
+                                    if let birdsString = pet.numBirds, let birds = Int(birdsString), birds > 0  {
+                                        Image(systemName: "bird.fill")
+                                        Text(birdsString)
+                                    }
+                                    if let catsString = pet.numCats, let cats = Int(catsString), cats > 0  {
+                                        Image(systemName: "bird.fill")
+                                        Text(catsString)
+                                    }
+                                    if let othersString = pet.numOthers, let others = Int(othersString), others > 0  {
+                                        Image(systemName: "pawprint.fill")
+                                        Text(othersString)
+                                    }
                                 }
                             }
-                            .background(Rectangle().fill(Color.white).shadow(radius: 1))
-                            .cornerRadius(10)
-                            .padding(.vertical, 5)
-                            .padding(.horizontal, 15)
+                            .padding([.leading, .trailing])
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    Button(action: {
-                        let zoomLevel = region.span.latitudeDelta
-                        viewModel.createAnnotations(from: firestoreService.listings, zoomLevel: zoomLevel)
-                        isMapViewPresented.toggle()
-                    }, label: {
-                        Image(systemName: "map.fill")
-                            .padding()
-                            .background(Color.black)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    })
-               
-            .navigationBarItems(
-                leading: HStack {
-                    Image(systemName: "person.crop.circle")
-                        .onTapGesture {
-                            navigationPathManager.push(.profileView)
-                            print("Image tapped!")
-                        }
-                },
-                trailing: HStack {
-                    Image(systemName: "message")
-                        .onTapGesture {
-                            isFullScreenCoverPresented.toggle()
-                        }
-                }
-            )
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Button(action: {
-                        withAnimation(.snappy) {
-                            navigationPathManager.push(.createListingView)
-                        }
-                    }) {
-                        Text("Post Your Own Listing")
-                            .padding(.horizontal)
-                            .frame(height: 30)
-                            .background(Color.secondary)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
+                    .background(Rectangle().fill(Color.white).shadow(radius: 1))
+                    .cornerRadius(10)
+                    .padding(.vertical, 5)
+                    .padding(.horizontal, 15)
+                    .overlay(alignment: .bottom) {
+                        Button(action: {
+                            let zoomLevel = region.span.latitudeDelta
+                            viewModel.createAnnotations(from: firestoreService.listings, zoomLevel: zoomLevel)
+                            isMapViewPresented.toggle()
+                        }, label: {
+                            Image(systemName: "map.fill")
+                                .padding()
+                                .background(Color.black)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        })
+                        .padding(.bottom, 10)
                     }
                 }
             }
         }
+//            .navigationBarItems(
+//                leading: HStack {
+//                    Image(systemName: "person.crop.circle")
+//                        .onTapGesture {
+//                            navigationPathManager.push(.profileView)
+//                            print("Image tapped!")
+//                        }
+//                },
+//                trailing: HStack {
+//                    Image(systemName: "message")
+//                        .onTapGesture {
+//                            isFullScreenCoverPresented.toggle()
+//                        }
+//                }
+//            )
+//            .toolbar {
+//                ToolbarItem(placement: .principal) {
+//                    Button(action: {
+//                        withAnimation(.snappy) {
+//                            navigationPathManager.push(.createListingView)
+//                        }
+//                    }) {
+//                        Text("Post Your Own Listing")
+//                            .padding(.horizontal)
+//                            .frame(height: 30)
+//                            .background(Color.secondary)
+//                            .foregroundColor(.white)
+//                            .cornerRadius(8)
+//                    }
+//                }
+//
 //            .navigationDestination(for: NavigationDestination.self) { destination in
 //                switch destination {
 //                case .profileView:
@@ -471,85 +473,6 @@ struct ContentView: View {
                 MapContainerView(annotations: $viewModel.annotations, region: $region, firestoreService: firestoreService, listings: firestoreService.listings)
             }
         }
-}
-// MARK: - ImageView
-struct ImagesView: View {
-    
-    let listing: PetSittingListing
-    var role: String?
-    @State private var favoriteListings: Set<String> = []
-    @ObservedObject var firestoreService: FirestoreService
-    @ObservedObject var imageCache: ImageCacheViewModel
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
-                if let image = imageCache.images[imageUrl] {
-                    ZStack(alignment: .topTrailing) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity, maxHeight: 200)
-                            .clipped()
-                            .cornerRadius(10)
-                        ZStack {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 30, height: 30)
-                                .shadow(color: .black.opacity(0.7), radius: 5, x: 0, y: 0)
-                            Image(systemName: favoriteListings.contains(listing.id) ? "bolt.heart.fill" : "bolt.heart")
-                                .resizable()
-                                .foregroundStyle(favoriteListings.contains(listing.id) ? .pink : .black)
-                                .frame(width: 15, height: 15)
-                                .scaleEffect(favoriteListings.contains(listing.id) ? 1.2 : 1.0)
-                                .animation(.easeInOut(duration: 0.3), value: favoriteListings.contains(listing.id))
-                                .padding()
-                        }
-                        .onTapGesture {
-                            toggleFavorite(for: listing)
-                        }
-                    }
-                } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: 200)
-                        .onAppear {
-                            imageCache.loadImage(from: url, for: imageUrl)
-                        }
-                    }
-            } else {
-                Image(systemName: "dog")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100) // Adjust the size here
-                    .foregroundColor(.gray) // Set the color to gray
-                    .font(.system(size: 20, weight: .thin))
-            }
-            
-        }
-        .onReceive(firestoreService.$listings) { _ in
-            syncFavoritesWithFirestore()
-        }
-    }
-    private func toggleFavorite(for listing: PetSittingListing) {
-        if favoriteListings.contains(listing.id) {
-            favoriteListings.remove(listing.id)
-            firestoreService.updateFavoriteStatus(role: self.role ?? "Sitter", for: listing.id, isFavorite: false)
-        } else {
-            favoriteListings.insert(listing.id)
-            firestoreService.updateFavoriteStatus(role: self.role ?? "Sitter", for: listing.id, isFavorite: true)
-        }
-    }
-    
-    
-    private func syncFavoritesWithFirestore() {
-        for listing in firestoreService.listings {
-            if listing.isFavorite {
-                favoriteListings.insert(listing.id)
-            } else {
-                favoriteListings.remove(listing.id)
-            }
-        }
-    }
 }
 
 struct ListingDetailView: View {

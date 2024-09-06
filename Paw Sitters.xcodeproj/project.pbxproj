@@ -60,6 +60,7 @@
 		1C9E25B52C25F73600351632 /* NavigationPathManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B42C25F73600351632 /* NavigationPathManager.swift */; };
 		1C9E25B72C25FCE100351632 /* MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B62C25FCE100351632 /* MainAppView.swift */; };
 		1C9E25B92C25FDAF00351632 /* PetSittingListing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */; };
+		1CCF05762C8B169F00EBE590 /* ImagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF05752C8B169F00EBE590 /* ImagesView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -105,6 +106,7 @@
 		1C9E25B42C25F73600351632 /* NavigationPathManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationPathManager.swift; sourceTree = "<group>"; };
 		1C9E25B62C25FCE100351632 /* MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppView.swift; sourceTree = "<group>"; };
 		1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetSittingListing.swift; sourceTree = "<group>"; };
+		1CCF05752C8B169F00EBE590 /* ImagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +159,7 @@
 				1C98E0D22C6D465F00433753 /* MapContainerView.swift */,
 				1C9AFCFB2C5FBCD300612E6E /* ImageView.swift */,
 				1C75F5802C80B26F00BB54DA /* BottomSheetView.swift */,
+				1CCF05752C8B169F00EBE590 /* ImagesView.swift */,
 			);
 			path = "Custom Views";
 			sourceTree = "<group>";
@@ -376,6 +379,7 @@
 				1C786E372C25BDAE0012A179 /* SignUpView.swift in Sources */,
 				1C786E2E2C25BC110012A179 /* FirestoreService.swift in Sources */,
 				1C786E082C25B6860012A179 /* ContentView.swift in Sources */,
+				1CCF05762C8B169F00EBE590 /* ImagesView.swift in Sources */,
 				1C786E3D2C25C00B0012A179 /* ImagePicker.swift in Sources */,
 				1C7581D62C56F4B000BF884E /* City.swift in Sources */,
 				1C9E25B02C25E45500351632 /* UserProfile.swift in Sources */,
