@@ -263,77 +263,116 @@ struct ContentView: View {
     var role: String?
 
     var body: some View {
-        tabView
-    }
+        GeometryReader { proxy in
+                VStack {
+                    Spacer()
+                    HStack(alignment: .bottom) {
+                        TabBarItem(label: "Listings", iconName: "house.fill") {}
+                        TabBarItem(label: "Favorites", iconName: "heart.fill") {}
+                        Text("Create")
+                        TabBarItem(label: "Messages", iconName: "message.fill") {}
+                        TabBarItem(label: "Profile", iconName: "person.fill") {}
+                    }
+                    .font(.footnote)
+                    .padding(.top, 42)
+                    .overlay(alignment: .top) {
+                        Button {
+                            print("Create Button Action")
+                        } label: {
+                            Image(systemName: "plus") // "plus_icon"
+                                .resizable()
+                                .scaledToFit()
+                                .padding()
+                                .frame(width: 50, height: 50)
+                                .foregroundStyle(.white)
+                                .background {
+                                    Circle()
+                                        .fill(.green) // custom64B054Color
+                                        .shadow(radius: 3)
+                                }
+                        }
+                        .padding(9)
+                    }
+                    .padding(.bottom, max(8, proxy.safeAreaInsets.bottom))
+                    .background {
+                        TabBarShape()
+                            .fill(.white)
+                            .shadow(radius: 3)
+                    }
+                }
+                .ignoresSafeArea(edges: .bottom)
+            }
+        }
+    
     
     
     // MARK: - TabView
     
-    private var tabView: some View {
-        ZStack {
-            TabView(selection: $selectedTab) {
-                homeView
-                    .environmentObject(imageCache)
-                    .tabItem {
-                        Image(systemName: "house")
-                        Text("Home")
-                    }
-                    .tag(0)
-
-                FavoritesView(userId: $userId, firestoreService: firestoreService, storageService: storageService, messagingService: messagingService, role: self.role)
-                    .tabItem {
-                        Image(systemName: "heart")
-                        Text("Favorites")
-                    }
-                    .tag(1)
-
-                ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
-                    .tabItem {
-                        Image(systemName: "message")
-                        Text("Messages")
-                    }
-                    .tag(2)
-
-                ProfileView(role: role ?? "Sitter")
-                    .tabItem {
-                        Image(systemName: "person")
-                        Text("Profile")
-                    }
-                    .tag(3)
-            }
-            
-            VStack {
-                Spacer()
-                
-                HStack {
-                    Spacer()
-                    
-                    Button(action: {
-                        CreateListingView(role: role)
-                    }) {
-                        VStack {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.blue)
-                                    .frame(width: 40, height: 40)
-                                
-                                Image(systemName: "plus")
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 24))
-                            }
-                            Text("Post")
-                                .foregroundColor(.black)
-                                .font(.footnote)
-                        }
-                    }
-                    .padding(.bottom, 10) // Adjust to make it look good in your layout
-                    
-                    Spacer()
-                }
-            }
-            .ignoresSafeArea(.keyboard, edges: .bottom) // Ensure it doesn't interfere with the keyboard
-        }
-    }
+//    private var tabView: some View {
+//        ZStack {
+//            TabView(selection: $selectedTab) {
+//                homeView
+//                    .environmentObject(imageCache)
+//                    .tabItem {
+//                        Image(systemName: "house")
+//                        Text("Home")
+//                    }
+//                    .tag(0)
+//
+//                FavoritesView(userId: $userId, firestoreService: firestoreService, storageService: storageService, messagingService: messagingService, role: self.role)
+//                    .tabItem {
+//                        Image(systemName: "heart")
+//                        Text("Favorites")
+//                    }
+//                    .tag(1)
+//
+//                ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
+//                    .tabItem {
+//                        Image(systemName: "message")
+//                        Text("Messages")
+//                    }
+//                    .tag(2)
+//
+//                ProfileView(role: role ?? "Sitter")
+//                    .tabItem {
+//                        Image(systemName: "person")
+//                        Text("Profile")
+//                    }
+//                    .tag(3)
+//            }
+//            
+//            VStack {
+//                Spacer()
+//                
+//                HStack {
+//                    Spacer()
+//                    
+//                    Button(action: {
+//                        CreateListingView(role: role)
+//                    }) {
+//                        VStack {
+//                            ZStack {
+//                                Circle()
+//                                    .fill(Color.blue)
+//                                    .frame(width: 40, height: 40)
+//                                
+//                                Image(systemName: "plus")
+//                                    .foregroundColor(.white)
+//                                    .font(.system(size: 24))
+//                            }
+//                            Text("Post")
+//                                .foregroundColor(.black)
+//                                .font(.footnote)
+//                        }
+//                    }
+//                    .padding(.bottom, 10) // Adjust to make it look good in your layout
+//                    
+//                    Spacer()
+//                }
+//            }
+//            .ignoresSafeArea(.keyboard, edges: .bottom) // Ensure it doesn't interfere with the keyboard
+//        }
+//    }
 
 
     
