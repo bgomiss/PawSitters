@@ -270,37 +270,72 @@ struct ContentView: View {
     // MARK: - TabView
     
     private var tabView: some View {
-        TabView(selection: $selectedTab) {
-            homeView
-                .environmentObject(imageCache)
-                .tabItem {
-                    Image(systemName: "house")
-                    Text("Home")
-                }
-                .tag(0)
-            
-            FavoritesView(userId: $userId, firestoreService: firestoreService, storageService: storageService, messagingService: messagingService, role: self.role)
+        ZStack {
+            TabView(selection: $selectedTab) {
+                homeView
+                    .environmentObject(imageCache)
+                    .tabItem {
+                        Image(systemName: "house")
+                        Text("Home")
+                    }
+                    .tag(0)
+
+                FavoritesView(userId: $userId, firestoreService: firestoreService, storageService: storageService, messagingService: messagingService, role: self.role)
                     .tabItem {
                         Image(systemName: "heart")
                         Text("Favorites")
                     }
                     .tag(1)
-            
-            ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
-            .tabItem {
-                Image(systemName: "message")
-                Text("Messages")
+
+                ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
+                    .tabItem {
+                        Image(systemName: "message")
+                        Text("Messages")
+                    }
+                    .tag(2)
+
+                ProfileView(role: role ?? "Sitter")
+                    .tabItem {
+                        Image(systemName: "person")
+                        Text("Profile")
+                    }
+                    .tag(3)
             }
-            .tag(2)
             
-            ProfileView(role: role ?? "Sitter")
-                       .tabItem {
-                Image(systemName: "person")
-                Text("Profile")
+            VStack {
+                Spacer()
+                
+                HStack {
+                    Spacer()
+                    
+                    Button(action: {
+                        CreateListingView(role: role)
+                    }) {
+                        VStack {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.blue)
+                                    .frame(width: 40, height: 40)
+                                
+                                Image(systemName: "plus")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 24))
+                            }
+                            Text("Post")
+                                .foregroundColor(.black)
+                                .font(.footnote)
+                        }
+                    }
+                    .padding(.bottom, 10) // Adjust to make it look good in your layout
+                    
+                    Spacer()
+                }
             }
-            .tag(3)
+            .ignoresSafeArea(.keyboard, edges: .bottom) // Ensure it doesn't interfere with the keyboard
         }
     }
+
+
     
     // MARK: - HomeView
     private var homeView: some View {
