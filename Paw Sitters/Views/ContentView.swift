@@ -3,239 +3,6 @@
 //  Paw Sitters
 //
 //  Created by aycan duskun on 21.06.2024.
-//
-//import SwiftUI
-//import MapKit
-//
-//struct ContentView: View {
-//    @Binding var isLoading: Bool
-//    @Binding var userId: String
-//    @State private var issLoading: Bool = false
-//    @EnvironmentObject var authService: AuthService
-//    @ObservedObject var firestoreService: FirestoreService
-//    @EnvironmentObject var userProfileService: UserProfileService
-//    @ObservedObject var messagingService: MessagingService
-//    @EnvironmentObject var navigationPathManager: NavigationPathManager
-//    @State private var listings: [PetSittingListing] = []
-//    @State private var isFullScreenCoverPresented = false
-//    @State private var isMapViewPresented = false
-//    @State var selectedTab = 0
-//    @ObservedObject var viewModel = MapViewModel()
-//        @State private var region = MKCoordinateRegion(
-//            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
-//            span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
-//        )
-//    
-//   // NavigationStack(path: $navigationPathManager.path) {
-//    var role: String?
-//  //  var tabView: AnyView?
-//    
-//    var body: some View {
-//        TabView(selection: $selectedTab) {
-//            NavigationStack(path: $navigationPathManager.path) {
-//                ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService)
-//            }
-//                    .tabItem {
-//                        Image(systemName: "house")
-//                        Text("Home")
-//                    }
-//                    .tag(0)
-//            NavigationStack(path: $navigationPathManager.path) {
-//                ConversationsView(messagingService: messagingService, userId: $userId)
-//            }
-//                    .tabItem {
-//                        Image(systemName: "message")
-//                        Text("Messages")
-//                    }
-//                    .tag(1)
-//            NavigationStack(path: $navigationPathManager.path) {
-//                ProfileView(role: role ?? "Sitter")
-//            }
-//                    .tabItem {
-//                        Image(systemName: "person")
-//                        Text("Profile")
-//                    }
-//                    .tag(2)
-//            }
-//        
-//                VStack {
-//                    Text("PAWSITTERS")
-//                        .font(.headline)
-//                        .padding(.top, -30)
-//                        .frame(maxWidth: .infinity, alignment: .center)
-//                        .fontWeight(.bold)
-//                    if isLoading {
-//                        Text("Loading listings...")
-//                            .font(.headline)
-//                            .padding()
-//                    } else if firestoreService.listings.isEmpty {
-//                        Text("No listings available.")
-//                            .font(.headline)
-//                            .padding()
-//                    } else {
-//                        ScrollView {
-//                            ForEach(firestoreService.listings) { listing in
-//                                NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService)) {
-//                                    VStack(alignment: .leading) {
-//                                        
-//                                        if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
-//                                            AsyncImage(url: url) { phase in
-//                                                switch phase {
-//                                                case .empty:
-//                                                    ProgressView()
-//                                                        .frame(maxWidth: .infinity, maxHeight: 200)
-//                                                case .success(let image):
-//                                                    image
-//                                                        .resizable()
-//                                                        .scaledToFill()
-//                                                        .frame(maxWidth: .infinity, maxHeight: 200)
-//                                                        .clipped()
-//                                                case .failure:
-//                                                    Image(systemName: "photo")
-//                                                        .resizable()
-//                                                        .scaledToFit()
-//                                                        .frame(maxWidth: .infinity, maxHeight: 200)
-//                                                @unknown default:
-//                                                    EmptyView()
-//                                                }
-//                                            }
-//                                            .cornerRadius(10)
-//                                        }
-//                                        Text(listing.title)
-//                                            .font(.headline)
-//                                            .padding([.top, .leading, .trailing])
-//                                            .frame(maxWidth: .infinity, alignment: .leading)
-//                                        
-//                                        if let dateRange = listing.dateRange {
-//                                            Text("Date: \(dateRange)")
-//                                                .font(.headline)
-//                                                .padding([.leading, .trailing])
-//                                                .frame(maxWidth: .infinity, alignment: .leading)
-//                                        } else {
-//                                            Text("No Date selected")
-//                                        }
-//                                        
-//                                        Text(listing.location ?? "")
-//                                            .font(.headline)
-//                                            .padding([.leading, .trailing])
-//                                            .frame(maxWidth: .infinity, alignment: .leading)
-//                                        HStack {
-//                                            if let pet = listing.pets {  // Eğer pets dizisinde ilk öğe varsa
-//                                                if let dogs = pet.numDogs {
-//                                                    Image(systemName: "dog.fill")
-//                                                    Text(dogs)
-//                                                }
-//                                                if let hares = pet.numHares {
-//                                                    Image(systemName: "hare.fill")
-//                                                    Text(hares)
-//                                                }
-//                                                if let birds = pet.numBirds {
-//                                                    Image(systemName: "bird.fill")
-//                                                    Text(birds)
-//                                                }
-//                                                if let others = pet.numOthers {
-//                                                    Image(systemName: "pawprint.fill")
-//                                                    Text(others)
-//                                                }
-//                                            }
-//                                        }
-//                                        .padding([.leading, .trailing])
-//                                        .frame(maxWidth: .infinity, alignment: .leading)
-//                                    }
-//                                }
-//                                .background(Rectangle().fill(Color.white).shadow(radius: 1))
-//                                .cornerRadius(10)
-//                                .padding(.vertical, 5)
-//                                .padding(.horizontal, 15)
-//                                
-//                            }
-//                          
-//                        }
-//                        // ZStack {
-//                        Button(action: {
-//                            let zoomLevel = region.span.latitudeDelta
-//                            viewModel.createAnnotations(from: firestoreService.listings, zoomLevel: zoomLevel)
-//                            isMapViewPresented.toggle()
-//                        }, label: {
-//                            Image(systemName: "map.fill")
-//                                .padding()
-//                                .background(Color.black)
-//                                .foregroundColor(.white)
-//                                .cornerRadius(8)
-//                        })
-//                        //}
-//                     }
-//                    
-//               // tabView
-//            }
-//            .navigationBarItems(
-//                leading: HStack {
-//                    Image(systemName: "person.crop.circle")
-//                        .onTapGesture {
-//                            navigationPathManager.push(.profileView)
-//                            print("Image tapped!")
-//                        }
-//                },
-//                trailing: HStack {
-//                    Image(systemName: "message")
-//                        .onTapGesture {
-//                            isFullScreenCoverPresented.toggle()
-//                        }
-//                }
-//            )
-//            .toolbar {
-//                ToolbarItem(placement: .principal) {
-//                    Button(action: {
-//                        withAnimation(.snappy) {
-//                            navigationPathManager.push(.createListingView)
-//                        }
-//                    }) {
-//                        Text("Post Your Own Listing")
-//                            .padding(.horizontal)
-//                            .frame(height: 30)
-//                            .background(Color.secondary)
-//                            .foregroundColor(.white)
-//                            .cornerRadius(8)
-//                    }
-//                }
-//            }
-//            .navigationDestination(for: NavigationDestination.self) { destination in
-//                switch destination {
-//                case .profileView:
-//                    ProfileView(role: role ?? "Sitter")
-//                case .conversationsView:
-//                    ConversationsView(messagingService: messagingService, userId: $userId)
-//                case .createListingView:
-//                    CreateListingView(role: role)
-//                default:
-//                    Text("GuimelContentView")
-//                }
-//            }
-//            .onAppear {
-//                issLoading.toggle()
-//                if let user = authService.user {
-//                    userProfileService.fetchUserProfile(uid: user.uid) { result in
-//                        switch result {
-//                        case .success(let profile):
-//                            DispatchQueue.main.async {
-//                                userProfileService.userProfile = profile
-//                                firestoreService.fetchListings(for: profile.role) // Use the role from the fetched profile
-//                            }
-//                        case .failure(let error):
-//                            print("Error fetching user profile: \(error.localizedDescription)")
-//                            isLoading = false
-//                        }
-//                    }
-//                }
-//            }
-//            .fullScreenCover(isPresented: $isFullScreenCoverPresented) {
-//                ConversationsView(messagingService: messagingService, userId: $userId)
-//            }
-//            .fullScreenCover(isPresented: $isMapViewPresented) {
-//                MapContainerView(annotations: $viewModel.annotations, region: $region, listings: firestoreService.listings)
-//            }
-//        }
-//    }
 
 import SwiftUI
 import MapKit
@@ -253,6 +20,7 @@ struct ContentView: View {
     @State private var listings: [PetSittingListing] = []
     @State private var isFullScreenCoverPresented = false
     @State private var isMapViewPresented = false
+    @State private var selectedView = AnyView(EmptyView())
     @State var selectedTab = 0
     @ObservedObject var viewModel = MapViewModel()
     @State private var region = MKCoordinateRegion(
@@ -261,23 +29,36 @@ struct ContentView: View {
     )
     
     var role: String?
-
+    
     var body: some View {
         GeometryReader { proxy in
                 VStack {
+                    selectedView
                     Spacer()
                     HStack(alignment: .bottom) {
-                        TabBarItem(label: "Listings", iconName: "house.fill") {}
-                        TabBarItem(label: "Favorites", iconName: "heart.fill") {}
+                        TabBarItem(label: "Listings", iconName: "house.fill", action: {
+                            selectedTab = 0
+                            selectedView = AnyView(homeView)
+                        })
+                        TabBarItem(label: "Favorites", iconName: "heart.fill", action: {
+                            selectedTab = 1
+                            selectedView = AnyView(FavoritesView(userId: $userId, firestoreService: firestoreService, storageService: storageService, messagingService: messagingService))
+                        })
                         Text("Create")
-                        TabBarItem(label: "Messages", iconName: "message.fill") {}
-                        TabBarItem(label: "Profile", iconName: "person.fill") {}
+                        TabBarItem(label: "Messages", iconName: "message.fill", action: {
+                            selectedTab = 2
+                            selectedView = AnyView(ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId))
+                        })
+                        TabBarItem(label: "Profile", iconName: "person.fill", action: {
+                            selectedTab = 3
+                            selectedView = AnyView(ProfileView(role: role ?? "Sitter"))
+                        })
                     }
                     .font(.footnote)
                     .padding(.top, 42)
                     .overlay(alignment: .top) {
                         Button {
-                            print("Create Button Action")
+                            selectedView = AnyView(CreateListingView(role: role))
                         } label: {
                             Image(systemName: "plus") // "plus_icon"
                                 .resizable()
@@ -301,6 +82,10 @@ struct ContentView: View {
                     }
                 }
                 .ignoresSafeArea(edges: .bottom)
+                .onReceive(firestoreService.$listings, perform: { _ in
+                    selectedView = AnyView(homeView)
+                })
+                 
             }
         }
     
@@ -540,9 +325,7 @@ struct ContentView: View {
             }
             
             
-            .fullScreenCover(isPresented: $isFullScreenCoverPresented) {
-                ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
-            }
+            
             .fullScreenCover(isPresented: $isMapViewPresented) {
                 MapContainerView(annotations: $viewModel.annotations, region: $region, firestoreService: firestoreService, listings: firestoreService.listings)
             }
@@ -689,20 +472,20 @@ struct ImageDetailView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView(
-            isLoading: .constant(false),
-            userId: .constant("49WVp3v9rjMtZr4wYmD6A1yfDKc2"),
-            firestoreService: FirestoreService(),
-            messagingService: MessagingService(),
-            storageService: StorageService(), role: "Sitter"
-        )
-        .environmentObject(AuthService())
-        .environmentObject(UserProfileService(authService: AuthService()))
-        .environmentObject(StorageService())
-        .environmentObject(NavigationPathManager())
-        .environmentObject(FirestoreService())
-        .environmentObject(ImageCacheViewModel())  // Include the ImageCacheViewModel
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView(
+//            isLoading: .constant(false),
+//            userId: .constant("49WVp3v9rjMtZr4wYmD6A1yfDKc2"),
+//            firestoreService: FirestoreService(),
+//            messagingService: MessagingService(),
+//            storageService: StorageService(), role: "Sitter"
+//        )
+//        .environmentObject(AuthService())
+//        .environmentObject(UserProfileService(authService: AuthService()))
+//        .environmentObject(StorageService())
+//        .environmentObject(NavigationPathManager())
+//        .environmentObject(FirestoreService())
+//        .environmentObject(ImageCacheViewModel())  // Include the ImageCacheViewModel
+//    }
+//}
