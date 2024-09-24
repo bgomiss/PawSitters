@@ -337,7 +337,7 @@ private func publishListing(imageUrls: [String]) {
     ] as [String : Any]
     // selectedDateRange'i uygun bir formata dönüştürün
         let dateRangeDict: [String: Any]?
-        if let dateRange = selectedDateRange {
+        if var dateRange = selectedDateRange {
             dateRangeDict = [
                 "start": Timestamp(date: dateRange.lowerBound),
                 "end": Timestamp(date: dateRange.upperBound)

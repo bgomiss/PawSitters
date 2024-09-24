@@ -2,74 +2,50 @@
 //  SwiftUIView.swift
 //  Paw Sitters
 //
-//  Created by aycan duskun on 19.08.2024.
+//  Created by aycan duskun on 14.09.2024.
 //
 
-//import SwiftUI
-//
-//struct ContentVview: View {
-//    
-//    var body: some View {
-//        TabView {
-//            Text("Home View")
-//                .tabItem {
-//                    Image(systemName: "house")
-//                    Text("Home")
-//                }
-//            
-//            Text("Search View")
-//                .tabItem {
-//                    Image(systemName: "magnifyingglass")
-//                    Text("Search")
-//                }
-//            
-//            Text("Profile View")
-//                .tabItem {
-//                    Image(systemName: "person")
-//                    Text("Profile")
-//                }
-//        }
-//    }
-//}
-//
-//struct ContentVview_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentVview()
-//    }
-//}
 import SwiftUI
 
-struct ContentVview: View {
-    @State private var selectedTab = 0
+struct SwiftUIView: View {
+    
+    
+  
+        @State private var isExpanded = false
 
-    var body: some View {
-        VStack {
-            Picker("Options", selection: $selectedTab) {
-                Text("Home").tag(0)
-                Text("Search").tag(1)
-                //Text("Profile").tag(2)
+        var body: some View {
+            VStack {
+                Button(action: {
+                    withAnimation {
+                        isExpanded.toggle()
+                    }
+                }) {
+                    HStack {
+                        Text("Öne Çıkanlar")
+                        Spacer()
+                        Image(systemName: isExpanded ? "chevron.down" : "chevron.up")
+                            .rotationEffect(.degrees(isExpanded ? 0 : 180))
+                            .animation(.snappy, value: isExpanded)
+                    }
+                    .padding()
+                }
+
+                if isExpanded {
+                                    VStack(alignment: .leading) {
+                                        Text("Anahtar kelimeleri otomatik olarak bulun")
+                                        Text("Hedef anahtar kelimeler veya ürünler")
+                                    }
+                                    .padding()
+                                }
             }
-            .pickerStyle(SegmentedPickerStyle())
+            .border(Color.gray, width: 1)
             .padding()
-
-            Spacer()
-
-            if selectedTab == 0 {
-                Text("Home View")
-            } else if selectedTab == 1 {
-                Text("Search View")
-            } else if selectedTab == 2 {
-                Text("Profile View")
-            }
-
-            Spacer()
         }
     }
-}
 
-struct ContentVview_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentVview()
-    }
-}
 
+
+
+#Preview {
+    SwiftUIView()
+}

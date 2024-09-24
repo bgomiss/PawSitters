@@ -19,6 +19,7 @@ struct ContentView: View {
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @State private var listings: [PetSittingListing] = []
     @State private var isFullScreenCoverPresented = false
+    @State private var showFilterMenu = false
     @State private var isMapViewPresented = false
     @ObservedObject var viewModel = MapViewModel()
     @State private var region = MKCoordinateRegion(
@@ -26,7 +27,8 @@ struct ContentView: View {
         span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
     )
     @State private var selectedTab: Tab = .listings
-
+    @State private var selected = 0
+    @State private var isExpanded = false
     enum Tab: Hashable {
         case listings, favorites, create, messages, profile
     }
@@ -35,78 +37,28 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                // Dinamik olarak görünüm seçimi
-                switch selectedTab {
-                case .listings:
-                    homeView
-                case .favorites:
-                    FavoritesView(userId: $userId, firestoreService: firestoreService, storageService: storageService, messagingService: messagingService)
-                case .create:
-                    CreateListingView(role: role)
-                case .messages:
-                    ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
-                case .profile:
-                    ProfileView(role: role ?? "Sitter")
-                }
-                
-                Spacer()
-                
-                // Alt tab bar
-                HStack {
-                    TabBarItem(label: "Listings", iconName: "house.fill", action: {
-                        selectedTab = .listings
-                    })
-                    TabBarItem(label: "Favorites", iconName: "heart.fill", action: {
-                        selectedTab = .favorites
-                    })
-                    Text("Create")
-                    
-                    TabBarItem(label: "Messages", iconName: "message.fill", action: {
-                        selectedTab = .messages
-                    })
-                    TabBarItem(label: "Profile", iconName: "person.fill", action: {
-                        selectedTab = .profile
-                    })
-                }
-                .font(.footnote)
-                .padding(.top, 42)
-                .overlay(alignment: .top) {
-                    Button {
-                        selectedTab = .create
-                    } label: {
-                        Image(systemName: "plus") // "plus_icon"
-                            .resizable()
-                            .scaledToFit()
-                            .padding()
-                            .frame(width: 50, height: 50)
-                            .foregroundStyle(.white)
-                            .background {
-                                Circle()
-                                    .fill(.green) // custom64B054Color
-                                    .shadow(radius: 3)
-                            }
-                    }
-                    .padding(9)
-                }
-                .padding(.bottom, max(8, safeAreaBottomInset))              
-                .background {
-                    TabBarShape()
-                        .fill(Color.white)
-                        .shadow(radius: 3)
+            ZStack {
+                tabView
+                if showFilterMenu {
+                    FilterMenuView(isShowing: $showFilterMenu, selectedTab: $selected, isExpanded: isExpanded, firestoreService: firestoreService, location: "")
                 }
             }
+            .toolbar(showFilterMenu ? .hidden : .visible, for: .navigationBar)
             .ignoresSafeArea(edges: .bottom)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Text("Başlık")
+            .navigationBarItems(leading: Button(action: {
+                withAnimation {
+                    showFilterMenu.toggle()
                 }
-            }
+            }) {
+                Image(systemName: "line.horizontal.3")
+                    .imageScale(.large)
+            })
             .onReceive(firestoreService.$listings) { _ in
                 selectedTab = .listings
-            }
         }
     }
+}
+    
     private var safeAreaBottomInset: CGFloat {
         UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
@@ -116,75 +68,71 @@ struct ContentView: View {
             .safeAreaInsets.bottom ?? 8
     }
     
-    
-    // MARK: - TabView
-    
-//    private var tabView: some View {
-//        ZStack {
-//            TabView(selection: $selectedTab) {
-//                homeView
-//                    .environmentObject(imageCache)
-//                    .tabItem {
-//                        Image(systemName: "house")
-//                        Text("Home")
-//                    }
-//                    .tag(0)
-//
-//                FavoritesView(userId: $userId, firestoreService: firestoreService, storageService: storageService, messagingService: messagingService, role: self.role)
-//                    .tabItem {
-//                        Image(systemName: "heart")
-//                        Text("Favorites")
-//                    }
-//                    .tag(1)
-//
-//                ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
-//                    .tabItem {
-//                        Image(systemName: "message")
-//                        Text("Messages")
-//                    }
-//                    .tag(2)
-//
-//                ProfileView(role: role ?? "Sitter")
-//                    .tabItem {
-//                        Image(systemName: "person")
-//                        Text("Profile")
-//                    }
-//                    .tag(3)
-//            }
-//            
-//            VStack {
-//                Spacer()
-//                
-//                HStack {
-//                    Spacer()
-//                    
-//                    Button(action: {
-//                        CreateListingView(role: role)
-//                    }) {
-//                        VStack {
-//                            ZStack {
-//                                Circle()
-//                                    .fill(Color.blue)
-//                                    .frame(width: 40, height: 40)
-//                                
-//                                Image(systemName: "plus")
-//                                    .foregroundColor(.white)
-//                                    .font(.system(size: 24))
-//                            }
-//                            Text("Post")
-//                                .foregroundColor(.black)
-//                                .font(.footnote)
-//                        }
-//                    }
-//                    .padding(.bottom, 10) // Adjust to make it look good in your layout
-//                    
-//                    Spacer()
-//                }
-//            }
-//            .ignoresSafeArea(.keyboard, edges: .bottom) // Ensure it doesn't interfere with the keyboard
-//        }
-//    }
 
+    // MARK: - TabView
+    private var tabView: some View {
+        VStack {
+            // Dinamik olarak görünüm seçimi
+            switch selectedTab {
+            case .listings:
+                homeView
+            case .favorites:
+                FavoritesView(userId: $userId, firestoreService: firestoreService, storageService: storageService, messagingService: messagingService)
+            case .create:
+                CreateListingView(role: role)
+            case .messages:
+                ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
+            case .profile:
+                ProfileView(role: role ?? "Sitter")
+            }
+            
+            Spacer()
+            
+            // Alt tab bar
+            HStack {
+                TabBarItem(label: "Listings", iconName: "house.fill", action: {
+                    selectedTab = .listings
+                })
+                TabBarItem(label: "Favorites", iconName: "heart.fill", action: {
+                    selectedTab = .favorites
+                })
+                Text("Create")
+                
+                TabBarItem(label: "Messages", iconName: "message.fill", action: {
+                    selectedTab = .messages
+                })
+                TabBarItem(label: "Profile", iconName: "person.fill", action: {
+                    selectedTab = .profile
+                })
+            }
+            .font(.footnote)
+            .padding(.top, 42)
+            .overlay(alignment: .top) {
+                Button {
+                    selectedTab = .create
+                } label: {
+                    Image(systemName: "plus") // "plus_icon"
+                        .resizable()
+                        .scaledToFit()
+                        .padding()
+                        .frame(width: 50, height: 50)
+                        .foregroundStyle(.white)
+                        .background {
+                            Circle()
+                                .fill(.green) // custom64B054Color
+                                .shadow(radius: 3)
+                        }
+                }
+                .padding(9)
+            }
+            .padding(.bottom, max(8, safeAreaBottomInset))
+            .background {
+                TabBarShape()
+                    .fill(Color.white)
+                    .shadow(radius: 3)
+            }
+        }
+    }
 
     
     // MARK: - HomeView
@@ -202,13 +150,13 @@ struct ContentView: View {
                     Text("Loading listings...")
                         .font(.headline)
                         .padding()
-                } else if firestoreService.listings.isEmpty {
+                } else if firestoreService.listings.isEmpty && firestoreService.filteredListings.isEmpty {
                     Text("No listings available.")
                         .font(.headline)
                         .padding()
                 } else {
                     ScrollView {
-                            ForEach(firestoreService.listings) { listing in
+                            ForEach(firestoreService.filteredListings.isEmpty ? firestoreService.listings : firestoreService.filteredListings) { listing in
                                 NavigationLink(destination: ListingDetailView(listing: listing, userId: $userId, messagingService: messagingService, storageService: storageService)) {
                                     ImagesView(listing: listing, role: self.role, firestoreService: firestoreService, imageCache: imageCache)
                                 }
@@ -290,51 +238,6 @@ struct ContentView: View {
                         }
                     }
                 }
-           // }
-        
-//            .navigationBarItems(
-//                leading: HStack {
-//                    Image(systemName: "person.crop.circle")
-//                        .onTapGesture {
-//                            navigationPathManager.push(.profileView)
-//                            print("Image tapped!")
-//                        }
-//                },
-//                trailing: HStack {
-//                    Image(systemName: "message")
-//                        .onTapGesture {
-//                            isFullScreenCoverPresented.toggle()
-//                        }
-//                }
-//            )
-//            .toolbar {
-//                ToolbarItem(placement: .principal) {
-//                    Button(action: {
-//                        withAnimation(.snappy) {
-//                            navigationPathManager.push(.createListingView)
-//                        }
-//                    }) {
-//                        Text("Post Your Own Listing")
-//                            .padding(.horizontal)
-//                            .frame(height: 30)
-//                            .background(Color.secondary)
-//                            .foregroundColor(.white)
-//                            .cornerRadius(8)
-//                    }
-//                }
-//
-//            .navigationDestination(for: NavigationDestination.self) { destination in
-//                switch destination {
-//                case .profileView:
-//                    ProfileView(role: role ?? "Sitter")
-//                case .conversationsView:
-//                    ConversationsView(messagingService: messagingService, storageService: storageService, userId: $userId)
-//                case .createListingView:
-//                    CreateListingView(role: role)
-//                default:
-//                    Text("GuimelContentView")
-//                }
-//            }
             .onAppear {
                 if let user = authService.user {
                     userProfileService.fetchUserProfile(uid: user.uid) { result in
@@ -359,6 +262,7 @@ struct ContentView: View {
             }
         }
 }
+
 
 struct ListingDetailView: View {
     var listing: PetSittingListing
@@ -517,3 +421,4 @@ struct ContentView_Previews: PreviewProvider {
         .environmentObject(ImageCacheViewModel())  // Include the ImageCacheViewModel
     }
 }
+

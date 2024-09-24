@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C3E91A12C94C1B300178D8C /* SideFilterMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3E91A02C94C1B300178D8C /* SideFilterMenu.swift */; };
+		1C3E91A52C94C2B800178D8C /* FilterMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3E91A42C94C2B800178D8C /* FilterMenuView.swift */; };
 		1C448C3B2C30328A00E78668 /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C448C3A2C30328A00E78668 /* NavigationDestination.swift */; };
 		1C448C3D2C305F3700E78668 /* EditProfileForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C448C3C2C305F3700E78668 /* EditProfileForm.swift */; };
 		1C5DE4892C7CCDE000FF8835 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DE4882C7CCDE000FF8835 /* FavoritesView.swift */; };
 		1C61A3D22C42C40C00AB9C7D /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C61A3D12C42C40C00AB9C7D /* ConversationsView.swift */; };
 		1C61A3D42C42EF3D00AB9C7D /* CreateListingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C61A3D32C42EF3D00AB9C7D /* CreateListingView.swift */; };
-		1C668B0F2C729EC3007848CD /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C668B0E2C729EC3007848CD /* SwiftUIView.swift */; };
+		1C6A877B2C95F496004F138D /* SideMenuRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6A877A2C95F496004F138D /* SideMenuRowView.swift */; };
+		1C6A877D2C95F6B9004F138D /* SideMenuOptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6A877C2C95F6B9004F138D /* SideMenuOptionModel.swift */; };
 		1C72544E2C8CF537002D6545 /* TabBarShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C72544D2C8CF537002D6545 /* TabBarShape.swift */; };
 		1C7581D42C56F45C00BF884E /* LocationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7581D32C56F45C00BF884E /* LocationViewModel.swift */; };
 		1C7581D62C56F4B000BF884E /* City.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7581D52C56F4B000BF884E /* City.swift */; };
@@ -62,15 +65,19 @@
 		1C9E25B72C25FCE100351632 /* MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B62C25FCE100351632 /* MainAppView.swift */; };
 		1C9E25B92C25FDAF00351632 /* PetSittingListing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */; };
 		1CCF05762C8B169F00EBE590 /* ImagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF05752C8B169F00EBE590 /* ImagesView.swift */; };
+		1CF8E6D12C9617D300172E1B /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF8E6D02C9617D300172E1B /* SwiftUIView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1C3E91A02C94C1B300178D8C /* SideFilterMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideFilterMenu.swift; sourceTree = "<group>"; };
+		1C3E91A42C94C2B800178D8C /* FilterMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterMenuView.swift; sourceTree = "<group>"; };
 		1C448C3A2C30328A00E78668 /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
 		1C448C3C2C305F3700E78668 /* EditProfileForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileForm.swift; sourceTree = "<group>"; };
 		1C5DE4882C7CCDE000FF8835 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		1C61A3D12C42C40C00AB9C7D /* ConversationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsView.swift; sourceTree = "<group>"; };
 		1C61A3D32C42EF3D00AB9C7D /* CreateListingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateListingView.swift; sourceTree = "<group>"; };
-		1C668B0E2C729EC3007848CD /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
+		1C6A877A2C95F496004F138D /* SideMenuRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuRowView.swift; sourceTree = "<group>"; };
+		1C6A877C2C95F6B9004F138D /* SideMenuOptionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionModel.swift; sourceTree = "<group>"; };
 		1C72544D2C8CF537002D6545 /* TabBarShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarShape.swift; sourceTree = "<group>"; };
 		1C7581D32C56F45C00BF884E /* LocationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationViewModel.swift; sourceTree = "<group>"; };
 		1C7581D52C56F4B000BF884E /* City.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = City.swift; sourceTree = "<group>"; };
@@ -109,6 +116,7 @@
 		1C9E25B62C25FCE100351632 /* MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppView.swift; sourceTree = "<group>"; };
 		1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetSittingListing.swift; sourceTree = "<group>"; };
 		1CCF05752C8B169F00EBE590 /* ImagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesView.swift; sourceTree = "<group>"; };
+		1CF8E6D02C9617D300172E1B /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +142,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C3E919F2C94C18100178D8C /* SideBar */ = {
+			isa = PBXGroup;
+			children = (
+				1C3E91A02C94C1B300178D8C /* SideFilterMenu.swift */,
+				1C3E91A42C94C2B800178D8C /* FilterMenuView.swift */,
+				1C6A877A2C95F496004F138D /* SideMenuRowView.swift */,
+			);
+			path = SideBar;
+			sourceTree = "<group>";
+		};
 		1C5EC0EC2C4FCE9C00A767F6 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
@@ -156,6 +174,7 @@
 		1C75F57F2C80B26100BB54DA /* Custom Views */ = {
 			isa = PBXGroup;
 			children = (
+				1C3E919F2C94C18100178D8C /* SideBar */,
 				1C783FFD2C550FCC00E6F325 /* HorizonCalendarView.swift */,
 				1C7E88752C72601A00CA5476 /* CustomAnnotationViews.swift */,
 				1C98E0D22C6D465F00433753 /* MapContainerView.swift */,
@@ -198,7 +217,7 @@
 				1C786E092C25B6880012A179 /* Assets.xcassets */,
 				1C786E0B2C25B6880012A179 /* Preview Content */,
 				1C8769792C50B1EB00703939 /* DatePicker.swift */,
-				1C668B0E2C729EC3007848CD /* SwiftUIView.swift */,
+				1CF8E6D02C9617D300172E1B /* SwiftUIView.swift */,
 			);
 			path = "Paw Sitters";
 			sourceTree = "<group>";
@@ -251,6 +270,7 @@
 				1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */,
 				1C7F65222C4DAE6400E2EBE1 /* ChatUser.swift */,
 				1C7581D52C56F4B000BF884E /* City.swift */,
+				1C6A877C2C95F6B9004F138D /* SideMenuOptionModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -353,7 +373,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C3E91A12C94C1B300178D8C /* SideFilterMenu.swift in Sources */,
 				1C783FFE2C550FCC00E6F325 /* HorizonCalendarView.swift in Sources */,
+				1CF8E6D12C9617D300172E1B /* SwiftUIView.swift in Sources */,
 				1C9E25B52C25F73600351632 /* NavigationPathManager.swift in Sources */,
 				1C7E88762C72601A00CA5476 /* CustomAnnotationViews.swift in Sources */,
 				1C448C3B2C30328A00E78668 /* NavigationDestination.swift in Sources */,
@@ -369,11 +391,13 @@
 				1C91A0BA2C45CD1300B6C16D /* Message.swift in Sources */,
 				1C786E342C25BD6F0012A179 /* MessagingService.swift in Sources */,
 				1C98E0D32C6D465F00433753 /* MapContainerView.swift in Sources */,
+				1C6A877B2C95F496004F138D /* SideMenuRowView.swift in Sources */,
 				1C9E25B92C25FDAF00351632 /* PetSittingListing.swift in Sources */,
 				1C786E322C25BD3D0012A179 /* UserProfileService.swift in Sources */,
 				1C9E25B72C25FCE100351632 /* MainAppView.swift in Sources */,
 				1C7581D42C56F45C00BF884E /* LocationViewModel.swift in Sources */,
 				1C75F5812C80B26F00BB54DA /* BottomSheetView.swift in Sources */,
+				1C6A877D2C95F6B9004F138D /* SideMenuOptionModel.swift in Sources */,
 				1C7F65232C4DAE6400E2EBE1 /* ChatUser.swift in Sources */,
 				1C61A3D42C42EF3D00AB9C7D /* CreateListingView.swift in Sources */,
 				1C98E0CF2C6C8F4B00433753 /* MapViewModel.swift in Sources */,
@@ -387,7 +411,7 @@
 				1C786E3D2C25C00B0012A179 /* ImagePicker.swift in Sources */,
 				1C7581D62C56F4B000BF884E /* City.swift in Sources */,
 				1C9E25B02C25E45500351632 /* UserProfile.swift in Sources */,
-				1C668B0F2C729EC3007848CD /* SwiftUIView.swift in Sources */,
+				1C3E91A52C94C2B800178D8C /* FilterMenuView.swift in Sources */,
 				1C87697A2C50B1EB00703939 /* DatePicker.swift in Sources */,
 				1C9E25B32C25ED2F00351632 /* UIImage+ext.swift in Sources */,
 				1C786E062C25B6860012A179 /* PawSittersApp.swift in Sources */,

@@ -127,22 +127,6 @@ struct FavoritesView: View {
         }
     }
 }
-//            .onAppear {
-//                if let user = authService.user {
-//                    userProfileService.fetchUserProfile(uid: user.uid) { result in
-//                        switch result {
-//                        case .success(let profile):
-//                            DispatchQueue.main.async {
-//                                userProfileService.userProfile = profile
-//                                firestoreService.fetchListings(for: profile.role)
-//                            }
-//                        case .failure(let error):
-//                            print("Error fetching user profile: \(error.localizedDescription)")
-//                            isLoading = false
-//                        }
-//                    }
-//                }
-//            }
             
     private func toggleFavorite(for listing: PetSittingListing) {
         if favoriteListings.contains(listing.id) {

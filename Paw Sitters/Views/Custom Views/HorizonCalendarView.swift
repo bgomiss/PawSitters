@@ -22,10 +22,10 @@ struct HorizonCalendar: View {
         self.calendar = calendar
         self.monthsLayout = monthsLayout
         self._selectedDateRange = selectedDateRange
-
-        let startDate = calendar.date(from: DateComponents(year: 2023, month: 01, day: 01))!
+        let today = Date()
+        //let startDate = calendar.date(from: DateComponents(year: 2023, month: 01, day: 01))!
         let endDate = calendar.date(from: DateComponents(year: 2026, month: 12, day: 31))!
-        visibleDateRange = startDate...endDate
+        visibleDateRange = today...endDate
 
         monthDateFormatter = DateFormatter()
         monthDateFormatter.calendar = calendar
@@ -73,7 +73,7 @@ struct HorizonCalendar: View {
                 .onTapGesture {
                     
                     var components = day.components
-                    components.hour = 12 // Gün ortasına ayarlayarak olası zaman kaymalarını önle
+                    components.hour = 12
                     
                     
                     guard let dayDate = calendar.date(from: components) else { return }
@@ -106,10 +106,11 @@ struct HorizonCalendar: View {
 
 
         .onAppear {
+            let today = Date()
             calendarViewProxy.scrollToDay(
-                containing: calendar.date(from: DateComponents(year: 2023, month: 07, day: 19))!,
+                containing: today,
                 scrollPosition: .centered,
-                animated: false)
+                animated: true)
         }
 
         .frame(maxWidth: 375, maxHeight: .infinity)
@@ -120,7 +121,7 @@ struct HorizonCalendar: View {
         
         var components = day.components
         components.hour = 12 // Gün ortasına ayarlayarak olası zaman kaymalarını önle
-        
+
         let dayDate = calendar.date(from: components)!
         return selectedDateRange.contains(dayDate)
     }
