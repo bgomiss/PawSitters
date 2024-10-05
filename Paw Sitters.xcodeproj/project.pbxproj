@@ -64,6 +64,7 @@
 		1C9E25B52C25F73600351632 /* NavigationPathManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B42C25F73600351632 /* NavigationPathManager.swift */; };
 		1C9E25B72C25FCE100351632 /* MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B62C25FCE100351632 /* MainAppView.swift */; };
 		1C9E25B92C25FDAF00351632 /* PetSittingListing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */; };
+		1CB4EBE42CB16A7E0055DA7F /* CreateListingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4EBE32CB16A700055DA7F /* CreateListingViewModel.swift */; };
 		1CCF05762C8B169F00EBE590 /* ImagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF05752C8B169F00EBE590 /* ImagesView.swift */; };
 		1CF8E6D12C9617D300172E1B /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF8E6D02C9617D300172E1B /* SwiftUIView.swift */; };
 /* End PBXBuildFile section */
@@ -115,6 +116,7 @@
 		1C9E25B42C25F73600351632 /* NavigationPathManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationPathManager.swift; sourceTree = "<group>"; };
 		1C9E25B62C25FCE100351632 /* MainAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppView.swift; sourceTree = "<group>"; };
 		1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetSittingListing.swift; sourceTree = "<group>"; };
+		1CB4EBE32CB16A700055DA7F /* CreateListingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateListingViewModel.swift; sourceTree = "<group>"; };
 		1CCF05752C8B169F00EBE590 /* ImagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesView.swift; sourceTree = "<group>"; };
 		1CF8E6D02C9617D300172E1B /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -164,6 +166,7 @@
 		1C7581D22C56F44400BF884E /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				1CB4EBE32CB16A700055DA7F /* CreateListingViewModel.swift */,
 				1C7581D32C56F45C00BF884E /* LocationViewModel.swift */,
 				1C98E0CE2C6C8F4B00433753 /* MapViewModel.swift */,
 				1C780EB12C82829600B9A936 /* ImageCacheViewModel.swift */,
@@ -414,6 +417,7 @@
 				1C3E91A52C94C2B800178D8C /* FilterMenuView.swift in Sources */,
 				1C87697A2C50B1EB00703939 /* DatePicker.swift in Sources */,
 				1C9E25B32C25ED2F00351632 /* UIImage+ext.swift in Sources */,
+				1CB4EBE42CB16A7E0055DA7F /* CreateListingViewModel.swift in Sources */,
 				1C786E062C25B6860012A179 /* PawSittersApp.swift in Sources */,
 				1C7951092C504778001029CF /* DateFormatter.swift in Sources */,
 				1C448C3D2C305F3700E78668 /* EditProfileForm.swift in Sources */,

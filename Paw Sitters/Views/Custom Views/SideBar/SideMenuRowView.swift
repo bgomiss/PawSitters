@@ -9,8 +9,8 @@ import SwiftUI
 import FirebaseFirestore
 
 struct SideMenuRowView: View {
-    @Binding var isExpanded: Bool
     let option: SideMenuOptionModel
+    @Binding var isExpanded: Bool
     @Binding var selectedOption: SideMenuOptionModel?
     @Binding var selectedTab: Int
     @Binding var location: String
@@ -34,14 +34,15 @@ struct SideMenuRowView: View {
                         Button(action: {
                             withAnimation {
                                 if isSelected {
-                                    selectedOption = nil
-                                } else {
                                     selectedOption = option
+                                    selectedTab = option.rawValue
+                                } else {
+                                    selectedOption = nil
                                 }
                             }
                         }) {
-                            Image(systemName: isSelected ? "chevron.down" : "chevron.up")
-                                .rotationEffect(.degrees(isSelected ? 0 : 90))
+                            Image(systemName: option.chevronImageName(isSelected: isSelected))
+                                .rotationEffect(.degrees(isSelected ? 180 : 90))
                                 .animation(.snappy, value: isSelected)
                                 .foregroundStyle(.black)
                            
@@ -77,9 +78,9 @@ struct SideMenuRowView: View {
 #Preview {
     let startDate = Date()
     let endDate = Calendar.current.date(from: DateComponents(year: 2024, month: 12, day: 31))!
-    return SideMenuRowView(
-        isExpanded: .constant(true),
+    SideMenuRowView(
         option: .location,
+        isExpanded: .constant(true),
         selectedOption: .constant(.location),
         selectedTab: .constant(1),
         location: .constant("manhattan"),

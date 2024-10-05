@@ -15,6 +15,7 @@ enum ListingDetails {
     case pets
     case description
     case location
+    case environment
 }
 
 struct CreateListingView: View {
@@ -24,6 +25,7 @@ struct CreateListingView: View {
     var role: String?
     @State private var description: String = ""
     @State private var title = ""
+    @State private var environment = ""
     @State private var selectedOption: ListingDetails = .title
     @State private var numBirds = 0
     @State private var numHares = 0
@@ -59,246 +61,286 @@ struct CreateListingView: View {
     }
     
     var body: some View {
-        VStack {
-            HStack {
-                Button("Cancel") {
-                    dismiss()
-                }
-                .foregroundStyle(.black)
-                .font(.subheadline)
-                .fontWeight(.bold)
-                
-                Spacer()
-                
-                if !title.isEmpty {
-                    Button("Clear") {
-                      title = ""
-                    }
-                    .foregroundStyle(.black)
-                    .font(.subheadline)
-                    .fontWeight(.bold)
-                }
-            }
-            .padding()
-            
-           VStack(alignment: .leading) {
-                if selectedOption == .title {
-                    Text("Title")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    HStack {
-                        TextField("Enter Title", text: $title)
-                            .font(.subheadline)
-                    }
-                    .frame(height: 44)
-                    .padding(.horizontal)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(lineWidth: 1.0)
-                            .foregroundStyle(Color(.systemGray4))
-                    }
-                } else {
-                    CollapsedPickerView(headline: "Title", placeholder: "Enter Title")
-                }
-            }
-           .modifier(CollapsibleDestinationViewModifier())
-           .frame(height: selectedOption == .title ? 120 : 64)
-            .onTapGesture {
-                withAnimation(.snappy) { selectedOption = .title }
-            }
-            
+        ScrollView {
             VStack {
-                if selectedOption == .date {
-                    HorizonCalendar(calendar: calendar, monthsLayout: .vertical, selectedDateRange: $selectedDateRange)
-                } else {
-                    CollapsedPickerView(headline: "When", placeholder: "Add Dates")
-                }
-            }
-            .modifier(CollapsibleDestinationViewModifier())
-            .frame(height: selectedOption == .date ? 300 : 64)
-            .onTapGesture {
-                withAnimation(.snappy) { selectedOption = .date }
-            }
-            
-        VStack(alignment: .leading) {
-                if selectedOption == .pets {
-                   Text("What are the pets?")
-                        .font(.title)
-                        .fontWeight(.semibold)
-                    Stepper {
-                        HStack {
-                            Image(systemName: "dog.fill")
-                            Text("\(numDogs)")
-                        }
-                    } onIncrement: {
-                        numDogs += 1
-                    } onDecrement: {
-                        guard numDogs > 0 else { return }
-                        numDogs -= 1                    }
+                HStack {
                     
-                    Stepper {
-                        HStack {
-                            Image(systemName: "bird.fill")
-                            Text("\(numBirds)")
-                        }
-                    } onIncrement: {
-                        numBirds += 1
-                    } onDecrement: {
-                        guard numBirds > 0 else { return }
-                        numBirds -= 1                    }
+                    Spacer()
                     
-                    Stepper {
-                        HStack {
-                            Image(systemName: "hare.fill")
-                            Text("\(numHares)")
+                    if !title.isEmpty {
+                        Button("Clear") {
+                            title = ""
                         }
-                    } onIncrement: {
-                        numHares += 1
-                    } onDecrement: {
-                        guard numHares > 0 else { return }
-                        numHares -= 1                    }
-                    Stepper {
-                        HStack {
-                            Image(systemName: "fish.fill")
-                            Text("\(numFish)")
-                        }
-                    } onIncrement: {
-                        numFish += 1
-                    } onDecrement: {
-                        guard numFish > 0 else { return }
-                        numFish -= 1                    }
-                    
-                    Stepper {
-                        HStack {
-                            Image(systemName: "pawprint.fill")
-                            Text("\(numOthers)")
-                        }
-                    } onIncrement: {
-                        numOthers += 1
-                    } onDecrement: {
-                        guard numOthers > 0 else { return }
-                        numOthers -= 1                    }
-                    
-                } else {
-                    CollapsedPickerView(headline: "Pets", placeholder: "Choose the pets")
-                }
-            }
-            .modifier(CollapsibleDestinationViewModifier())
-            .frame(height: selectedOption == .pets ? 200 : 64)
-            .padding(EdgeInsets(top: selectedOption == .pets ? 40 : 0, leading: 0, bottom: selectedOption == .pets ? 40 : 0, trailing: 0))
-            .onTapGesture {
-                withAnimation { selectedOption = .pets }
-            }
-            
-            VStack(alignment: .leading) {
-                if selectedOption == .description {
-                    ZStack(alignment: .topLeading) {
-                        if description.isEmpty {
-                            Text("Enter a description")
-                                .foregroundColor(.gray)
-                                .padding(.top, 8)
-                                .padding(.horizontal, 4)
-                        }
-                        TextEditor(text: $description)
-                            .frame(height: 150)
-                            .onChange(of: description) {_, newValue in
-                                if newValue.count > 150 {
-                                    description = String(newValue.prefix(150))
-                             }
-                        }
-                    }
-                } else {
-                    CollapsedPickerView(headline: "Description", placeholder: "Enter Description")
-                }
-            }
-            .modifier(CollapsibleDestinationViewModifier())
-            .frame(height: selectedOption == .description ? 180 : 64)
-            .onTapGesture {
-                withAnimation { selectedOption = .description }
-            }
-            
-            VStack(alignment: .leading) {
-                 if selectedOption == .location {
-                     Text("Location")
-                         .font(.title2)
-                         .fontWeight(.semibold)
-                     HStack {
-                         TextField("Choose your location", text: $viewModel.location)
-                             .font(.subheadline)
-                     }
-                     .frame(height: 44)
-                     .padding(.horizontal)
-                     .overlay {
-                         RoundedRectangle(cornerRadius: 8)
-                             .stroke(lineWidth: 1.0)
-                             .foregroundStyle(Color(.systemGray4))
-                     }
-                     if !viewModel.citySuggestions.isEmpty {
-                             List(viewModel.citySuggestions) { city in
-                                 Text(city.name)
-                                     .onTapGesture {
-                                         viewModel.location = city.name
-                                         viewModel.fetchCoordinates(for: city)
-                                         viewModel.citySuggestions = []                                     }
-                             }
-                             // .frame(height: 100)
-                         }
-                 } else {
-                     CollapsedPickerView(headline: "Location", placeholder: "Choose the Location")
-                 }
-             }
-            .modifier(CollapsibleDestinationViewModifier())
-            .frame(height: selectedOption == .location ? 280 : 64)
-            .padding(.bottom)
-             .onTapGesture {
-                 withAnimation(.snappy) { selectedOption = .location }
-             }
-            
-            if !images.isEmpty {
-                ScrollView(.horizontal) {
-                    HStack {
-                        ForEach(images, id: \.self) { image in
-                            Image(uiImage: image)
-                                .resizable()
-                                .frame(width: 100, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                .padding(4)
-                        }
+                        .foregroundStyle(.black)
+                        .font(.subheadline)
+                        .fontWeight(.bold)
                     }
                 }
-            }
-            
-            Button("Choose Listing Images ") {
-                showingImagePicker = true
-            }
-            .padding(.bottom, 18)
-            
-            Button("Publish") {
-                uploadImagesAndPublishListing()
-            }
-            
-            .alert(isPresented: $showingAlert) {
-                Alert(
-                    title: Text(alertTitle),
-                    message: Text(alertMessage),
-                    dismissButton: .default(Text("OK")) {
-                        presentationMode.wrappedValue.dismiss()
+                .padding()
+// MARK: - Title
+                VStack(alignment: .leading) {
+                    if selectedOption == .title {
+                        Text("Title")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        HStack {
+                            TextField("Enter Title", text: $title)
+                                .font(.subheadline)
+                        }
+                        .frame(height: 44)
+                        .padding(.horizontal)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(lineWidth: 1.0)
+                                .foregroundStyle(Color(.systemGray4))
+                        }
+                    } else {
+                        CollapsedPickerView(headline: "Title", placeholder: "Enter Title")
                     }
+                }
+                .modifier(CollapsibleDestinationViewModifier())
+                .frame(height: selectedOption == .title ? 120 : 64)
+                .onTapGesture {
+                    withAnimation(.snappy) { selectedOption = .title }
+                }
+// MARK: - Date
+                VStack(alignment: .leading) {
+                    if selectedOption == .date {
+                        HorizonCalendar(calendar: calendar, monthsLayout: .vertical, selectedDateRange: $selectedDateRange)
+                    } else {
+                        CollapsedPickerView(headline: "When", placeholder: "Add Dates")
+                    }
+                }
+                .modifier(CollapsibleDestinationViewModifier())
+                .frame(height: selectedOption == .date ? 300 : 64)
+                .onTapGesture {
+                    withAnimation(.snappy) { selectedOption = .date }
+                }
+                
+// MARK: - Pets
+                VStack(alignment: .leading) {
+                    if selectedOption == .pets {
+                        Text("What are the pets?")
+                            .font(.title)
+                            .fontWeight(.semibold)
+                        Stepper {
+                            HStack {
+                                Image(systemName: "dog.fill")
+                                Text("\(numDogs)")
+                            }
+                        } onIncrement: {
+                            numDogs += 1
+                        } onDecrement: {
+                            guard numDogs > 0 else { return }
+                            numDogs -= 1                    }
+                        
+                        Stepper {
+                            HStack {
+                                Image(systemName: "bird.fill")
+                                Text("\(numBirds)")
+                            }
+                        } onIncrement: {
+                            numBirds += 1
+                        } onDecrement: {
+                            guard numBirds > 0 else { return }
+                            numBirds -= 1                    }
+                        
+                        Stepper {
+                            HStack {
+                                Image(systemName: "hare.fill")
+                                Text("\(numHares)")
+                            }
+                        } onIncrement: {
+                            numHares += 1
+                        } onDecrement: {
+                            guard numHares > 0 else { return }
+                            numHares -= 1                    }
+                        Stepper {
+                            HStack {
+                                Image(systemName: "fish.fill")
+                                Text("\(numFish)")
+                            }
+                        } onIncrement: {
+                            numFish += 1
+                        } onDecrement: {
+                            guard numFish > 0 else { return }
+                            numFish -= 1                    }
+                        
+                        Stepper {
+                            HStack {
+                                Image(systemName: "pawprint.fill")
+                                Text("\(numOthers)")
+                            }
+                        } onIncrement: {
+                            numOthers += 1
+                        } onDecrement: {
+                            guard numOthers > 0 else { return }
+                            numOthers -= 1                    }
+                        
+                    } else {
+                        CollapsedPickerView(headline: "Pets", placeholder: "Choose the pets")
+                    }
+                }
+                .modifier(CollapsibleDestinationViewModifier())
+                .frame(height: selectedOption == .pets ? 200 : 64)
+                .padding(EdgeInsets(top: selectedOption == .pets ? 40 : 0, leading: 0, bottom: selectedOption == .pets ? 40 : 0, trailing: 0))
+                .onTapGesture {
+                    withAnimation { selectedOption = .pets }
+                }
+// MARK: - Description
+                VStack(alignment: .leading) {
+                    if selectedOption == .description {
+                        ZStack(alignment: .topLeading) {
+                            if description.isEmpty {
+                                Text("Enter a description")
+                                    .foregroundColor(.gray)
+                                    .padding(.top, 8)
+                                    .padding(.horizontal, 4)
+                            }
+                            TextEditor(text: $description)
+                                .frame(height: 150)
+                                .onChange(of: description) {_, newValue in
+                                    if newValue.count > 150 {
+                                        description = String(newValue.prefix(150))
+                                    }
+                                }
+                        }
+                    } else {
+                        CollapsedPickerView(headline: "Description", placeholder: "Enter Description")
+                    }
+                }
+                .modifier(CollapsibleDestinationViewModifier())
+                .frame(height: selectedOption == .description ? 180 : 64)
+                .onTapGesture {
+                    withAnimation { selectedOption = .description }
+                }
+// MARK: - Location
+                VStack(alignment: .leading) {
+                    if selectedOption == .location {
+                        Text("Location")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        HStack {
+                            TextField("Choose your location", text: $viewModel.location)
+                                .font(.subheadline)
+                        }
+                        .frame(height: 44)
+                        .padding(.horizontal)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(lineWidth: 1.0)
+                                .foregroundStyle(Color(.systemGray4))
+                        }
+                        
+                        if !viewModel.citySuggestions.isEmpty {
+                            List(viewModel.citySuggestions) { city in
+                                    Text(city.name)
+                                        .onTapGesture {
+                                            viewModel.location = city.name
+                                            viewModel.fetchCoordinates(for: city)
+                                            viewModel.citySuggestions = []
+                                }
+                            }
+                        }
+                    } else {
+                        CollapsedPickerView(headline: "Location", placeholder: "Choose the Location")
+                    }
+                }
+                .modifier(CollapsibleDestinationViewModifier())
+                .frame(height: selectedOption == .location ? 280 : 64)
+                .onTapGesture {
+                    withAnimation(.snappy) { selectedOption = .location }
+                }
+// MARK: - Environment
+                VStack(alignment: .leading) {
+                    if selectedOption == .environment {
+                        Text("Environment")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        HStack {
+                            Menu {
+                                    Button("Beachside") { environment = "Beachside" }
+                                    Button("Countryside") { environment = "Countryside" }
+                                    Button("Forestside") { environment = "Forestside" }
+                                    Button("Urban") { environment = "Urban" }
+                                    Button("Suburban") { environment = "Suburban" }
+                                    Button("Mountainous") { environment = "Mountainous" }
+                                    Button("Lakeside") { environment = "Lakeside" }
+                                    Button("Rural") { environment = "Rural" }
+                                    Button("Coastal") { environment = "Coastal" }
+                                    Button("Desert") { environment = "Desert" }
+                                } label: {
+                                    Text(environment.isEmpty ? "Choose the environment" : environment)
+                                        .font(.subheadline)
+                                        .foregroundColor(.primary)
+                                        .padding(.horizontal)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .cornerRadius(8)
+                                }
+                        }
+                        .frame(height: 44)
+                        .padding(.horizontal)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(lineWidth: 1.0)
+                                .foregroundStyle(Color(.systemGray4))
+                        }
+                    } else {
+                        CollapsedPickerView(headline: "Environment", placeholder: "Choose the Location")
+                    }
+                }
+                .modifier(CollapsibleDestinationViewModifier())
+                .frame(height: selectedOption == .environment ? 120 : 64)
+                .padding(.bottom)
+                .onTapGesture {
+                    withAnimation(.snappy) { selectedOption = .environment }
+                }
+                
+                if !images.isEmpty {
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(images, id: \.self) { image in
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    .padding(4)
+                            }
+                        }
+                    }
+                }
+                
+                Button("Choose Listing Images ") {
+                    showingImagePicker = true
+                }
+                .modifier(CollapsibleDestinationViewModifier())
+                .padding(.bottom, 1)
+                
+                Button("Publish") {
+                    uploadImagesAndPublishListing()
+                }
+                .modifier(CollapsibleDestinationViewModifier())
+                .alert(isPresented: $showingAlert) {
+                    Alert(
+                        title: Text(alertTitle),
+                        message: Text(alertMessage),
+                        dismissButton: .default(Text("OK")) {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    )
+                }
+                
+                .navigationBarItems(leading: Text("Please Enter The Details Below")
+                    .font(.custom("HelveticaNeue-Thin", size: 16))
+                    .foregroundColor(.teal)
+                    .fontWeight(.bold)
+                    .padding(.horizontal, 15)
                 )
+                .sheet(isPresented: $showingImagePicker) {
+                    ImagePicker(images: $images, isForMessaging: false)
+                }
+                Spacer()
             }
-            
-            .navigationBarItems(leading: Text("Please Enter The Details Below")
-                .font(.custom("HelveticaNeue-Thin", size: 16))
-                .foregroundColor(.teal)
-                .fontWeight(.bold)
-            )
-            .navigationBarItems(trailing: Button("Cancel") {
-                presentationMode.wrappedValue.dismiss()
-            })
-            .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(images: $images, isForMessaging: false)
-            }
-            Spacer()
         }
         
     }
@@ -335,9 +377,8 @@ private func publishListing(imageUrls: [String]) {
             "fish": numFish,
             "others": numOthers
     ] as [String : Any]
-    // selectedDateRange'i uygun bir formata dönüştürün
         let dateRangeDict: [String: Any]?
-        if var dateRange = selectedDateRange {
+        if let dateRange = selectedDateRange {
             dateRangeDict = [
                 "start": Timestamp(date: dateRange.lowerBound),
                 "end": Timestamp(date: dateRange.upperBound)
@@ -421,34 +462,7 @@ struct CollapsedPickerView: View {
     }
 
 }
-//        NavigationView {
-//            Form {
-//                Section(header: Text("Please Enter The Details Below")) {
-//                    
-//                    TextField("Title", text: $title)
-//                    
-//                    TextField("Name&Surname", text: $name)
-//                    
-//                    // Select Dates section
-//                    Section {
-//                        Button("Select Dates") {
-//                            showingDatePicker.toggle()
-//                        }
-//                        if let startDate = startDate, let endDate = endDate {
-//                            Text("Selected Dates: \(formattedDateRange(startDate: startDate, endDate:endDate))")
-//                        }
-//                    }
-//                    TextField("Location", text: $location)
-//                    }
-//
-//                }
-//            }
-//        }
-//    private func formattedDateRange(startDate: Date, endDate: Date) -> String {
-//            let formatter = DateFormatter()
-//            formatter.dateFormat = "dd MMM yyyy"
-//            return "\(formatter.string(from: startDate)) - \(formatter.string(from: endDate))"
-//        }
+
     
 
 
