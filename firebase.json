@@ -24,5 +24,16 @@
       "host": "0.0.0.0"
     },
     "singleProjectMode": true
-  }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "*.log"
+      ]
+    }
+  ]
 }

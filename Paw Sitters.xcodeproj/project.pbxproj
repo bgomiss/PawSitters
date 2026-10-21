@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8ECC8A5AA3316C6F697A0938 /* PushNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F555C318ECC8A5AA3316C6F /* PushNotifications.swift */; };
 		A7BE2A5B336F4782E0F4AE64 /* ReviewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B044DEB0A7BE2A5B336F4782 /* ReviewsView.swift */; };
 		7BDB03AEC6C9A1957A2EB98E /* ReviewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E722AC7BDB03AEC6C9A195 /* ReviewService.swift */; };
 		A1F70891C8E0450DBF91C1C0 /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD778A16A1F70891C8E0450D /* Review.swift */; };
@@ -85,6 +86,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7F555C318ECC8A5AA3316C6F /* PushNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotifications.swift; sourceTree = "<group>"; };
 		B044DEB0A7BE2A5B336F4782 /* ReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsView.swift; sourceTree = "<group>"; };
 		01E722AC7BDB03AEC6C9A195 /* ReviewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewService.swift; sourceTree = "<group>"; };
 		FD778A16A1F70891C8E0450D /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
@@ -272,6 +274,7 @@
 			isa = PBXGroup;
 			children = (
 				1C786E2B2C25BBA60012A179 /* AuthService.swift */,
+				7F555C318ECC8A5AA3316C6F /* PushNotifications.swift */,
 				01E722AC7BDB03AEC6C9A195 /* ReviewService.swift */,
 				5271268F58CED4A4B568E564 /* ApplicationService.swift */,
 				1C786E2D2C25BC110012A179 /* FirestoreService.swift */,
@@ -437,6 +440,7 @@
 				1C786E3F2C25C0EA0012A179 /* MessagingView.swift in Sources */,
 				1C5DE4892C7CCDE000FF8835 /* FavoritesView.swift in Sources */,
 				1C786E2C2C25BBA60012A179 /* AuthService.swift in Sources */,
+				8ECC8A5AA3316C6F697A0938 /* PushNotifications.swift in Sources */,
 				7BDB03AEC6C9A1957A2EB98E /* ReviewService.swift in Sources */,
 				58CED4A4B568E5648BAF76C5 /* ApplicationService.swift in Sources */,
 				1C9AFCFC2C5FBCD300612E6E /* ImageView.swift in Sources */,
@@ -610,6 +614,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Paw Sitters/Paw Sitters.entitlements";
 				INFOPLIST_FILE = "Paw Sitters/Debug-Info.plist";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -641,6 +646,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Paw Sitters/Paw Sitters.entitlements";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

@@ -18,6 +18,8 @@ struct ProfileView: View {
     @State private var images: [UIImage] = []
     @State private var showingImagePicker = false
     @State private var showingEditForm = false
+    @State private var verificationMessage: String?
+    @State private var isCheckingVerification = false
     var role: String
     
     private let theme = AppTheme.current
@@ -56,8 +58,17 @@ struct ProfileView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
                         .background(role == "Sitter" ? theme.primary : theme.accent, in: Capsule())
+                    
+                    if userProfileService.userProfile?.emailVerified == true || authService.isEmailVerified {
+                        VerifiedBadge()
+                    }
                 }
                 .padding(.top, 24)
+                
+                if !(userProfileService.userProfile?.emailVerified == true || authService.isEmailVerified) {
+                    verifyEmailCard
+                        .padding(.horizontal)
+                }
                 
                 // About
                 VStack(alignment: .leading, spacing: 12) {
@@ -91,6 +102,7 @@ struct ProfileView: View {
                 
                 Button(role: .destructive) {
                     do {
+                        PushNotifications.unregisterCurrentUser()
                         try authService.signOut()
                         navigationPathManager.popToRoot() // Clear the navigation stack
                     } catch let error {
@@ -131,6 +143,67 @@ struct ProfileView: View {
 }
 
 extension ProfileView {
+    /// Prompts the user to verify their email, which earns the "Verified" badge.
+    private var verifyEmailCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Verify your email", systemImage: "envelope.badge.shield.half.filled")
+                .font(.system(.headline, design: .rounded))
+                .foregroundStyle(theme.text)
+            Text("Verified members get a badge that helps others trust them. We sent a link to \(authService.user?.email ?? "your email").")
+                .font(.system(.subheadline, design: .rounded))
+                .foregroundStyle(theme.text.opacity(0.7))
+            if let verificationMessage {
+                Text(verificationMessage)
+                    .font(.footnote)
+                    .foregroundStyle(theme.accent)
+            }
+            HStack(spacing: 10) {
+                Button {
+                    authService.sendEmailVerification { error in
+                        verificationMessage = error.map { "Couldn't send the link: \($0.localizedDescription)" }
+                            ?? "Link sent. Check your inbox (and spam folder)."
+                    }
+                } label: {
+                    Text("Resend link")
+                        .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .foregroundStyle(theme.primary)
+                        .background(theme.primary.opacity(0.12), in: Capsule())
+                }
+                Button {
+                    isCheckingVerification = true
+                    authService.reloadUser { verified in
+                        isCheckingVerification = false
+                        if verified {
+                            userProfileService.syncEmailVerified(true)
+                            verificationMessage = nil
+                        } else {
+                            verificationMessage = "Not verified yet. Tap the link in the email first."
+                        }
+                    }
+                } label: {
+                    Group {
+                        if isCheckingVerification {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text("I've verified")
+                        }
+                    }
+                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .foregroundStyle(.white)
+                    .background(theme.primary, in: Capsule())
+                }
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .themedCard()
+    }
+    
     private var avatarPlaceholder: some View {
         Image(systemName: role == "Sitter" ? "person.fill" : "dog.fill")
             .font(.system(size: 48))

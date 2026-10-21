@@ -124,6 +124,7 @@ struct ApplicationRow: View {
     var onMessage: () -> Void
     @EnvironmentObject var applicationService: ApplicationService
     @EnvironmentObject var reviewService: ReviewService
+    @EnvironmentObject var userProfileService: UserProfileService
     @State private var confirmDecline = false
     @State private var isReviewSheetPresented = false
     private let theme = AppTheme.current
@@ -142,6 +143,9 @@ struct ApplicationRow: View {
                         Label(otherPartyName, systemImage: isReceived ? "person.crop.circle.fill" : "house.fill")
                             .font(.system(.subheadline, design: .rounded))
                             .foregroundStyle(theme.text.opacity(0.7))
+                        if userProfileService.cachedProfile(uid: otherPartyId)?.emailVerified == true {
+                            VerifiedBadge(showsText: false)
+                        }
                         // Helps the owner judge an applicant (and vice versa).
                         RatingBadge(summary: reviewService.summary(for: otherPartyId))
                             .font(.caption)

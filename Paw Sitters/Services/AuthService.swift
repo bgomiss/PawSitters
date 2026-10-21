@@ -36,6 +36,29 @@ class AuthService: ObservableObject {
         }
     }
     
+    func sendEmailVerification(completion: @escaping (Error?) -> Void) {
+        guard let user = Auth.auth().currentUser else { return }
+        user.sendEmailVerification { error in
+            DispatchQueue.main.async { completion(error) }
+        }
+    }
+    
+    /// Reloads the user from Firebase and refreshes the ID token, so a freshly
+    /// verified email is reflected both in the app and in Firestore rules.
+    func reloadUser(completion: @escaping (Bool) -> Void) {
+        guard let user = Auth.auth().currentUser else { return completion(false) }
+        user.reload { _ in
+            let current = Auth.auth().currentUser
+            current?.getIDTokenForcingRefresh(true) { _, _ in
+                DispatchQueue.main.async { completion(current?.isEmailVerified ?? false) }
+            }
+        }
+    }
+    
+    var isEmailVerified: Bool {
+        Auth.auth().currentUser?.isEmailVerified ?? false
+    }
+    
     func signOut() throws {
            try Auth.auth().signOut()
            //self.user = nil

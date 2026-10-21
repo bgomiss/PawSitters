@@ -11,6 +11,7 @@ import FirebaseStorage
 
 @main
 struct PawSittersApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var authService: AuthService
     @StateObject private var userProfileService: UserProfileService
     @StateObject private var firestoreService: FirestoreService

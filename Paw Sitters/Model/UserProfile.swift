@@ -17,5 +17,8 @@ struct UserProfile: Codable, Identifiable {
     var role: String
     var age: String?
     var location: String?
+    /// Mirrors Firebase Auth's verified-email flag so other users can see the badge.
+    /// Firestore rules only accept `true` from a token whose email is verified.
+    var emailVerified: Bool?
 }
 

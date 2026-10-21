@@ -194,6 +194,8 @@ struct SignUpView: View {
             switch result {
             case .success():
                 // MainAppView switches to ContentView as soon as the profile is loaded.
+                // Start email verification right away; the profile shows the status.
+                authService.sendEmailVerification { _ in }
                 userProfileService.fetchUserProfile(uid: uid) { result in
                     DispatchQueue.main.async {
                         isSubmitting = false

@@ -4,14 +4,25 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function isUser(uid) { return signedIn() && request.auth.uid == uid; }
 
-    // User profiles
+    // User profiles. `emailVerified: true` is only accepted from a token whose
+    // email Firebase Auth has actually verified, so the badge can't be faked.
+    function emailVerifiedFieldIsHonest() {
+      return !('emailVerified' in request.resource.data)
+        || request.resource.data.emailVerified != true
+        || request.auth.token.email_verified == true;
+    }
     match /sitters/{uid} {
       allow read: if signedIn();
-      allow write: if isUser(uid);
+      allow write: if isUser(uid) && emailVerifiedFieldIsHonest();
     }
     match /owners/{uid} {
       allow read: if signedIn();
-      allow write: if isUser(uid);
+      allow write: if isUser(uid) && emailVerifiedFieldIsHonest();
+    }
+
+    // Push notification tokens for each user's devices (read by Cloud Functions).
+    match /fcmTokens/{uid} {
+      allow read, write: if isUser(uid);
     }
 
     // Listings: anyone signed in can browse, only the author can change them

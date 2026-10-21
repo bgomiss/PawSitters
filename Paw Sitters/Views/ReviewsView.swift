@@ -241,3 +241,20 @@ struct ReviewRow: View {
         }
     }
 }
+
+/// Small "Verified" seal shown next to people whose email address is verified.
+struct VerifiedBadge: View {
+    var showsText = true
+    
+    var body: some View {
+        HStack(spacing: 3) {
+            Image(systemName: "checkmark.seal.fill")
+            if showsText {
+                Text("Verified")
+            }
+        }
+        .font(.system(.caption, design: .rounded).weight(.bold))
+        .foregroundStyle(AppTheme.current.primary)
+        .accessibilityLabel("Verified email")
+    }
+}

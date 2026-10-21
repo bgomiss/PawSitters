@@ -267,6 +267,7 @@ struct ContentView: View {
                                 firestoreService.listenToFavorites()
                                 applicationService.startListening()
                                 reviewService.startListening()
+                                PushNotifications.registerForSignedInUser()
                             }
                         case .failure(let error):
                             print("Error fetching user profile: \(error.localizedDescription)")
@@ -358,7 +359,12 @@ struct ListingDetailView: View {
                         .foregroundStyle(theme.text)
                     
                     if !listing.name.isEmpty {
-                        detailRow(icon: "person.crop.circle.fill", text: listing.name)
+                        HStack(spacing: 8) {
+                            detailRow(icon: "person.crop.circle.fill", text: listing.name)
+                            if userProfileService.cachedProfile(uid: listing.ownerId)?.emailVerified == true {
+                                VerifiedBadge()
+                            }
+                        }
                     }
                     if let location = listing.location, !location.isEmpty {
                         detailRow(icon: "mappin.and.ellipse", text: location)

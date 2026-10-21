@@ -71,7 +71,8 @@ struct EditProfileForm: View {
             description: bio,
             role: role,
             age: age,
-            location: location
+            location: location,
+            emailVerified: userProfile.emailVerified
         )
         
         let collection = role == "Sitter" ? "sitters" : "owners"

@@ -13,6 +13,9 @@ class UserProfileService: ObservableObject {
     @Published var userProfile: UserProfile?
     @Published var users: [UserProfile] = []
     @Published var authService: AuthService?
+    /// Other users' profiles, loaded on demand (e.g. for verified badges).
+    @Published private(set) var publicProfiles: [String: UserProfile] = [:]
+    private var loadingProfiles: Set<String> = []
         
     init(authService: AuthService?) {
         if authService != nil {
@@ -73,6 +76,38 @@ class UserProfileService: ObservableObject {
      //   fetchAllUsers()
         }
     
+    
+    /// Cached profile of any user; starts loading it the first time it is asked for.
+    func cachedProfile(uid: String) -> UserProfile? {
+        if let profile = publicProfiles[uid] { return profile }
+        guard !uid.isEmpty, !loadingProfiles.contains(uid) else { return nil }
+        loadingProfiles.insert(uid)
+        loadProfile(uid: uid) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.loadingProfiles.remove(uid)
+                if case .success(let profile) = result {
+                    self?.publicProfiles[uid] = profile
+                }
+            }
+        }
+        return nil
+    }
+    
+    /// Copies Firebase Auth's verified-email state into the signed-in user's profile.
+    func syncEmailVerified(_ verified: Bool) {
+        guard verified, var profile = userProfile, profile.emailVerified != true, let uid = profile.id else { return }
+        let collection = profile.role == "Sitter" ? "sitters" : "owners"
+        db.collection(collection).document(uid).updateData(["emailVerified": true]) { [weak self] error in
+            if let error = error {
+                print("Failed to mark email as verified: \(error.localizedDescription)")
+                return
+            }
+            DispatchQueue.main.async {
+                profile.emailVerified = true
+                self?.userProfile = profile
+            }
+        }
+    }
     
     /// Loads any user's profile without touching `userProfile` (the signed-in user's profile).
     func loadProfile(uid: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {

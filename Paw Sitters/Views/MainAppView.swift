@@ -274,6 +274,7 @@ struct MainAppView: View {
                 switch result {
                 case .success(let profile):
                     userProfileService.userProfile = profile
+                    userProfileService.syncEmailVerified(authService.isEmailVerified)
                 case .failure(let error):
                     // Expected right after sign-up: the profile document is written a moment later.
                     print("Profile fetch failed: \(error.localizedDescription)")

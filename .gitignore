@@ -10,3 +10,6 @@ DerivedData/
 
 # Old duplicate/broken files moved out of the source tree
 _unused_files/
+
+# Cloud Functions dependencies
+functions/node_modules/
