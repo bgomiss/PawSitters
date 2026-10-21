@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+  Debug builds only (see INFOPLIST_FILE for the Debug configuration).
+  Lets a physical device talk to the Firebase emulators on your Mac over
+  plain HTTP on the local network. Release builds don't include this.
+-->
+<dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Connects to the Firebase emulators on your Mac during development.</string>
+</dict>
+</plist>

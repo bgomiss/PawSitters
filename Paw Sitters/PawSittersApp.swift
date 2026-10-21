@@ -80,11 +80,22 @@ struct PawSittersApp: App {
 /// Points Firebase at the local Emulator Suite when the app is launched with
 /// `-useFirebaseEmulator YES` (Debug builds only), so you can test without
 /// touching the production project. See `firebase.json` in the repo root.
+///
+/// On a physical device also pass `-emulatorHost <your-mac>.local` so the phone
+/// reaches the emulators on your Mac over Wi-Fi. Both settings are remembered,
+/// so later launches from the home screen keep using the emulators until the app
+/// is launched with `-useFirebaseEmulator NO`.
 enum FirebaseEmulator {
     static func configureIfRequested() {
         #if DEBUG
-        guard UserDefaults.standard.bool(forKey: "useFirebaseEmulator") else { return }
-        let host = "127.0.0.1"
+        let defaults = UserDefaults.standard
+        let arguments = ProcessInfo.processInfo.arguments
+        // Launch arguments only last for one launch; persist them for home-screen launches.
+        for key in ["useFirebaseEmulator", "emulatorHost"] where arguments.contains("-\(key)") {
+            defaults.set(defaults.object(forKey: key), forKey: key)
+        }
+        guard defaults.bool(forKey: "useFirebaseEmulator") else { return }
+        let host = defaults.string(forKey: "emulatorHost") ?? "127.0.0.1"
         Auth.auth().useEmulator(withHost: host, port: 9099)
         let settings = Firestore.firestore().settings
         settings.host = "\(host):8080"
@@ -92,7 +103,7 @@ enum FirebaseEmulator {
         settings.isSSLEnabled = false
         Firestore.firestore().settings = settings
         Storage.storage().useEmulator(withHost: host, port: 9199)
-        print("Using local Firebase emulators")
+        print("Using local Firebase emulators at \(host)")
         #endif
     }
     
