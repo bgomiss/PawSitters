@@ -164,7 +164,7 @@ struct EnvironmentPickerView: View {
         "Suburban": "house.fill",
         "Mountainous": "mountain.2.fill",
         "Lakeside": "drop.fill",
-        "Rural": "tractor.fill",
+        "Rural": "carrot.fill",
         "Coastal": "waveform.path.ecg",
         "Desert": "sun.haze.fill"
     ]

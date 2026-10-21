@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5744B38EDA0D8A2CFF419904 /* ListingFilterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F196579D5744B38EDA0D8A2C /* ListingFilterSheet.swift */; };
+		1CAFB4D7E28284A012F7C518 /* ListingFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A105D521CAFB4D7E28284A0 /* ListingFilters.swift */; };
 		8ECC8A5AA3316C6F697A0938 /* PushNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F555C318ECC8A5AA3316C6F /* PushNotifications.swift */; };
 		A7BE2A5B336F4782E0F4AE64 /* ReviewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B044DEB0A7BE2A5B336F4782 /* ReviewsView.swift */; };
 		7BDB03AEC6C9A1957A2EB98E /* ReviewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E722AC7BDB03AEC6C9A195 /* ReviewService.swift */; };
@@ -86,6 +88,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F196579D5744B38EDA0D8A2C /* ListingFilterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingFilterSheet.swift; sourceTree = "<group>"; };
+		3A105D521CAFB4D7E28284A0 /* ListingFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingFilters.swift; sourceTree = "<group>"; };
 		7F555C318ECC8A5AA3316C6F /* PushNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotifications.swift; sourceTree = "<group>"; };
 		B044DEB0A7BE2A5B336F4782 /* ReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsView.swift; sourceTree = "<group>"; };
 		01E722AC7BDB03AEC6C9A195 /* ReviewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewService.swift; sourceTree = "<group>"; };
@@ -300,6 +304,7 @@
 				1C98E0D02C6C8FCB00433753 /* MapView.swift */,
 				1C786E3E2C25C0EA0012A179 /* MessagingView.swift */,
 				1C786E3A2C25BF070012A179 /* ProfileView.swift */,
+				F196579D5744B38EDA0D8A2C /* ListingFilterSheet.swift */,
 				B044DEB0A7BE2A5B336F4782 /* ReviewsView.swift */,
 				E680590F04300D68E0BD1228 /* ApplicationsView.swift */,
 				1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */,
@@ -315,6 +320,7 @@
 			children = (
 				1C9E25AF2C25E45500351632 /* UserProfile.swift */,
 				1C91A0B92C45CD1300B6C16D /* Message.swift */,
+				3A105D521CAFB4D7E28284A0 /* ListingFilters.swift */,
 				FD778A16A1F70891C8E0450D /* Review.swift */,
 				A38BA6C15366534DD7BF51D6 /* Application.swift */,
 				1C7BEEDD2D576868007DC3DB /* AppError.swift */,
@@ -434,6 +440,7 @@
 				1C786E392C25BEDF0012A179 /* SignInView.swift in Sources */,
 				1C786E302C25BC530012A179 /* StorageService.swift in Sources */,
 				1C786E3B2C25BF070012A179 /* ProfileView.swift in Sources */,
+				5744B38EDA0D8A2CFF419904 /* ListingFilterSheet.swift in Sources */,
 				A7BE2A5B336F4782E0F4AE64 /* ReviewsView.swift in Sources */,
 				04300D68E0BD122896C27965 /* ApplicationsView.swift in Sources */,
 				1C780EB22C82829600B9A936 /* ImageCacheViewModel.swift in Sources */,
@@ -446,6 +453,7 @@
 				1C9AFCFC2C5FBCD300612E6E /* ImageView.swift in Sources */,
 				1C98E0D12C6C8FCB00433753 /* MapView.swift in Sources */,
 				1C91A0BA2C45CD1300B6C16D /* Message.swift in Sources */,
+				1CAFB4D7E28284A012F7C518 /* ListingFilters.swift in Sources */,
 				A1F70891C8E0450DBF91C1C0 /* Review.swift in Sources */,
 				5366534DD7BF51D6CF2280B5 /* Application.swift in Sources */,
 				1C786E342C25BD6F0012A179 /* MessagingService.swift in Sources */,

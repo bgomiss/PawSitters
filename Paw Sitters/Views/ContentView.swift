@@ -21,7 +21,8 @@ struct ContentView: View {
     @EnvironmentObject var reviewService: ReviewService
     @State private var listings: [PetSittingListing] = []
     @State private var isFullScreenCoverPresented = false
-    @State private var showFilterMenu = false
+    @State private var filters = ListingFilters()
+    @State private var isFilterSheetPresented = false
     @State private var isMapViewPresented = false
     @ObservedObject var mapViewModel = MapViewModel()
     @State private var region = MKCoordinateRegion(
@@ -29,8 +30,6 @@ struct ContentView: View {
         span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
     )
     @State private var selectedTab: Tab = .listings
-    @State private var selected = 0
-    @State private var isExpanded = false
     @State private var selectedListingId: String?
     enum Tab: Hashable {
         case listings, favorites, create, messages, profile
@@ -40,25 +39,22 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                tabView
-                if showFilterMenu {
-                    FilterMenuView(isShowing: $showFilterMenu, selectedTab: $selected, isExpanded: isExpanded, location: "", environment: "")
+            tabView
+                .pawBackground()
+                .toolbar(.hidden, for: .navigationBar)
+                .ignoresSafeArea(edges: .bottom)
+                .sheet(isPresented: $isFilterSheetPresented) {
+                    ListingFilterSheet(filters: $filters, listings: firestoreService.listings)
+                        .presentationDetents([.medium, .large])
+                        .presentationDragIndicator(.visible)
                 }
-            }
-            .pawBackground()
-            .toolbar(showFilterMenu ? .hidden : .visible, for: .navigationBar)
-            .ignoresSafeArea(edges: .bottom)
-            .navigationBarItems(leading: Button(action: {
-                withAnimation {
-                    showFilterMenu.toggle()
-                }
-            }) {
-                Image(systemName: "line.horizontal.3")
-                    .imageScale(.large)
-            })
+        }
     }
-}
+    
+    /// Listings after applying the filters chosen in the filter sheet.
+    private var visibleListings: [PetSittingListing] {
+        firestoreService.listings.filter { filters.matches($0) }
+    }
     
     private var safeAreaBottomInset: CGFloat {
         UIApplication.shared.connectedScenes
@@ -144,23 +140,50 @@ struct ContentView: View {
     private var homeView: some View {
        // NavigationStack(path: $navigationPathManager.path) {
             VStack {
-                ScreenTitle("Paw Sitters", icon: "pawprint.fill")
-                    .navigationBarTitleDisplayMode(.inline)
+                HStack {
+                    Label("Paw Sitters", systemImage: "pawprint.fill")
+                        .font(.system(.title2, design: .rounded).weight(.bold))
+                        .foregroundStyle(AppTheme.current.text)
+                        .labelStyle(AccentIconLabelStyle())
+                    Spacer()
+                    FilterButton(activeCount: filters.activeCount) {
+                        isFilterSheetPresented = true
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                
+                if !filters.isEmpty {
+                    ActiveFilterChips(filters: $filters)
+                        .transition(.opacity)
+                }
                 
                 if isLoading {
                     Spacer()
                     ProgressView("Loading listings…")
                         .tint(AppTheme.current.primary)
                     Spacer()
-                } else if firestoreService.listings.isEmpty && firestoreService.filteredListings.isEmpty {
+                } else if firestoreService.listings.isEmpty {
                     EmptyStateView(icon: "dog.fill",
                                    title: "No listings yet",
                                    message: role == "Sitter"
                                        ? "When owners post a pet-sitting request, it'll show up here."
                                        : "When sitters offer their help, they'll show up here.")
+                } else if visibleListings.isEmpty {
+                    VStack(spacing: 16) {
+                        EmptyStateView(icon: "magnifyingglass",
+                                       title: "No matches",
+                                       message: "No listings match these filters. Try a different city, dates or environment.")
+                        Button("Clear filters") {
+                            withAnimation(.snappy) { filters = ListingFilters() }
+                        }
+                        .font(.system(.headline, design: .rounded))
+                        .foregroundStyle(AppTheme.current.accent)
+                        Spacer()
+                    }
                 } else {
                     ScrollView {
-                        ForEach(firestoreService.filteredListings.isEmpty ? firestoreService.listings : firestoreService.filteredListings) { listing in
+                        ForEach(visibleListings) { listing in
                             VStack {
                                 ImagesView(listing: listing, role: self.role, imageCache: imageCache)
                                 HStack(alignment: .firstTextBaseline) {
@@ -241,7 +264,7 @@ struct ContentView: View {
                         .overlay(alignment: .bottom) {
                             Button(action: {
                                 let zoomLevel = region.span.latitudeDelta
-                                mapViewModel.createAnnotations(from: firestoreService.listings, zoomLevel: zoomLevel)
+                                mapViewModel.createAnnotations(from: visibleListings, zoomLevel: zoomLevel)
                                 isMapViewPresented.toggle()
                             }, label: {
                                 Label("Map", systemImage: "map.fill")
@@ -285,7 +308,7 @@ struct ContentView: View {
                 }
             }
             .fullScreenCover(isPresented: $isMapViewPresented) {
-                MapContainerView(annotations: $mapViewModel.annotations, region: $region, listings: firestoreService.listings)
+                MapContainerView(annotations: $mapViewModel.annotations, region: $region, listings: visibleListings)
             }
         }
     }
