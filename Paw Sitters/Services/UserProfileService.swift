@@ -74,6 +74,17 @@ class UserProfileService: ObservableObject {
         }
     
     
+    /// Loads any user's profile without touching `userProfile` (the signed-in user's profile).
+    func loadProfile(uid: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
+        fetchUserProfile(uid: uid, from: "sitters") { result in
+            if case .success = result {
+                completion(result)
+            } else {
+                self.fetchUserProfile(uid: uid, from: "owners", completion: completion)
+            }
+        }
+    }
+    
     private func fetchUserProfile(uid: String, from collection: String, completion: @escaping (Result<UserProfile, Error>) -> Void) {
         let docRef = db.collection(collection).document(uid)
         docRef.getDocument { document, error in
@@ -81,7 +92,6 @@ class UserProfileService: ObservableObject {
                 do {
                     var userProfile = try document.data(as: UserProfile.self)
                     userProfile.id = document.documentID  // Ensure ID is set
-                    self.userProfile = userProfile
                     completion(.success(userProfile))
                 } catch {
                     completion(.failure(error))

@@ -12,101 +12,110 @@ struct SignInView: View {
     @Binding var userId: String
     @State private var email: String = ""
     @State private var password: String = ""
-    @State private var isPresenting = false
+    @State private var isSubmitting = false
+    @State private var showingAlert = false
+    @State private var alertMessage = ""
     @State private var role: String?
     @EnvironmentObject var authService: AuthService
     @EnvironmentObject var userProfileService: UserProfileService
-    @EnvironmentObject var messagingService: MessagingService
-    @EnvironmentObject var storageService: StorageService
-    @EnvironmentObject var firestoreService: FirestoreService
-    @EnvironmentObject var navigationPathManager: NavigationPathManager
-    @StateObject private var viewModel: SigninViewModel
-    @Environment(\.presentationMode) var presentationMode
-
     
     init(isLoading: Binding<Bool>, userId: Binding<String>, role: String) {
         self.role = role
         self._isLoading = isLoading
         self._userId = userId
-        _viewModel = StateObject(wrappedValue: SigninViewModel(isLoading: isLoading))
-     }
+    }
+    
+    private let theme = AppTheme.current
     
     var body: some View {
-   //     NavigationStack(path: $navigationPathManager.path) {
-            VStack {
-                Text("Sign In")
-                    .font(.largeTitle)
-                    .padding()
-                Spacer()
+        ScrollView {
+            VStack(spacing: 24) {
+                VStack(spacing: 8) {
+                    Image(systemName: "pawprint.circle.fill")
+                        .font(.system(size: 64))
+                        .foregroundStyle(theme.primary)
+                    Text("Welcome back")
+                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                        .foregroundStyle(theme.text)
+                    Text("Sign in to continue")
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(theme.text.opacity(0.7))
+                }
+                .padding(.top, 40)
                 
-                TextField("Email", text: $email)
-                    .autocapitalization(.none)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
+                VStack(spacing: 14) {
+                    ThemedTextField(icon: "envelope.fill", placeholder: "Email", text: $email)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .keyboardType(.emailAddress)
+                        .textContentType(.emailAddress)
+                    ThemedTextField(icon: "lock.fill", placeholder: "Password", text: $password, isSecure: true)
+                        .textContentType(.password)
+                }
+                .padding(20)
+                .themedCard()
                 
-                SecureField("Password", text: $password)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-                Spacer()
-                
-                Button(action: {
-                    viewModel.isLoading = true
-                    authService.signIn(email: email, password: password) { result in
-                        switch result {
-                        case .success(let user):
-                            viewModel.determineRoleAndFetchUserProfile(user)
-                            viewModel.isLoading = false
-                            isPresenting.toggle()
-                         case .failure(let error):
-                            print("Error signing in: \(error.localizedDescription)")
-                            viewModel.isLoading = false
+                Button(action: signIn) {
+                    Group {
+                        if isSubmitting {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text("Sign In")
                         }
                     }
-                }) {
-                    Text("Sign In")
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                    .themedButton()
                 }
+                .disabled(isSubmitting)
             }
-            .padding()
-            .onAppear {
-                viewModel.messagingService = messagingService
-                viewModel.storageService = storageService
-                viewModel.userProfileService = userProfileService
-                viewModel.authService = authService
-                viewModel.firestoreService = firestoreService
-                viewModel.navigationPathManager = navigationPathManager
-            }
-//            .alert(isPresented: $viewModel.showingAlert) {
-//                Alert(title: Text(viewModel.alertTitle),
-//                      message: Text(viewModel.alertMessage),
-//                      dismissButton: .default(Text("OK")) {
-//                    if viewModel.alertTitle == "Success" {
-//                        presentationMode.wrappedValue.dismiss()
-//                    }
-//                })
-//            }
-//            .sheet(isPresented: $isPresenting) {
-//                if let role = self.role {
-//                    ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, storageService: storageService, role: role)
-//                }
-//            }
-//            .navigationDestination(for: NavigationDestination.self) { destination in
-//                switch destination {
-//                case .contentView:
-//                    if let role = self.role {
-//                        ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, storageService: storageService, role: role)
-//                    }
-//                default:
-//                    Text("Guimel2")
-//                }
-//            }
+            .padding(.horizontal, 24)
         }
- //   }
-
+        .scrollDismissesKeyboard(.interactively)
+        .pawBackground()
+        .onAppear {
+            if email.isEmpty, let credentials = FirebaseEmulator.prefilledCredentials {
+                email = credentials.email
+                password = credentials.password
+            }
+        }
+        .alert("Sign In Failed", isPresented: $showingAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(alertMessage)
+        }
     }
+    
+    private func signIn() {
+        let email = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !email.isEmpty, !password.isEmpty else {
+            alertMessage = "Please enter your email and password."
+            showingAlert = true
+            return
+        }
+        // Local state only: the shared `isLoading` would replace this navigation stack with the splash screen.
+        isSubmitting = true
+        authService.signIn(email: email, password: password) { result in
+            switch result {
+            case .success(let user):
+                userId = user.uid
+                // MainAppView switches to ContentView once the profile is loaded.
+                userProfileService.fetchUserProfile(uid: user.uid) { result in
+                    DispatchQueue.main.async {
+                        isSubmitting = false
+                        if case .failure(let error) = result {
+                            alertMessage = "No profile was found for this account. \(error.localizedDescription)"
+                            showingAlert = true
+                            try? authService.signOut()
+                        }
+                    }
+                }
+            case .failure(let error):
+                isSubmitting = false
+                alertMessage = error.localizedDescription
+                showingAlert = true
+            }
+        }
+    }
+}
 
 struct SignInView_Previews: PreviewProvider {
     static var previews: some View {

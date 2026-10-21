@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00AF390014F1D585C419688C /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F0CB6D00AF390014F1D585 /* SplashView.swift */; };
+		7B510469E2C9A7E8FF87166F /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498330DB7B510469E2C9A7E8 /* Theme.swift */; };
 		1C3E91A12C94C1B300178D8C /* SideFilterMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3E91A02C94C1B300178D8C /* SideFilterMenu.swift */; };
 		1C3E91A52C94C2B800178D8C /* FilterMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3E91A42C94C2B800178D8C /* FilterMenuView.swift */; };
 		1C448C3B2C30328A00E78668 /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C448C3A2C30328A00E78668 /* NavigationDestination.swift */; };
@@ -49,6 +51,10 @@
 		1C786E3F2C25C0EA0012A179 /* MessagingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C786E3E2C25C0EA0012A179 /* MessagingView.swift */; };
 		1C786E412C25C2550012A179 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1C786E402C25C2550012A179 /* FirebaseFirestoreSwift */; };
 		1C7951092C504778001029CF /* DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7951082C504778001029CF /* DateFormatter.swift */; };
+		1C7BEEDC2D576413007DC3DB /* LoadingView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7BEEDB2D576413007DC3DB /* LoadingView 2.swift */; };
+		1C7BEEDE2D576868007DC3DB /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7BEEDD2D576868007DC3DB /* AppError.swift */; };
+		1C7BEEE02D576E12007DC3DB /* FavoriteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7BEEDF2D576E12007DC3DB /* FavoriteButton.swift */; };
+		1C7BEEE22D577F86007DC3DB /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7BEEE12D577F86007DC3DB /* LoadingIndicator.swift */; };
 		1C7C31F92CBC618B008A7D48 /* SigninViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7C31F82CBC618B008A7D48 /* SigninViewModel.swift */; };
 		1C7E88762C72601A00CA5476 /* CustomAnnotationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7E88752C72601A00CA5476 /* CustomAnnotationViews.swift */; };
 		1C7F65232C4DAE6400E2EBE1 /* ChatUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7F65222C4DAE6400E2EBE1 /* ChatUser.swift */; };
@@ -67,11 +73,14 @@
 		1C9E25B92C25FDAF00351632 /* PetSittingListing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */; };
 		1CB4EBE42CB16A7E0055DA7F /* CreateListingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB4EBE32CB16A700055DA7F /* CreateListingViewModel.swift */; };
 		1CB794652CB59C5400CF5085 /* MessagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB794642CB59C5400CF5085 /* MessagingViewModel.swift */; };
+		1CC4DE5E2D58DA3E0063EBAD /* ListingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC4DE5D2D58DA3E0063EBAD /* ListingCardView.swift */; };
 		1CCF05762C8B169F00EBE590 /* ImagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF05752C8B169F00EBE590 /* ImagesView.swift */; };
 		1CF8E6D12C9617D300172E1B /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF8E6D02C9617D300172E1B /* SwiftUIView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A9F0CB6D00AF390014F1D585 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		498330DB7B510469E2C9A7E8 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		1C3E91A02C94C1B300178D8C /* SideFilterMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideFilterMenu.swift; sourceTree = "<group>"; };
 		1C3E91A42C94C2B800178D8C /* FilterMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterMenuView.swift; sourceTree = "<group>"; };
 		1C448C3A2C30328A00E78668 /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
@@ -104,6 +113,10 @@
 		1C786E3C2C25C00B0012A179 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		1C786E3E2C25C0EA0012A179 /* MessagingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingView.swift; sourceTree = "<group>"; };
 		1C7951082C504778001029CF /* DateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatter.swift; sourceTree = "<group>"; };
+		1C7BEEDB2D576413007DC3DB /* LoadingView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoadingView 2.swift"; sourceTree = "<group>"; };
+		1C7BEEDD2D576868007DC3DB /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		1C7BEEDF2D576E12007DC3DB /* FavoriteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteButton.swift; sourceTree = "<group>"; };
+		1C7BEEE12D577F86007DC3DB /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
 		1C7C31F82CBC618B008A7D48 /* SigninViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninViewModel.swift; sourceTree = "<group>"; };
 		1C7E88752C72601A00CA5476 /* CustomAnnotationViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnnotationViews.swift; sourceTree = "<group>"; };
 		1C7F65222C4DAE6400E2EBE1 /* ChatUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUser.swift; sourceTree = "<group>"; };
@@ -121,6 +134,7 @@
 		1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetSittingListing.swift; sourceTree = "<group>"; };
 		1CB4EBE32CB16A700055DA7F /* CreateListingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateListingViewModel.swift; sourceTree = "<group>"; };
 		1CB794642CB59C5400CF5085 /* MessagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingViewModel.swift; sourceTree = "<group>"; };
+		1CC4DE5D2D58DA3E0063EBAD /* ListingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingCardView.swift; sourceTree = "<group>"; };
 		1CCF05752C8B169F00EBE590 /* ImagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesView.swift; sourceTree = "<group>"; };
 		1CF8E6D02C9617D300172E1B /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -189,6 +203,9 @@
 				1C98E0D22C6D465F00433753 /* MapContainerView.swift */,
 				1C9AFCFB2C5FBCD300612E6E /* ImageView.swift */,
 				1C75F5802C80B26F00BB54DA /* BottomSheetView.swift */,
+				1C7BEEDF2D576E12007DC3DB /* FavoriteButton.swift */,
+				A9F0CB6D00AF390014F1D585 /* SplashView.swift */,
+				498330DB7B510469E2C9A7E8 /* Theme.swift */,
 				1CCF05752C8B169F00EBE590 /* ImagesView.swift */,
 				1C72544D2C8CF537002D6545 /* TabBarShape.swift */,
 			);
@@ -256,10 +273,13 @@
 			children = (
 				1C75F57F2C80B26100BB54DA /* Custom Views */,
 				1C786E072C25B6860012A179 /* ContentView.swift */,
+				1C7BEEE12D577F86007DC3DB /* LoadingIndicator.swift */,
+				1C7BEEDB2D576413007DC3DB /* LoadingView 2.swift */,
 				1C61A3D12C42C40C00AB9C7D /* ConversationsView.swift */,
 				1C61A3D32C42EF3D00AB9C7D /* CreateListingView.swift */,
 				1C448C3C2C305F3700E78668 /* EditProfileForm.swift */,
 				1C9E25B62C25FCE100351632 /* MainAppView.swift */,
+				1CC4DE5D2D58DA3E0063EBAD /* ListingCardView.swift */,
 				1C98E0D02C6C8FCB00433753 /* MapView.swift */,
 				1C786E3E2C25C0EA0012A179 /* MessagingView.swift */,
 				1C786E3A2C25BF070012A179 /* ProfileView.swift */,
@@ -276,6 +296,7 @@
 			children = (
 				1C9E25AF2C25E45500351632 /* UserProfile.swift */,
 				1C91A0B92C45CD1300B6C16D /* Message.swift */,
+				1C7BEEDD2D576868007DC3DB /* AppError.swift */,
 				1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */,
 				1C7F65222C4DAE6400E2EBE1 /* ChatUser.swift */,
 				1C7581D52C56F4B000BF884E /* City.swift */,
@@ -387,6 +408,7 @@
 				1CF8E6D12C9617D300172E1B /* SwiftUIView.swift in Sources */,
 				1C9E25B52C25F73600351632 /* NavigationPathManager.swift in Sources */,
 				1C7E88762C72601A00CA5476 /* CustomAnnotationViews.swift in Sources */,
+				1C7BEEDC2D576413007DC3DB /* LoadingView 2.swift in Sources */,
 				1C448C3B2C30328A00E78668 /* NavigationDestination.swift in Sources */,
 				1C786E392C25BEDF0012A179 /* SignInView.swift in Sources */,
 				1C786E302C25BC530012A179 /* StorageService.swift in Sources */,
@@ -401,6 +423,7 @@
 				1C786E342C25BD6F0012A179 /* MessagingService.swift in Sources */,
 				1C98E0D32C6D465F00433753 /* MapContainerView.swift in Sources */,
 				1C6A877B2C95F496004F138D /* SideMenuRowView.swift in Sources */,
+				1C7BEEDE2D576868007DC3DB /* AppError.swift in Sources */,
 				1C9E25B92C25FDAF00351632 /* PetSittingListing.swift in Sources */,
 				1C786E322C25BD3D0012A179 /* UserProfileService.swift in Sources */,
 				1C9E25B72C25FCE100351632 /* MainAppView.swift in Sources */,
@@ -419,10 +442,15 @@
 				1C786E2E2C25BC110012A179 /* FirestoreService.swift in Sources */,
 				1C786E082C25B6860012A179 /* ContentView.swift in Sources */,
 				1CCF05762C8B169F00EBE590 /* ImagesView.swift in Sources */,
+				1C7BEEE22D577F86007DC3DB /* LoadingIndicator.swift in Sources */,
 				1C786E3D2C25C00B0012A179 /* ImagePicker.swift in Sources */,
 				1C7581D62C56F4B000BF884E /* City.swift in Sources */,
 				1C9E25B02C25E45500351632 /* UserProfile.swift in Sources */,
+				1CC4DE5E2D58DA3E0063EBAD /* ListingCardView.swift in Sources */,
 				1C3E91A52C94C2B800178D8C /* FilterMenuView.swift in Sources */,
+				1C7BEEE02D576E12007DC3DB /* FavoriteButton.swift in Sources */,
+				00AF390014F1D585C419688C /* SplashView.swift in Sources */,
+				7B510469E2C9A7E8FF87166F /* Theme.swift in Sources */,
 				1C87697A2C50B1EB00703939 /* DatePicker.swift in Sources */,
 				1C9E25B32C25ED2F00351632 /* UIImage+ext.swift in Sources */,
 				1CB4EBE42CB16A7E0055DA7F /* CreateListingViewModel.swift in Sources */,
@@ -487,7 +515,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -544,7 +572,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -570,6 +598,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -599,6 +628,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

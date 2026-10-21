@@ -106,7 +106,7 @@ struct DatePickerView: View {
     init(selectedDateRange: Binding<ClosedRange<Date>?>) {
         self._selectedDateRange = selectedDateRange
         self.startDate = Date()
-        self.endDate = calendar.date(from: DateComponents(year: 2026, month: 12, day: 31))!
+        self.endDate = calendar.date(byAdding: .year, value: 2, to: Date())!
     }
     
     var body: some View {

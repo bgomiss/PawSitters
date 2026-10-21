@@ -20,6 +20,8 @@ class MessagingService: ObservableObject {
     // Add a new published property to hold filtered messages
     @Published var filteredMessages: [Message] = []
     @Published var count = 0
+    private var messagesListener: ListenerRegistration?
+    private var recentMessagesListener: ListenerRegistration?
     
     //        init(userProfileService: UserProfileService) {
     //            self.userProfileService = userProfileService
@@ -94,7 +96,9 @@ class MessagingService: ObservableObject {
     func fetchMessages(_ toId: String) {
         guard let uid = authService.user?.uid else {return}
         self.messages.removeAll()
-        db.collection("messages")
+        // Only listen to the conversation that is currently open.
+        messagesListener?.remove()
+        messagesListener = db.collection("messages")
             .document(uid)
             .collection(toId)
             .order(by: "timestamp", descending: false)
@@ -132,7 +136,9 @@ class MessagingService: ObservableObject {
     func fetchRecentMessages() {
         
         guard let uid = authService.user?.uid else { return }
-        db.collection("recent_messages")
+        recentMessagesListener?.remove()
+        recentMessages.removeAll()
+        recentMessagesListener = db.collection("recent_messages")
             .document(uid)
             .collection("messages")
             .addSnapshotListener { querySnapshot, error in
@@ -150,8 +156,11 @@ class MessagingService: ObservableObject {
                             if !self.recentMessages.contains(where: { $0.documentId == docId }) {
                                 let newMessage = Message(documentId: docId, data: data)
                                 self.recentMessages.append(newMessage)
-                                print("RECENT MESSAGES: \(self.recentMessages)")
-                                
+                            }
+                        case .modified:
+                            // A new message in an existing conversation overwrites its recent-message document.
+                            if let index = self.recentMessages.firstIndex(where: { $0.documentId == docId }) {
+                                self.recentMessages[index] = Message(documentId: docId, data: data)
                             }
                         case .removed:
                             
@@ -173,8 +182,14 @@ class MessagingService: ObservableObject {
     
     
     func clearMessages() {
+        messagesListener?.remove()
+        messagesListener = nil
+        recentMessagesListener?.remove()
+        recentMessagesListener = nil
         DispatchQueue.main.async {
             self.messages.removeAll()
+            self.recentMessages.removeAll()
+            self.filteredMessages.removeAll()
         }
     }
 }

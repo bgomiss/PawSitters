@@ -20,142 +20,83 @@ struct ProfileView: View {
     @State private var showingEditForm = false
     var role: String
     
+    private let theme = AppTheme.current
+    
     var body: some View {
         ScrollView {
-            VStack {
-                // Profile Header
-                ZStack {
-                    VStack {
-                        Text("\(name)")
-                            .font(.largeTitle)
-                            .bold()
-                            .padding(.top, 40)
-                        
+            VStack(spacing: 20) {
+                // Profile header
+                VStack(spacing: 12) {
+                    Group {
                         if let imageUrl = userProfileService.userProfile?.profileImageUrl, let url = URL(string: imageUrl) {
                             AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .empty:
-                                    ProgressView()
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 150, height: 150)
-                                        .clipShape(Circle())
-                                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                                        .shadow(radius: 10)
-                                        .padding(.top, 20)
-                                case .failure:
-                                    Image(systemName: "person.fill")
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 150, height: 150)
-                                        .clipShape(Circle())
-                                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                                        .shadow(radius: 10)
-                                        .padding(.top, 20)
-                                @unknown default:
-                                    EmptyView()
+                                if case .success(let image) = phase {
+                                    image.resizable().scaledToFill()
+                                } else {
+                                    avatarPlaceholder
                                 }
                             }
                         } else {
-                            Button("Select Profile Image") {
-                                showingImagePicker = true
-                            }
-                            .padding()
+                            avatarPlaceholder
                         }
                     }
+                    .frame(width: 120, height: 120)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color.white, lineWidth: 4))
+                    .shadow(color: .black.opacity(0.12), radius: 8, y: 4)
                     
-                    // Animal Icons
-                            Group {
-                                Image(systemName: "pawprint.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 30, height: 30)
-                                    .foregroundColor(.orange)
-                                    .offset(x: -20, y: -110)
-
-                                Image(systemName: "hare.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundColor(.purple)
-                                    .offset(x: 70, y: -30)
-
-                                Image(systemName: "tortoise.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundColor(.green)
-                                    .offset(x: -120, y: 40)
-
-                                Image(systemName: "bird.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundColor(.blue)
-                                    .offset(x: 90, y: 110)
-                        }
-                    }
-                .frame(maxWidth: .infinity)
-                .modifier(CollapsibleDestinationViewModifier())
-                
-//                .background(Color.blue)
-//                .foregroundColor(.white)
-//                .cornerRadius(15)
-//                .padding()
-                // Profile Details
-                VStack(spacing: 20) {
+                    Text(name)
+                        .font(.system(.title, design: .rounded).weight(.bold))
+                        .foregroundStyle(theme.text)
                     
-                    Text(bio)
-                        .modifier(CollapsibleDestinationViewModifier())
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                    HStack {
-                        Image(systemName: "mappin.and.ellipse.circle.fill")
-                            .foregroundColor(.red)
-                    Text(location)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                    }
-                    .modifier(CollapsibleDestinationViewModifier())
-
+                    Label(role == "Sitter" ? "Pet sitter" : "Pet or home owner",
+                          systemImage: role == "Sitter" ? "figure.walk.motion" : "house.fill")
+                        .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(role == "Sitter" ? theme.primary : theme.accent, in: Capsule())
                 }
-               // .modifier(CollapsibleDestinationViewModifier())
-                .padding(.top, 20)
+                .padding(.top, 24)
                 
-                // Update Info Button
-                Button(action: {
+                // About
+                VStack(alignment: .leading, spacing: 12) {
+                    profileRow(icon: "text.alignleft", title: "About",
+                               value: bio.isEmpty ? "Tell others a little about yourself." : bio,
+                               isPlaceholder: bio.isEmpty)
+                    Divider()
+                    profileRow(icon: "mappin.and.ellipse", title: "Location",
+                               value: location.isEmpty ? "Not set" : location,
+                               isPlaceholder: location.isEmpty)
+                    if !age.isEmpty {
+                        Divider()
+                        profileRow(icon: "number", title: "Age", value: age, isPlaceholder: false)
+                    }
+                }
+                .padding(18)
+                .themedCard()
+                .padding(.horizontal)
+                
+                Button {
                     showingEditForm = true
-                }) {
-                    Text("Edit Profile")
-                        .modifier(CollapsibleDestinationViewModifier())
-                        .foregroundStyle(.green)
-                        .fontWeight(.semibold)
-//                        .padding()
-//                        .frame(maxWidth: .infinity)
-//                        .background(Color.blue)
-//                        .foregroundColor(.white)
-//                        .cornerRadius(10)
-//                        .shadow(radius: 5)
+                } label: {
+                    Label("Edit profile", systemImage: "pencil")
+                        .themedButton()
                 }
-                .padding()
                 
-                Button(action: {
+                Button(role: .destructive) {
                     do {
                         try authService.signOut()
                         navigationPathManager.popToRoot() // Clear the navigation stack
                     } catch let error {
                         print("Error signing out: \(error.localizedDescription)")
                     }
-                }) {
-                    Text("Sign Out")
-                        .modifier(CollapsibleDestinationViewModifier())
-                        .padding()
-                        .background(Color.clear)
-                        .foregroundColor(.red)
-                        .cornerRadius(8)
+                } label: {
+                    Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
+                        .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                        .foregroundStyle(.red)
                 }
+                .padding(.bottom, 24)
             }
             .onAppear {
                 if let user = authService.user {
@@ -180,6 +121,33 @@ struct ProfileView: View {
         .sheet(isPresented: $showingEditForm) {
             EditProfileForm(name: $name, bio: $bio, age: $age, location: $location, role: role)
                 .environmentObject(userProfileService)
+        }
+    }
+}
+
+extension ProfileView {
+    private var avatarPlaceholder: some View {
+        Image(systemName: role == "Sitter" ? "person.fill" : "dog.fill")
+            .font(.system(size: 48))
+            .foregroundStyle(theme.primary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(theme.secondary.opacity(0.5))
+    }
+    
+    private func profileRow(icon: String, title: String, value: String, isPlaceholder: Bool) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .foregroundStyle(theme.primary)
+                .frame(width: 22)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .foregroundStyle(theme.text.opacity(0.55))
+                Text(value)
+                    .font(.system(.body, design: .rounded))
+                    .foregroundStyle(isPlaceholder ? theme.text.opacity(0.45) : theme.text)
+            }
+            Spacer(minLength: 0)
         }
     }
 }

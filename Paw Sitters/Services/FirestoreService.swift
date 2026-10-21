@@ -13,7 +13,10 @@ class FirestoreService: ObservableObject {
     private var db = Firestore.firestore()
     @Published var listings: [PetSittingListing] = []
     @Published var filteredListings: [PetSittingListing] = []
+    /// IDs of the listings the signed-in user has favorited (stored per user in `favorites/{uid}`).
+    @Published var favoriteIds: Set<String> = []
     var listener: ListenerRegistration?
+    private var favoritesListener: ListenerRegistration?
     var userProfileService: UserProfileService?
     
 //    func fetchListings(for role: String, completion: @escaping (Result<[PetSittingListing], Error>) -> Void) {
@@ -31,62 +34,76 @@ class FirestoreService: ObservableObject {
 //            }
 //        }
 //    }
+    @MainActor
     func fetchListings(for role: String, location: String? = nil, dateRange: ClosedRange<Date>? = nil, environment: String? = nil) {
-            guard let _ = Auth.auth().currentUser?.uid else { return }
-            let collection = role == "Sitter" ? "ownersListings" : "sittersListings"
+        // Remove previous listener
+        listener?.remove()
+        
+        // Clear existing listings
+        listings.removeAll()
+        filteredListings.removeAll()
+        
+        let collection = role == "Sitter" ? "ownersListings" : "sittersListings"
+        var query: Query = db.collection(collection)
+        
+        // Add filters
+        if let location = location, !location.isEmpty {
+            query = query.whereField("location", isEqualTo: location)
+        }
+        
+        if let environment = environment, !environment.isEmpty {
+            query = query.whereField("environment", isEqualTo: environment)
+        }
+        
+        if let dateRange = dateRange {
+            query = query
+                .whereField("dateRange.start", isLessThanOrEqualTo: Timestamp(date: dateRange.upperBound))
+                .whereField("dateRange.end", isGreaterThanOrEqualTo: Timestamp(date: dateRange.lowerBound))
+                .order(by: "dateRange.start", descending: false)
+        } else {
+            query = query.order(by: "timestamp", descending: false)
+        }
+        
+        // Attach snapshot listener
+        listener = query.addSnapshotListener { [weak self] querySnapshot, error in
+            guard let self = self else { return }
             
-            self.listings.removeAll()
-            
-            var query: Query = db.collection(collection)
-            
-            // Add filters dynamically based on non-nil and non-empty parameters
-            if let location = location, !location.isEmpty {
-                query = query.whereField("location", isEqualTo: location)
+            if let error = error {
+                print("Failed to listen for listings: \(error.localizedDescription)")
+                return
             }
             
-            if let environment = environment, !environment.isEmpty {
-                query = query.whereField("environment", isEqualTo: environment)
-            }
+            let changes = querySnapshot?.documentChanges ?? []
             
-            if let dateRange = dateRange {
-                query = query
-                    .whereField("dateRange.start", isLessThanOrEqualTo: Timestamp(date: dateRange.upperBound))
-                    .whereField("dateRange.end", isGreaterThanOrEqualTo: Timestamp(date: dateRange.lowerBound))
-                    .order(by: "dateRange.start", descending: false)
-            } else {
-                query = query.order(by: "timestamp", descending: false)
-            }
-            
-            // Remove previous listener to prevent multiple listeners
-            listener?.remove()
-            
-            // Attach snapshot listener
-            listener = query.addSnapshotListener { querySnapshot, error in
-                if let error = error {
-                    print("FAILED TO LISTEN FOR LISTINGS: \(error.localizedDescription)")
-                    return
-                }
-                
-                DispatchQueue.main.async {
-                    querySnapshot?.documentChanges.forEach { change in
-                        let docId = change.document.documentID
-                        let data = change.document.data()
-                        
-                        switch change.type {
-                        case .added:
-                            if !self.listings.contains(where: { $0.documentId == docId }) {
-                                let newListing = PetSittingListing(documentId: docId, data: data)
-                                self.listings.append(newListing)
-                            }
-                        case .removed:
-                            self.listings.removeAll { $0.documentId == docId }
-                        default:
-                            break
+            // Process changes on main thread
+            DispatchQueue.main.async {
+                for change in changes {
+                    let docId = change.document.documentID
+                    let data = change.document.data()
+                    
+                    switch change.type {
+                    case .added:
+                        if !self.filteredListings.contains(where: { $0.documentId == docId }) {
+                            let newListing = PetSittingListing(documentId: docId, data: data)
+                            self.filteredListings.append(newListing)
+                            self.listings.append(newListing)
                         }
+                    case .modified:
+                        if let index = self.filteredListings.firstIndex(where: { $0.documentId == docId }) {
+                            let updatedListing = PetSittingListing(documentId: docId, data: data)
+                            self.filteredListings[index] = updatedListing
+                            if let listingIndex = self.listings.firstIndex(where: { $0.documentId == docId }) {
+                                self.listings[listingIndex] = updatedListing
+                            }
+                        }
+                    case .removed:
+                        self.filteredListings.removeAll { $0.documentId == docId }
+                        self.listings.removeAll { $0.documentId == docId }
                     }
                 }
             }
         }
+    }
 //    func fetchListings(for role: String) {
 //        guard let _ = Auth.auth().currentUser?.uid else { return }
 //        let collection = role == "Sitter" ? "ownersListings" : "sittersListings"
@@ -285,19 +302,63 @@ class FirestoreService: ObservableObject {
         }
     }
     
-    func updateFavoriteStatus(role: String, for listingId: String, isFavorite: Bool) {
-        let collection = role == "Sitter" ? "ownersListings" : "sittersListings"
-        let documentRef = db.collection(collection).document(listingId)
-            
-        documentRef.updateData(["isFavorite": isFavorite]) { error in
+    func isFavorite(_ listing: PetSittingListing) -> Bool {
+        favoriteIds.contains(listing.documentId)
+    }
+    
+    func listenToFavorites() {
+        favoritesListener?.remove()
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        favoritesListener = db.collection("favorites").document(uid).addSnapshotListener { [weak self] snapshot, error in
             if let error = error {
-                print("Error updating favorite status: \(error.localizedDescription)")
-            } else {
-                print("Favorite status updated successfully.")
+                print("Failed to listen for favorites: \(error.localizedDescription)")
+                return
+            }
+            let ids = snapshot?.data()?["listingIds"] as? [String] ?? []
+            DispatchQueue.main.async {
+                self?.favoriteIds = Set(ids)
             }
         }
     }
+    
+    func toggleFavorite(_ listing: PetSittingListing) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let listingId = listing.documentId
+        let willBeFavorite = !favoriteIds.contains(listingId)
+        
+        // Optimistic update; the snapshot listener reconciles with the server.
+        if willBeFavorite {
+            favoriteIds.insert(listingId)
+        } else {
+            favoriteIds.remove(listingId)
+        }
+        
+        let change = willBeFavorite ? FieldValue.arrayUnion([listingId]) : FieldValue.arrayRemove([listingId])
+        db.collection("favorites").document(uid).setData(["listingIds": change], merge: true) { [weak self] error in
+            guard let error = error else { return }
+            print("Error updating favorite status: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                if willBeFavorite {
+                    self?.favoriteIds.remove(listingId)
+                } else {
+                    self?.favoriteIds.insert(listingId)
+                }
+            }
+        }
+    }
+    
+    /// Removes all listeners and clears cached data (used on sign-out).
+    func stopListening() {
+        listener?.remove()
+        listener = nil
+        favoritesListener?.remove()
+        favoritesListener = nil
+        listings.removeAll()
+        filteredListings.removeAll()
+        favoriteIds.removeAll()
+    }
 
+    @MainActor
     func refreshListings() async {
         guard let userProfile = userProfileService?.userProfile else { return }
         
@@ -305,10 +366,8 @@ class FirestoreService: ObservableObject {
         listener?.remove()
         
         // Clear existing listings
-        DispatchQueue.main.async {
-            self.listings.removeAll()
-            self.filteredListings.removeAll()
-        }
+        listings.removeAll()
+        filteredListings.removeAll()
         
         // Fetch fresh listings
         fetchListings(for: userProfile.role)

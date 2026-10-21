@@ -16,8 +16,8 @@ struct PetSittingListing: Codable, Identifiable {
     var description: String
     var name: String
     var dateRange: ClosedRange<Date>?
-    var imageUrl: String?
     var imageUrls: [String]?
+    var imageUrl: String? { imageUrls?.first(where: { !$0.isEmpty }) }
     var timestamp: Timestamp
     var role: String
     var location: String?
@@ -33,7 +33,7 @@ struct PetSittingListing: Codable, Identifiable {
         self.title = data["title"] as? String ?? ""
         self.description = data["description"] as? String ?? ""
         self.name = data["name"] as? String ?? ""
-        self.imageUrls = data["imageUrls"] as? [String] ?? [""]
+        self.imageUrls = (data["imageUrls"] as? [String])?.filter { !$0.isEmpty }
         self.timestamp = data["timestamp"] as? Timestamp ?? Timestamp(date: Date())
         self.role = data["role"] as? String ?? ""
         self.location = data["location"] as? String ?? ""

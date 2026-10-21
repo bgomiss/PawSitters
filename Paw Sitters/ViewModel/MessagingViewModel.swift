@@ -78,18 +78,19 @@ class MessagingViewModel: ObservableObject {
         guard let userProfileService = userProfileService else { return }
 
         // Fetch current user
-        userProfileService.fetchUserProfile(uid: userId) { [weak self] _ in
+        userProfileService.loadProfile(uid: userId) { [weak self] result in
+            guard case .success(let profile) = result else { return }
             DispatchQueue.main.async {
-                self?.senderProfileImageUrl = userProfileService.userProfile?.profileImageUrl ?? ""
-                self?.senderName = userProfileService.userProfile?.name ?? ""
+                self?.senderProfileImageUrl = profile.profileImageUrl ?? ""
+                self?.senderName = profile.name ?? ""
             }
         }
         
-        // Fetch receiver user
-        userProfileService.fetchUserProfile(uid: receiverId) { [weak self] _ in
+        userProfileService.loadProfile(uid: receiverId) { [weak self] result in
+            guard case .success(let profile) = result else { return }
             DispatchQueue.main.async {
-                self?.receiverProfileImageUrl = userProfileService.userProfile?.profileImageUrl ?? ""
-                self?.receiverName = userProfileService.userProfile?.name ?? ""
+                self?.receiverProfileImageUrl = profile.profileImageUrl ?? ""
+                self?.receiverName = profile.name ?? ""
             }
         }
     }

@@ -17,72 +17,102 @@ struct RoleSelectionView: View {
     @EnvironmentObject var firestoreService: FirestoreService
     
     
+    private let theme = AppTheme.current
+    
     var body: some View {
-        NavigationStack(path: $navigationPathManager.path) {
-            VStack {
-                Text("Welcome to Pet Sitter App")
-                    .font(.largeTitle)
-                    .padding()
+        VStack(spacing: 24) {
+            Spacer()
+            
+            VStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(theme.primary)
+                        .frame(width: 110, height: 110)
+                    Image(systemName: "pawprint.fill")
+                        .font(.system(size: 52))
+                        .foregroundStyle(.white)
+                }
+                .shadow(color: theme.primary.opacity(0.35), radius: 10, y: 5)
                 
-                Text("Please select your role")
-                    .font(.headline)
-                    .padding()
+                Text("Welcome to Paw Sitters")
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .foregroundStyle(theme.text)
+                    .multilineTextAlignment(.center)
+                Text("Find a trusted sitter, or a home full of furry friends.")
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(theme.text.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+            }
+            
+            Spacer()
+            
+            VStack(spacing: 14) {
+                Text("How will you use Paw Sitters?")
+                    .font(.system(.headline, design: .rounded))
+                    .foregroundStyle(theme.text)
                 
-                Button(action: {
+                roleCard(title: "I'm a sitter",
+                         subtitle: "Look after pets and homes",
+                         icon: "figure.walk.motion",
+                         color: theme.primary) {
                     userProfileService.userProfile = UserProfile(role: "Sitter")
                     navigationPathManager.push(.sitterSignUp)
-                }) {
-                    Text("I am a Sitter")
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
                 }
                 
-                Button(action: {
+                roleCard(title: "I'm a pet or home owner",
+                         subtitle: "Find someone you can trust",
+                         icon: "house.fill",
+                         color: theme.accent) {
                     userProfileService.userProfile = UserProfile(role: "Owner")
                     navigationPathManager.push(.ownerSignUp)
-                }) {
-                    Text("I am a Pet/House Owner")
-                        .padding()
-                        .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
                 }
-                
-                Spacer().frame(height: 20)
-                
-                Text("I already have an account")
-                
-                Button(action: {
+            }
+            .padding(.horizontal, 24)
+            
+            HStack(spacing: 4) {
+                Text("Already have an account?")
+                    .foregroundStyle(theme.text.opacity(0.7))
+                Button("Sign in") {
                     navigationPathManager.push(.signInView)
-                }) {
-                    Text("Sign In")
-                        .padding()
-                        .background(Color.orange)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
                 }
+                .fontWeight(.semibold)
+                .foregroundStyle(theme.primary)
             }
-            .navigationDestination(for: NavigationDestination.self) { destination in
-                    switch destination {
-                    case .sitterSignUp:
-                        SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService, role: "Sitter")
-                    case .ownerSignUp:
-                        SignUpView(isLoading: $isLoading, userId: $userId, messagingService: messagingService, firestoreService: firestoreService, role: "Owner")
-                    case .signInView:
-                        SignInView(isLoading: $isLoading, userId: $userId, role: "")
-                    case .contentView:
-                        if let role = userProfileService.userProfile?.role {
-                          //  ContentView(isLoading: $isLoading, userId: $userId, firestoreService: firestoreService, messagingService: messagingService, storageService: storageService, role: role)
-                        }
-                    default:
-                        Text("roleSection")
-                    }
-                }
-            }
+            .font(.system(.subheadline, design: .rounded))
+            .padding(.bottom, 24)
         }
+        .frame(maxWidth: .infinity)
+        .pawBackground()
+        // Navigation destinations are registered by MainAppView, which owns the NavigationStack.
     }
+    
+    private func roleCard(title: String, subtitle: String, icon: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 48, height: 48)
+                    .background(color, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.system(.headline, design: .rounded))
+                        .foregroundStyle(theme.text)
+                    Text(subtitle)
+                        .font(.system(.footnote, design: .rounded))
+                        .foregroundStyle(theme.text.opacity(0.65))
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(theme.text.opacity(0.4))
+            }
+            .padding(14)
+            .themedCard()
+        }
+        .buttonStyle(.plain)
+    }
+}
 
 //struct RoleSelectionView_Previews: PreviewProvider {
 //    static var previews: some View {

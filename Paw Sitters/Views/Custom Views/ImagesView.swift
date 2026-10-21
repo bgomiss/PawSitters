@@ -12,77 +12,53 @@ struct ImagesView: View {
     
     let listing: PetSittingListing
     var role: String?
-    @State private var favoriteListings: Set<String> = []
+    @StateObject private var viewModel = ImageViewModel()
     @EnvironmentObject var firestoreService: FirestoreService
     @ObservedObject var imageCache: ImageCacheViewModel
 
     var body: some View {
-        VStack(alignment: .leading) {
-            if let imageUrl = listing.imageUrls?.first, let url = URL(string: imageUrl) {
-                if let image = imageCache.images[imageUrl] {
-                    ZStack(alignment: .topTrailing) {
+        ZStack(alignment: .topTrailing) {
+            Group {
+                if let imageUrl = listing.imageUrl {
+                    if let image = imageCache.images[imageUrl] {
                         Image(uiImage: image)
                             .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity, maxHeight: 200)
-                            .clipped()
-                            .cornerRadius(10)
-                        ZStack {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 30, height: 30)
-                                .shadow(color: .black.opacity(0.7), radius: 5, x: 0, y: 0)
-                            Image(systemName: favoriteListings.contains(listing.id) ? "bolt.heart.fill" : "bolt.heart")
-                                .resizable()
-                                .foregroundStyle(favoriteListings.contains(listing.id) ? .pink : .black)
-                                .frame(width: 15, height: 15)
-                                .scaleEffect(favoriteListings.contains(listing.id) ? 1.2 : 1.0)
-                                .animation(.easeInOut(duration: 0.3), value: favoriteListings.contains(listing.id))
-                                .padding()
-                        }
-                        .onTapGesture {
-                            toggleFavorite(for: listing)
-                        }
+                            .aspectRatio(contentMode: .fill)
+                    } else {
+                        AppTheme.current.secondary.opacity(0.35)
+                            .overlay(ProgressView().tint(AppTheme.current.primary))
+                            .onAppear {
+                                imageCache.loadImage(from: imageUrl)
+                            }
                     }
                 } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: 200)
-                        .onAppear {
-                            imageCache.loadImage(from: url, for: imageUrl)
-                        }
-                    }
-            } else {
-                Image(systemName: "dog")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100) // Adjust the size here
-                    .foregroundColor(.gray) // Set the color to gray
-                    .font(.system(size: 20, weight: .thin))
+                    // No photo: a friendly themed placeholder instead of a grey box.
+                    AppTheme.current.secondary.opacity(0.35)
+                        .overlay(
+                            Image(systemName: "pawprint.fill")
+                                .font(.system(size: 44))
+                                .foregroundStyle(AppTheme.current.primary.opacity(0.5))
+                        )
+                }
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 180)
+            .clipped()
             
-        }
-        .onReceive(firestoreService.$listings) { _ in
-            syncFavoritesWithFirestore()
-        }
-    }
-    private func toggleFavorite(for listing: PetSittingListing) {
-        if favoriteListings.contains(listing.id) {
-            favoriteListings.remove(listing.id)
-            firestoreService.updateFavoriteStatus(role: self.role ?? "Sitter", for: listing.id, isFavorite: false)
-        } else {
-            favoriteListings.insert(listing.id)
-            firestoreService.updateFavoriteStatus(role: self.role ?? "Sitter", for: listing.id, isFavorite: true)
-        }
-    }
-    
-    
-    private func syncFavoritesWithFirestore() {
-        for listing in firestoreService.listings {
-            if listing.isFavorite {
-                favoriteListings.insert(listing.id)
-            } else {
-                favoriteListings.remove(listing.id)
+            FavoriteButton(isFavorite: firestoreService.isFavorite(listing)) {
+                firestoreService.toggleFavorite(listing)
             }
+            .padding(10)
         }
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+}
+
+// ViewModel for ImagesView
+class ImageViewModel: ObservableObject {
+    @Published var isFavorite = false
+    
+    func toggleFavorite() {
+        isFavorite.toggle()
     }
 }

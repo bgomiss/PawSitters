@@ -14,6 +14,7 @@ class CreateListingViewModel: ObservableObject {
     @Published var showingAlert = false
     @Published var alertTitle = ""
     @Published var alertMessage = ""
+    @Published var isPublishing = false
     
     var locationViewModel: LocationViewModel
     
@@ -21,8 +22,23 @@ class CreateListingViewModel: ObservableObject {
         self.locationViewModel = locationViewModel
     }
     
-    func publishListing(authService: AuthService, firestoreService: FirestoreService, storageService: StorageService) {
-        let ownerId = authService.user?.uid ?? ""
+    func reset() {
+        listingDetails = ListingDetails()
+        selectedOption = .title
+        locationViewModel.location = ""
+        locationViewModel.selectedCityCoordinates = nil
+    }
+    
+    func publishListing(role: String, ownerName: String, authService: AuthService, firestoreService: FirestoreService, storageService: StorageService) {
+        guard let ownerId = authService.user?.uid else {
+            showAlert(title: "Error", message: "You need to be signed in to publish a listing.")
+            return
+        }
+        guard !listingDetails.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            showAlert(title: "Missing Title", message: "Please enter a title for your listing.")
+            return
+        }
+        isPublishing = true
         let pets = [
             "birds": listingDetails.pets.birds,
             "dogs": listingDetails.pets.dogs,
@@ -64,7 +80,8 @@ class CreateListingViewModel: ObservableObject {
                 "timestamp": Timestamp(date: Date()),
                 "dateRange": dateRangeDict as Any,
                 "imageUrls": imageUrls,
-                "role": "Sitter",
+                "role": role,
+                "name": ownerName,
                 "ownerId": ownerId,
                 "location": self.locationViewModel.location,
                 "latitude": self.locationViewModel.selectedCityCoordinates?.latitude as Any,
@@ -73,19 +90,24 @@ class CreateListingViewModel: ObservableObject {
                 "pets": pets
             ] as [String : Any]
             
-            firestoreService.addListing("Sitter", listingData: listingData) { result in
+            firestoreService.addListing(role, listingData: listingData) { result in
+                self.isPublishing = false
                 switch result {
                 case .success():
-                    self.alertTitle = "Success"
-                    self.alertMessage = "Listing published successfully"
-                    self.showingAlert = true
+                    self.showAlert(title: "Success", message: "Listing published successfully")
                 case .failure(let error):
-                    self.alertTitle = "Error"
-                    self.alertMessage = error.localizedDescription
-                    self.showingAlert = true
+                    self.showAlert(title: "Error", message: error.localizedDescription)
                 }
             }
         }
+    }
+}
+
+extension CreateListingViewModel {
+    func showAlert(title: String, message: String) {
+        alertTitle = title
+        alertMessage = message
+        showingAlert = true
     }
 }
 

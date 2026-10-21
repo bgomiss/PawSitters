@@ -1,4 +1,6 @@
 // Create new file for centralized error handling
+
+import Foundation
 enum AppError: LocalizedError {
     case authError(String)
     case networkError(String)

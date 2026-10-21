@@ -29,7 +29,7 @@ struct MessagingView: View {
             }
             .navigationBarTitle("MESSAGES", displayMode: .inline)
             .navigationBarItems(leading: backButton)
-            .background(Color(.systemGroupedBackground).ignoresSafeArea())
+            .pawBackground()
         }
         .onAppear {
             viewModel.messagingService = messagingService
@@ -105,7 +105,7 @@ struct ChatBottomBar: View {
                 Text("Send")
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(Color.blue)
+                    .background(AppTheme.current.primary)
                     .foregroundColor(.white)
                     .cornerRadius(8)
             }
@@ -145,7 +145,7 @@ struct MessageBubble: View {
                 } else {
                     Text(message.content)
                         .padding(10)
-                        .background(isCurrentUser ? Color.blue : Color(.systemGray5))
+                        .background(isCurrentUser ? AppTheme.current.primary : Color.white)
                         .foregroundStyle(isCurrentUser ? .white : .primary)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }

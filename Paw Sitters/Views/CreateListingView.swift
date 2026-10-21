@@ -22,6 +22,8 @@ struct CreateListingView: View {
     
     @State private var name: String = ""
     var role: String?
+    /// Called after the user acknowledges a successful publish.
+    var onPublished: () -> Void = {}
     @State private var selectedDateRange: ClosedRange<Date>?
     private let calendar = Calendar.current
     private let startDate: Date
@@ -41,12 +43,13 @@ struct CreateListingView: View {
     @Environment(\.presentationMode) var presentationMode
     
     
-    init(role: String?) {
+    init(role: String?, onPublished: @escaping () -> Void = {}) {
+        self.onPublished = onPublished
         let locationVVM = LocationViewModel()
         _locationViewModel = StateObject(wrappedValue: locationVVM)
         _viewModel = StateObject(wrappedValue: CreateListingViewModel(locationViewModel: locationVVM))
         self.startDate = calendar.date(from: DateComponents(year: 2023, month: 01, day: 01))!
-        self.endDate = calendar.date(from: DateComponents(year: 2026, month: 12, day: 31))!
+        self.endDate = calendar.date(byAdding: .year, value: 2, to: Date())!
         self.role = role
     }
     
@@ -59,11 +62,22 @@ struct CreateListingView: View {
                 
                 imageSection
                 
-                Button("Publish") {
-                    viewModel.publishListing(authService: authService, firestoreService: firestoreService, storageService: storageService)
+                Button {
+                    viewModel.publishListing(role: role ?? userProfileService.userProfile?.role ?? "Owner",
+                                             ownerName: userProfileService.userProfile?.name ?? "",
+                                             authService: authService, firestoreService: firestoreService, storageService: storageService)
+                } label: {
+                    Group {
+                        if viewModel.isPublishing {
+                            ProgressView().tint(.white)
+                        } else {
+                            Label("Publish", systemImage: "paperplane.fill")
+                        }
+                    }
+                    .themedButton(AppTheme.current.accent)
                 }
-                .modifier(CollapsibleDestinationViewModifier())
-                .padding(.top, 1)
+                .disabled(viewModel.isPublishing)
+                .padding(.vertical, 12)
             }
         }
         .navigationBarTitle("Create Listing")
@@ -72,7 +86,9 @@ struct CreateListingView: View {
                   message: Text(viewModel.alertMessage),
                   dismissButton: .default(Text("OK")) {
                 if viewModel.alertTitle == "Success" {
-                    presentationMode.wrappedValue.dismiss()
+                    viewModel.reset()
+                    selectedDateRange = nil
+                    onPublished()
                 }
             })
         }
@@ -251,9 +267,9 @@ struct CollapsibleDestinationViewModifier: ViewModifier {
         content
             .padding()
             .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: .black.opacity(0.08), radius: 8, y: 3)
             .padding()
-            .shadow(radius: 10)
     }
 }
 

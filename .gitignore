@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Xcode per-user state
+xcuserdata/
+DerivedData/
+
+# Firebase emulator logs
+*-debug.log
+
+# Old duplicate/broken files moved out of the source tree
+_unused_files/

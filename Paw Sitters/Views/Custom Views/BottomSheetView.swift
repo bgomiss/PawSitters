@@ -55,7 +55,7 @@ struct BottomSheetView: View {
                         
                         // Date Range
                         if let dateRange = listing.dateRange {
-                            Text("Date: \(dateRange)")
+                            Text("Date: \(dateRange.lowerBound, style: .date) - \(dateRange.upperBound, style: .date)")
                                 .font(.headline)
                                 .padding([.leading, .trailing])
                         } else {

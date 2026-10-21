@@ -89,16 +89,20 @@ struct TabBarShape: Shape {
 struct TabBarItem: View {
     let label: String
     let iconName: String
+    var isSelected = false
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: iconName)
-                    .font(.system(size: 24))
-                    .foregroundColor(.blue)
+                    .font(.system(size: 22))
+                    .scaleEffect(isSelected ? 1.1 : 1)
                 Text(label)
+                    .fontWeight(isSelected ? .semibold : .regular)
             }
+            .foregroundColor(isSelected ? AppTheme.current.primary : .gray)
+            .animation(.spring(response: 0.3), value: isSelected)
         }
         .frame(maxWidth: .infinity)
     }

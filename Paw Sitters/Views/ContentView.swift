@@ -43,6 +43,7 @@ struct ContentView: View {
                     FilterMenuView(isShowing: $showFilterMenu, selectedTab: $selected, isExpanded: isExpanded, location: "", environment: "")
                 }
             }
+            .pawBackground()
             .toolbar(showFilterMenu ? .hidden : .visible, for: .navigationBar)
             .ignoresSafeArea(edges: .bottom)
             .navigationBarItems(leading: Button(action: {
@@ -53,9 +54,6 @@ struct ContentView: View {
                 Image(systemName: "line.horizontal.3")
                     .imageScale(.large)
             })
-            .onReceive(firestoreService.$listings) { _ in
-                selectedTab = .listings
-        }
     }
 }
     
@@ -79,7 +77,9 @@ struct ContentView: View {
             case .favorites:
                 FavoritesView(userId: $userId)
             case .create:
-                CreateListingView(role: role)
+                CreateListingView(role: role) {
+                    selectedTab = .listings
+                }
             case .messages:
                 ConversationsView(userId: $userId)
             case .profile:
@@ -90,18 +90,19 @@ struct ContentView: View {
             
             // Alt tab bar
             HStack {
-                TabBarItem(label: "Listings", iconName: "house.fill", action: {
+                TabBarItem(label: "Listings", iconName: "house.fill", isSelected: selectedTab == .listings, action: {
                     selectedTab = .listings
                 })
-                TabBarItem(label: "Favorites", iconName: "heart.fill", action: {
+                TabBarItem(label: "Favorites", iconName: "heart.fill", isSelected: selectedTab == .favorites, action: {
                     selectedTab = .favorites
                 })
                 Text("Create")
+                    .foregroundStyle(selectedTab == .create ? AppTheme.current.primary : .gray)
                 
-                TabBarItem(label: "Messages", iconName: "message.fill", action: {
+                TabBarItem(label: "Messages", iconName: "message.fill", isSelected: selectedTab == .messages, action: {
                     selectedTab = .messages
                 })
-                TabBarItem(label: "Profile", iconName: "person.fill", action: {
+                TabBarItem(label: "Profile", iconName: "person.fill", isSelected: selectedTab == .profile, action: {
                     selectedTab = .profile
                 })
             }
@@ -119,7 +120,7 @@ struct ContentView: View {
                         .foregroundStyle(.white)
                         .background {
                             Circle()
-                                .fill(.green) // custom64B054Color
+                                .fill(AppTheme.current.accent)
                                 .shadow(radius: 3)
                         }
                 }
@@ -139,61 +140,59 @@ struct ContentView: View {
     private var homeView: some View {
        // NavigationStack(path: $navigationPathManager.path) {
             VStack {
-                Text("PAWSITTERS")
-                    .font(.headline)
-                 //   .padding(.top, -30)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .fontWeight(.bold)
+                ScreenTitle("Paw Sitters", icon: "pawprint.fill")
                     .navigationBarTitleDisplayMode(.inline)
                 
                 if isLoading {
-                    Text("Loading listings...")
-                        .font(.headline)
-                        .padding()
+                    Spacer()
+                    ProgressView("Loading listings…")
+                        .tint(AppTheme.current.primary)
+                    Spacer()
                 } else if firestoreService.listings.isEmpty && firestoreService.filteredListings.isEmpty {
-                    Text("No listings available.")
-                        .font(.headline)
-                        .padding()
+                    EmptyStateView(icon: "dog.fill",
+                                   title: "No listings yet",
+                                   message: role == "Sitter"
+                                       ? "When owners post a pet-sitting request, it'll show up here."
+                                       : "When sitters offer their help, they'll show up here.")
                 } else {
                     ScrollView {
-                        RefreshControl(coordinateSpace: .named("refresh")) {
-                            await firestoreService.refreshListings()
-                        }
                         ForEach(firestoreService.filteredListings.isEmpty ? firestoreService.listings : firestoreService.filteredListings) { listing in
                             VStack {
                                 NavigationLink(destination: ListingDetailView(listing: listing, userId: userId)) {
                                     ImagesView(listing: listing, role: self.role, imageCache: imageCache)
-                                        .padding(.top, 5)
                                 }
+                                .buttonStyle(.plain)
                                 Text(listing.title)
-                                    .font(.headline)
-                                    .padding([.top, .leading, .trailing])
+                                    .font(.system(.headline, design: .rounded))
+                                    .foregroundStyle(AppTheme.current.text)
+                                    .padding([.top, .leading, .trailing], 4)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 
-                                if let dateRange = listing.dateRange {
-                                    Text("Date: \(dateRange)")
-                                        .font(.headline)
-                                        .padding([.leading, .trailing])
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                } else {
-                                    Text("No Date selected")
-                                }
-                                HStack {
-                                    Text(listing.location ?? "")
-                                        .font(.subheadline)
-                                        .fontWeight(.light)
-                                        .foregroundColor(Color(white: 0.7))
-                                        .padding([.leading])
-                                        .frame(alignment: .leading)
-                                    ZStack {
-                                        Image(systemName: "mappin.and.ellipse")
-                                            .foregroundColor(.black)  // Çubuk için siyah
-                                        Image(systemName: "circle.fill")
-                                            .foregroundColor(Color(red: 0.7, green: 0, blue: 0.3))  // Üstteki yuvarlak için vişne rengi
-                                            .offset(y: -10)  // Çubuğun üst kısmındaki yuvarlağı hizalıyoruz
-                                            .scaleEffect(0.5)  // Yuvarlağı uygun boyuta getiriyoruz
+                                Label {
+                                    if let dateRange = listing.dateRange {
+                                        Text("\(dateRange.lowerBound.formatted(date: .abbreviated, time: .omitted)) – \(dateRange.upperBound.formatted(date: .abbreviated, time: .omitted))")
+                                    } else {
+                                        Text("Flexible dates")
                                     }
-                                    Spacer()
+                                } icon: {
+                                    Image(systemName: "calendar")
+                                        .foregroundStyle(AppTheme.current.primary)
+                                }
+                                .font(.system(.subheadline, design: .rounded))
+                                .foregroundStyle(AppTheme.current.text.opacity(0.75))
+                                .padding(.horizontal, 4)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                if let location = listing.location, !location.isEmpty {
+                                    Label {
+                                        Text(location)
+                                    } icon: {
+                                        Image(systemName: "mappin.and.ellipse")
+                                            .foregroundStyle(AppTheme.current.accent)
+                                    }
+                                    .font(.system(.subheadline, design: .rounded))
+                                    .foregroundStyle(AppTheme.current.text.opacity(0.75))
+                                    .padding(.horizontal, 4)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                                 HStack {
                                     if let pet = listing.pets {
@@ -210,7 +209,7 @@ struct ContentView: View {
                                             Text(birdsString)
                                         }
                                         if let catsString = pet.numCats, let cats = Int(catsString), cats > 0  {
-                                            Image(systemName: "bird.fill")
+                                            Image(systemName: "cat.fill")
                                             Text(catsString)
                                         }
                                         if let othersString = pet.numOthers, let others = Int(othersString), others > 0  {
@@ -226,21 +225,23 @@ struct ContentView: View {
                             }
                         }
                     
-                        .background(Rectangle().fill(Color.white).shadow(radius: 1))
-                        .cornerRadius(10)
-                        .padding(.vertical, 5)
-                        .padding(.horizontal, 15)
+                        // Native pull-to-refresh (the old custom RefreshControl kept firing in a loop).
+                        .refreshable {
+                            await firestoreService.refreshListings()
+                        }
                         .overlay(alignment: .bottom) {
                             Button(action: {
                                 let zoomLevel = region.span.latitudeDelta
                                 mapViewModel.createAnnotations(from: firestoreService.listings, zoomLevel: zoomLevel)
                                 isMapViewPresented.toggle()
                             }, label: {
-                                Image(systemName: "map.fill")
-                                    .padding()
-                                    .background(Color.black)
+                                Label("Map", systemImage: "map.fill")
+                                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                                    .padding(.horizontal, 18)
+                                    .padding(.vertical, 12)
+                                    .background(AppTheme.current.text, in: Capsule())
                                     .foregroundColor(.white)
-                                    .cornerRadius(8)
+                                    .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
                             })
                             .padding(.bottom, 10)
                         }
@@ -254,6 +255,7 @@ struct ContentView: View {
                             DispatchQueue.main.async {
                                 userProfileService.userProfile = profile
                                 firestoreService.fetchListings(for: profile.role)
+                                firestoreService.listenToFavorites()
                             }
                         case .failure(let error):
                             print("Error fetching user profile: \(error.localizedDescription)")
@@ -284,73 +286,116 @@ struct ListingDetailView: View {
     @State private var showingImageDetail = false
     @State private var isMessagingViewPresented = false
 
+    private let theme = AppTheme.current
+    
     var body: some View {
-        VStack {
-            Text(listing.title)
-                .font(.largeTitle)
-                .padding()
-            
-            if let imageUrls = listing.imageUrls, !imageUrls.isEmpty {
-                TabView {
-                    ForEach(imageUrls.indices, id: \.self) { index in
-                        AsyncImage(url: URL(string: imageUrls[index])) { phase in
-                            switch phase {
-                            case .empty:
-                                ProgressView()
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: .infinity, maxHeight: 300)
-                                    .onTapGesture {
-                                        self.selectedImageIndex = index
-                                        self.showingImageDetail = true
-                                    }
-                            case .failure:
-                                Image(systemName: "photo")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: .infinity, maxHeight: 300)
-                            @unknown default:
-                                EmptyView()
+        ScrollView {
+            VStack(spacing: 16) {
+                if let imageUrls = listing.imageUrls?.filter({ !$0.isEmpty }), !imageUrls.isEmpty {
+                    TabView {
+                        ForEach(imageUrls.indices, id: \.self) { index in
+                            AsyncImage(url: URL(string: imageUrls[index])) { phase in
+                                switch phase {
+                                case .empty:
+                                    ProgressView()
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(maxWidth: .infinity, maxHeight: 300)
+                                        .clipped()
+                                        .onTapGesture {
+                                            self.selectedImageIndex = index
+                                            self.showingImageDetail = true
+                                        }
+                                case .failure:
+                                    Image(systemName: "photo")
+                                        .font(.largeTitle)
+                                        .foregroundStyle(theme.primary)
+                                @unknown default:
+                                    EmptyView()
+                                }
                             }
+                            .tag(index)
                         }
-                        .tag(index)
+                    }
+                    .frame(height: 300)
+                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .tabViewStyle(PageTabViewStyle())
+                    .fullScreenCover(isPresented: $showingImageDetail) {
+                        ImageDetailView(imageUrls: imageUrls, selectedImageIndex: $selectedImageIndex)
+                    }
+                } else {
+                    Image(systemName: "dog.fill")
+                        .font(.system(size: 64))
+                        .foregroundStyle(theme.primary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 200)
+                        .background(theme.secondary.opacity(0.45), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                }
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(listing.title)
+                        .font(.system(.title, design: .rounded).weight(.bold))
+                        .foregroundStyle(theme.text)
+                    
+                    if !listing.name.isEmpty {
+                        detailRow(icon: "person.crop.circle.fill", text: listing.name)
+                    }
+                    if let location = listing.location, !location.isEmpty {
+                        detailRow(icon: "mappin.and.ellipse", text: location)
+                    }
+                    if let dateRange = listing.dateRange {
+                        detailRow(icon: "calendar",
+                                  text: "\(dateRange.lowerBound.formatted(date: .abbreviated, time: .omitted)) – \(dateRange.upperBound.formatted(date: .abbreviated, time: .omitted))")
+                    } else {
+                        detailRow(icon: "calendar", text: "Flexible dates")
+                    }
+                    if !listing.environment.isEmpty {
+                        detailRow(icon: "leaf.fill", text: listing.environment)
+                    }
+                    
+                    if !listing.description.isEmpty {
+                        Divider()
+                        Text(listing.description)
+                            .font(.system(.body, design: .rounded))
+                            .foregroundStyle(theme.text.opacity(0.85))
                     }
                 }
-                .frame(height: 300)
-                .tabViewStyle(PageTabViewStyle())
-                .fullScreenCover(isPresented: $showingImageDetail) {
-                    ImageDetailView(imageUrls: imageUrls, selectedImageIndex: $selectedImageIndex)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(18)
+                .themedCard()
+                
+                // No point in applying to (messaging) your own listing.
+                if listing.ownerId != userId {
+                    Button(action: {
+                        isMessagingViewPresented.toggle()
+                    }, label: {
+                        Label("Apply", systemImage: "paperplane.fill")
+                            .themedButton()
+                    })
+                    .padding(.top, 4)
                 }
             }
-            
-            Text(listing.description)
-                .padding()
-            Text("Owner: \(listing.name)")
-                .padding()
-            if let dateRange = listing.dateRange {
-                Text("Date: \(dateRange)")
-                    .padding()
-            } else {
-                Text("No Date selected")
-            }
-            
-            Button(action: {
-                    isMessagingViewPresented.toggle()
-                }, label: {
-                    Text("Apply")
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-                })
-            }
+            .padding()
+        }
+        .pawBackground()
+        .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $isMessagingViewPresented) {
             MessagingView(userId: userId, receiverId: listing.ownerId)
         }
-            .padding(.top, 10)
+    }
+    
+    private func detailRow(icon: String, text: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .foregroundStyle(theme.primary)
+                .frame(width: 22)
+            Text(text)
+                .font(.system(.subheadline, design: .rounded))
+                .foregroundStyle(theme.text)
         }
+    }
     
     private func formattedDateRange(_ range: ClosedRange<Date>) -> String {
         let formatter = DateFormatter()

@@ -24,7 +24,7 @@ struct HorizonCalendar: View {
         self._selectedDateRange = selectedDateRange
         let today = Date()
         //let startDate = calendar.date(from: DateComponents(year: 2023, month: 01, day: 01))!
-        let endDate = calendar.date(from: DateComponents(year: 2026, month: 12, day: 31))!
+        let endDate = calendar.date(byAdding: .year, value: 2, to: today)!
         visibleDateRange = today...endDate
 
         monthDateFormatter = DateFormatter()

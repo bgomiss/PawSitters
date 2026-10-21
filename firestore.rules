@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isUser(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // User profiles
+    match /sitters/{uid} {
+      allow read: if signedIn();
+      allow write: if isUser(uid);
+    }
+    match /owners/{uid} {
+      allow read: if signedIn();
+      allow write: if isUser(uid);
+    }
+
+    // Listings: anyone signed in can browse, only the author can change them
+    match /ownersListings/{listingId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if signedIn() && resource.data.ownerId == request.auth.uid;
+    }
+    match /sittersListings/{listingId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if signedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // Per-user favorites: favorites/{uid} { listingIds: [...] }
+    match /favorites/{uid} {
+      allow read, write: if isUser(uid);
+    }
+
+    // Messages are written to both messages/{sender}/{receiver} and messages/{receiver}/{sender}
+    match /messages/{ownerId}/{otherId}/{messageId} {
+      allow read: if isUser(ownerId);
+      allow create: if signedIn()
+        && request.resource.data.senderId == request.auth.uid
+        && (request.auth.uid == ownerId || request.auth.uid == otherId);
+    }
+    match /recent_messages/{ownerId}/messages/{otherId} {
+      allow read: if isUser(ownerId);
+      allow write: if isUser(ownerId) || isUser(otherId);
+    }
+  }
+}
