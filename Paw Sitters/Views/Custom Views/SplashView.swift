@@ -44,18 +44,17 @@ struct SplashView: View {
 
                 VStack(spacing: 20) {
                     ZStack {
-                        Circle()
-                            .fill(.white)
+                        Image("Logo")
+                            .resizable()
+                            .scaledToFit()
                             .frame(width: 150, height: 150)
-                            .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
-                        Image(systemName: "pawprint.fill")
-                            .font(.system(size: 70))
-                            .foregroundStyle(theme.primary)
+                            .shadow(color: .black.opacity(0.2), radius: 12, y: 6)
                         Image(systemName: "heart.fill")
                             .font(.system(size: 26))
-                            .foregroundStyle(theme.accent)
+                            .foregroundStyle(.white)
+                            .shadow(color: .black.opacity(0.2), radius: 3)
                             .scaleEffect(heartBeat ? 1.25 : 0.9)
-                            .offset(x: 46, y: -46)
+                            .offset(x: 62, y: -62)
                     }
                     .scaleEffect(logoScale)
                     .rotationEffect(.degrees(logoRotation))

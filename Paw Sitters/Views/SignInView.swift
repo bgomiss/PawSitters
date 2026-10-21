@@ -31,9 +31,10 @@ struct SignInView: View {
         ScrollView {
             VStack(spacing: 24) {
                 VStack(spacing: 8) {
-                    Image(systemName: "pawprint.circle.fill")
-                        .font(.system(size: 64))
-                        .foregroundStyle(theme.primary)
+                    Image("Logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 72, height: 72)
                     Text("Welcome back")
                         .font(.system(size: 30, weight: .bold, design: .rounded))
                         .foregroundStyle(theme.text)
