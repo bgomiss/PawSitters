@@ -24,11 +24,15 @@ struct RoleSelectionView: View {
             Spacer()
             
             VStack(spacing: 12) {
-                Image("Logo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 110, height: 110)
-                    .shadow(color: theme.accent.opacity(0.35), radius: 10, y: 5)
+                ZStack {
+                    Circle()
+                        .fill(theme.primary)
+                        .frame(width: 110, height: 110)
+                    Image(systemName: "pawprint.fill")
+                        .font(.system(size: 52))
+                        .foregroundStyle(.white)
+                }
+                .shadow(color: theme.primary.opacity(0.35), radius: 10, y: 5)
                 
                 Text("Welcome to Paw Sitters")
                     .font(.system(size: 30, weight: .bold, design: .rounded))
