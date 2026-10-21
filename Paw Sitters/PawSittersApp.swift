@@ -17,6 +17,7 @@ struct PawSittersApp: App {
     @StateObject private var storageService = StorageService()
     @StateObject private var messagingService = MessagingService()
     @StateObject private var applicationService = ApplicationService()
+    @StateObject private var reviewService = ReviewService()
     @StateObject private var navigationPathManager = NavigationPathManager()
     @State private var isLoading = true // Define the loading state
     @State private var isSignedUp = false
@@ -61,6 +62,7 @@ struct PawSittersApp: App {
                 .environmentObject(navigationPathManager)
                 .environmentObject(messagingService)
                 .environmentObject(applicationService)
+                .environmentObject(reviewService)
                 .onOpenURL { url in
                     // Handle deep links
                     if url.scheme == "pawsitters" {

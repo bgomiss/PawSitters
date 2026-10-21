@@ -151,6 +151,7 @@ struct MainAppView: View {
     @EnvironmentObject var firestoreService: FirestoreService
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @EnvironmentObject var applicationService: ApplicationService
+    @EnvironmentObject var reviewService: ReviewService
     
     /// The signed-in user's role, available only once their profile has been loaded.
     private var signedInRole: String? {
@@ -261,6 +262,7 @@ struct MainAppView: View {
             firestoreService.stopListening()
             messagingService.clearMessages()
             applicationService.stopListening()
+            reviewService.stopListening()
             isSignedUp = false
             isLoading = false
         }

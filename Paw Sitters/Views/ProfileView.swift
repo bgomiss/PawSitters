@@ -77,6 +77,11 @@ struct ProfileView: View {
                 .themedCard()
                 .padding(.horizontal)
                 
+                if let uid = authService.user?.uid {
+                    ReviewsSection(userId: uid, title: "Your reviews")
+                        .padding(.horizontal)
+                }
+                
                 Button {
                     showingEditForm = true
                 } label: {

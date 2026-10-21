@@ -18,6 +18,7 @@ struct ContentView: View {
     @EnvironmentObject var storageService: StorageService
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @EnvironmentObject var applicationService: ApplicationService
+    @EnvironmentObject var reviewService: ReviewService
     @State private var listings: [PetSittingListing] = []
     @State private var isFullScreenCoverPresented = false
     @State private var showFilterMenu = false
@@ -162,11 +163,16 @@ struct ContentView: View {
                         ForEach(firestoreService.filteredListings.isEmpty ? firestoreService.listings : firestoreService.filteredListings) { listing in
                             VStack {
                                 ImagesView(listing: listing, role: self.role, imageCache: imageCache)
-                                Text(listing.title)
-                                    .font(.system(.headline, design: .rounded))
-                                    .foregroundStyle(AppTheme.current.text)
-                                    .padding([.top, .leading, .trailing], 4)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                HStack(alignment: .firstTextBaseline) {
+                                    Text(listing.title)
+                                        .font(.system(.headline, design: .rounded))
+                                        .foregroundStyle(AppTheme.current.text)
+                                    Spacer()
+                                    RatingBadge(summary: reviewService.summary(for: listing.ownerId))
+                                        .font(.caption)
+                                        .onAppear { reviewService.loadReviews(for: listing.ownerId) }
+                                }
+                                .padding([.top, .leading, .trailing], 4)
                                 
                                 Label {
                                     if let dateRange = listing.dateRange {
@@ -260,6 +266,7 @@ struct ContentView: View {
                                 firestoreService.fetchListings(for: profile.role)
                                 firestoreService.listenToFavorites()
                                 applicationService.startListening()
+                                reviewService.startListening()
                             }
                         case .failure(let error):
                             print("Error fetching user profile: \(error.localizedDescription)")
@@ -379,6 +386,12 @@ struct ListingDetailView: View {
                 
                 applicationSection
                     .padding(.top, 4)
+                
+                if listing.ownerId != userId && !listing.ownerId.isEmpty {
+                    ReviewsSection(userId: listing.ownerId,
+                                   title: listing.name.isEmpty ? "Reviews" : "Reviews of \(listing.name)",
+                                   limit: 3)
+                }
             }
             .padding()
         }

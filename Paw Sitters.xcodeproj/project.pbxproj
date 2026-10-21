@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A7BE2A5B336F4782E0F4AE64 /* ReviewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B044DEB0A7BE2A5B336F4782 /* ReviewsView.swift */; };
+		7BDB03AEC6C9A1957A2EB98E /* ReviewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E722AC7BDB03AEC6C9A195 /* ReviewService.swift */; };
+		A1F70891C8E0450DBF91C1C0 /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD778A16A1F70891C8E0450D /* Review.swift */; };
 		04300D68E0BD122896C27965 /* ApplicationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E680590F04300D68E0BD1228 /* ApplicationsView.swift */; };
 		58CED4A4B568E5648BAF76C5 /* ApplicationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5271268F58CED4A4B568E564 /* ApplicationService.swift */; };
 		5366534DD7BF51D6CF2280B5 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38BA6C15366534DD7BF51D6 /* Application.swift */; };
@@ -82,6 +85,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B044DEB0A7BE2A5B336F4782 /* ReviewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewsView.swift; sourceTree = "<group>"; };
+		01E722AC7BDB03AEC6C9A195 /* ReviewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewService.swift; sourceTree = "<group>"; };
+		FD778A16A1F70891C8E0450D /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
 		E680590F04300D68E0BD1228 /* ApplicationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationsView.swift; sourceTree = "<group>"; };
 		5271268F58CED4A4B568E564 /* ApplicationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationService.swift; sourceTree = "<group>"; };
 		A38BA6C15366534DD7BF51D6 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
@@ -266,6 +272,7 @@
 			isa = PBXGroup;
 			children = (
 				1C786E2B2C25BBA60012A179 /* AuthService.swift */,
+				01E722AC7BDB03AEC6C9A195 /* ReviewService.swift */,
 				5271268F58CED4A4B568E564 /* ApplicationService.swift */,
 				1C786E2D2C25BC110012A179 /* FirestoreService.swift */,
 				1C786E2F2C25BC530012A179 /* StorageService.swift */,
@@ -290,6 +297,7 @@
 				1C98E0D02C6C8FCB00433753 /* MapView.swift */,
 				1C786E3E2C25C0EA0012A179 /* MessagingView.swift */,
 				1C786E3A2C25BF070012A179 /* ProfileView.swift */,
+				B044DEB0A7BE2A5B336F4782 /* ReviewsView.swift */,
 				E680590F04300D68E0BD1228 /* ApplicationsView.swift */,
 				1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */,
 				1C786E382C25BEDF0012A179 /* SignInView.swift */,
@@ -304,6 +312,7 @@
 			children = (
 				1C9E25AF2C25E45500351632 /* UserProfile.swift */,
 				1C91A0B92C45CD1300B6C16D /* Message.swift */,
+				FD778A16A1F70891C8E0450D /* Review.swift */,
 				A38BA6C15366534DD7BF51D6 /* Application.swift */,
 				1C7BEEDD2D576868007DC3DB /* AppError.swift */,
 				1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */,
@@ -422,15 +431,18 @@
 				1C786E392C25BEDF0012A179 /* SignInView.swift in Sources */,
 				1C786E302C25BC530012A179 /* StorageService.swift in Sources */,
 				1C786E3B2C25BF070012A179 /* ProfileView.swift in Sources */,
+				A7BE2A5B336F4782E0F4AE64 /* ReviewsView.swift in Sources */,
 				04300D68E0BD122896C27965 /* ApplicationsView.swift in Sources */,
 				1C780EB22C82829600B9A936 /* ImageCacheViewModel.swift in Sources */,
 				1C786E3F2C25C0EA0012A179 /* MessagingView.swift in Sources */,
 				1C5DE4892C7CCDE000FF8835 /* FavoritesView.swift in Sources */,
 				1C786E2C2C25BBA60012A179 /* AuthService.swift in Sources */,
+				7BDB03AEC6C9A1957A2EB98E /* ReviewService.swift in Sources */,
 				58CED4A4B568E5648BAF76C5 /* ApplicationService.swift in Sources */,
 				1C9AFCFC2C5FBCD300612E6E /* ImageView.swift in Sources */,
 				1C98E0D12C6C8FCB00433753 /* MapView.swift in Sources */,
 				1C91A0BA2C45CD1300B6C16D /* Message.swift in Sources */,
+				A1F70891C8E0450DBF91C1C0 /* Review.swift in Sources */,
 				5366534DD7BF51D6CF2280B5 /* Application.swift in Sources */,
 				1C786E342C25BD6F0012A179 /* MessagingService.swift in Sources */,
 				1C98E0D32C6D465F00433753 /* MapContainerView.swift in Sources */,

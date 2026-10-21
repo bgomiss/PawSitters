@@ -50,6 +50,27 @@ service cloud.firestore {
       );
     }
 
+    // Reviews; the ID is "{applicationId}_{reviewerId}" so each party reviews a stay once.
+    // Only the two people of an accepted application can review each other. Reviews are
+    // readable by every signed-in user and can't be edited or deleted afterwards.
+    function reviewMatchesApplication(app) {
+      return app.status == 'accepted'
+        && ((app.applicantId == request.auth.uid && request.resource.data.revieweeId == app.listingOwnerId)
+          || (app.listingOwnerId == request.auth.uid && request.resource.data.revieweeId == app.applicantId));
+    }
+    match /reviews/{reviewId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.reviewerId == request.auth.uid
+        && reviewId == request.resource.data.applicationId + '_' + request.auth.uid
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+        && request.resource.data.comment is string && request.resource.data.comment.size() <= 1000
+        && exists(/databases/$(database)/documents/applications/$(request.resource.data.applicationId))
+        && reviewMatchesApplication(get(/databases/$(database)/documents/applications/$(request.resource.data.applicationId)).data);
+      allow update, delete: if false;
+    }
+
     // Per-user favorites: favorites/{uid} { listingIds: [...] }
     match /favorites/{uid} {
       allow read, write: if isUser(uid);

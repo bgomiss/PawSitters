@@ -123,8 +123,13 @@ struct ApplicationRow: View {
     let isReceived: Bool
     var onMessage: () -> Void
     @EnvironmentObject var applicationService: ApplicationService
+    @EnvironmentObject var reviewService: ReviewService
     @State private var confirmDecline = false
+    @State private var isReviewSheetPresented = false
     private let theme = AppTheme.current
+    
+    private var otherPartyId: String { isReceived ? application.applicantId : application.listingOwnerId }
+    private var otherPartyName: String { isReceived ? application.applicantName : application.listingOwnerName }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -133,10 +138,15 @@ struct ApplicationRow: View {
                     Text(application.listingTitle.isEmpty ? "Listing" : application.listingTitle)
                         .font(.system(.headline, design: .rounded))
                         .foregroundStyle(theme.text)
-                    Label(isReceived ? application.applicantName : application.listingOwnerName,
-                          systemImage: isReceived ? "person.crop.circle.fill" : "house.fill")
-                        .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(theme.text.opacity(0.7))
+                    HStack(spacing: 8) {
+                        Label(otherPartyName, systemImage: isReceived ? "person.crop.circle.fill" : "house.fill")
+                            .font(.system(.subheadline, design: .rounded))
+                            .foregroundStyle(theme.text.opacity(0.7))
+                        // Helps the owner judge an applicant (and vice versa).
+                        RatingBadge(summary: reviewService.summary(for: otherPartyId))
+                            .font(.caption)
+                    }
+                    .onAppear { reviewService.loadReviews(for: otherPartyId) }
                 }
                 Spacer()
                 StatusBadge(status: application.status)
@@ -169,12 +179,26 @@ struct ApplicationRow: View {
                         applicationService.updateStatus(of: application, to: .withdrawn)
                     }
                 }
+                if application.status == .accepted {
+                    if reviewService.hasReviewed(application) {
+                        Label("Reviewed", systemImage: "checkmark")
+                            .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                            .foregroundStyle(theme.text.opacity(0.5))
+                    } else {
+                        actionButton("Review", icon: "star.fill", color: theme.primary, filled: true) {
+                            isReviewSheetPresented = true
+                        }
+                    }
+                }
                 Spacer()
                 actionButton("Message", icon: "bubble.left.fill", color: theme.accent, filled: false, action: onMessage)
             }
         }
         .padding(14)
         .themedCard()
+        .sheet(isPresented: $isReviewSheetPresented) {
+            ReviewSheet(application: application, revieweeName: otherPartyName)
+        }
         .confirmationDialog("Decline this application?", isPresented: $confirmDecline, titleVisibility: .visible) {
             Button("Decline", role: .destructive) {
                 applicationService.updateStatus(of: application, to: .declined)
