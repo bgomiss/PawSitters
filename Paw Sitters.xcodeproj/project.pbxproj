@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04300D68E0BD122896C27965 /* ApplicationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E680590F04300D68E0BD1228 /* ApplicationsView.swift */; };
+		58CED4A4B568E5648BAF76C5 /* ApplicationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5271268F58CED4A4B568E564 /* ApplicationService.swift */; };
+		5366534DD7BF51D6CF2280B5 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38BA6C15366534DD7BF51D6 /* Application.swift */; };
 		00AF390014F1D585C419688C /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F0CB6D00AF390014F1D585 /* SplashView.swift */; };
 		7B510469E2C9A7E8FF87166F /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498330DB7B510469E2C9A7E8 /* Theme.swift */; };
 		1C3E91A12C94C1B300178D8C /* SideFilterMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3E91A02C94C1B300178D8C /* SideFilterMenu.swift */; };
@@ -79,6 +82,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E680590F04300D68E0BD1228 /* ApplicationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationsView.swift; sourceTree = "<group>"; };
+		5271268F58CED4A4B568E564 /* ApplicationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationService.swift; sourceTree = "<group>"; };
+		A38BA6C15366534DD7BF51D6 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		A9F0CB6D00AF390014F1D585 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		498330DB7B510469E2C9A7E8 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		1C3E91A02C94C1B300178D8C /* SideFilterMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideFilterMenu.swift; sourceTree = "<group>"; };
@@ -260,6 +266,7 @@
 			isa = PBXGroup;
 			children = (
 				1C786E2B2C25BBA60012A179 /* AuthService.swift */,
+				5271268F58CED4A4B568E564 /* ApplicationService.swift */,
 				1C786E2D2C25BC110012A179 /* FirestoreService.swift */,
 				1C786E2F2C25BC530012A179 /* StorageService.swift */,
 				1C786E312C25BD3D0012A179 /* UserProfileService.swift */,
@@ -283,6 +290,7 @@
 				1C98E0D02C6C8FCB00433753 /* MapView.swift */,
 				1C786E3E2C25C0EA0012A179 /* MessagingView.swift */,
 				1C786E3A2C25BF070012A179 /* ProfileView.swift */,
+				E680590F04300D68E0BD1228 /* ApplicationsView.swift */,
 				1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */,
 				1C786E382C25BEDF0012A179 /* SignInView.swift */,
 				1C786E362C25BDAE0012A179 /* SignUpView.swift */,
@@ -296,6 +304,7 @@
 			children = (
 				1C9E25AF2C25E45500351632 /* UserProfile.swift */,
 				1C91A0B92C45CD1300B6C16D /* Message.swift */,
+				A38BA6C15366534DD7BF51D6 /* Application.swift */,
 				1C7BEEDD2D576868007DC3DB /* AppError.swift */,
 				1C9E25B82C25FDAF00351632 /* PetSittingListing.swift */,
 				1C7F65222C4DAE6400E2EBE1 /* ChatUser.swift */,
@@ -413,13 +422,16 @@
 				1C786E392C25BEDF0012A179 /* SignInView.swift in Sources */,
 				1C786E302C25BC530012A179 /* StorageService.swift in Sources */,
 				1C786E3B2C25BF070012A179 /* ProfileView.swift in Sources */,
+				04300D68E0BD122896C27965 /* ApplicationsView.swift in Sources */,
 				1C780EB22C82829600B9A936 /* ImageCacheViewModel.swift in Sources */,
 				1C786E3F2C25C0EA0012A179 /* MessagingView.swift in Sources */,
 				1C5DE4892C7CCDE000FF8835 /* FavoritesView.swift in Sources */,
 				1C786E2C2C25BBA60012A179 /* AuthService.swift in Sources */,
+				58CED4A4B568E5648BAF76C5 /* ApplicationService.swift in Sources */,
 				1C9AFCFC2C5FBCD300612E6E /* ImageView.swift in Sources */,
 				1C98E0D12C6C8FCB00433753 /* MapView.swift in Sources */,
 				1C91A0BA2C45CD1300B6C16D /* Message.swift in Sources */,
+				5366534DD7BF51D6CF2280B5 /* Application.swift in Sources */,
 				1C786E342C25BD6F0012A179 /* MessagingService.swift in Sources */,
 				1C98E0D32C6D465F00433753 /* MapContainerView.swift in Sources */,
 				1C6A877B2C95F496004F138D /* SideMenuRowView.swift in Sources */,

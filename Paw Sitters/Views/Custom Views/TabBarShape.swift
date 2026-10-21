@@ -90,6 +90,7 @@ struct TabBarItem: View {
     let label: String
     let iconName: String
     var isSelected = false
+    var badge = 0
     let action: () -> Void
 
     var body: some View {
@@ -98,6 +99,17 @@ struct TabBarItem: View {
                 Image(systemName: iconName)
                     .font(.system(size: 22))
                     .scaleEffect(isSelected ? 1.1 : 1)
+                    .overlay(alignment: .topTrailing) {
+                        if badge > 0 {
+                            Text("\(badge)")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 1)
+                                .background(AppTheme.current.accent, in: Capsule())
+                                .offset(x: 10, y: -6)
+                        }
+                    }
                 Text(label)
                     .fontWeight(isSelected ? .semibold : .regular)
             }

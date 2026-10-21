@@ -16,6 +16,7 @@ struct PawSittersApp: App {
     @StateObject private var firestoreService: FirestoreService
     @StateObject private var storageService = StorageService()
     @StateObject private var messagingService = MessagingService()
+    @StateObject private var applicationService = ApplicationService()
     @StateObject private var navigationPathManager = NavigationPathManager()
     @State private var isLoading = true // Define the loading state
     @State private var isSignedUp = false
@@ -59,6 +60,7 @@ struct PawSittersApp: App {
                 .environmentObject(userProfileService)
                 .environmentObject(navigationPathManager)
                 .environmentObject(messagingService)
+                .environmentObject(applicationService)
                 .onOpenURL { url in
                     // Handle deep links
                     if url.scheme == "pawsitters" {

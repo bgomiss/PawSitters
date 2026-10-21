@@ -19,11 +19,14 @@ struct ConversationsView: View {
     @State private var receiverId: String = ""
     @State private var isMessagingViewPresented = false
     var didSelectNewUser: (String) -> () = { _ in }
+    var showsTitle = true
     
     var body: some View {
         // Shown inside ContentView's NavigationStack, so no navigation container of its own here.
         VStack {
-            ScreenTitle("Messages", icon: "bubble.left.and.bubble.right.fill")
+            if showsTitle {
+                ScreenTitle("Messages", icon: "bubble.left.and.bubble.right.fill")
+            }
             ScrollView {
                 conversationList
             }

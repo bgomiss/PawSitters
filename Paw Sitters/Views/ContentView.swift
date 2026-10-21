@@ -17,6 +17,7 @@ struct ContentView: View {
     @EnvironmentObject var messagingService: MessagingService
     @EnvironmentObject var storageService: StorageService
     @EnvironmentObject var navigationPathManager: NavigationPathManager
+    @EnvironmentObject var applicationService: ApplicationService
     @State private var listings: [PetSittingListing] = []
     @State private var isFullScreenCoverPresented = false
     @State private var showFilterMenu = false
@@ -29,6 +30,7 @@ struct ContentView: View {
     @State private var selectedTab: Tab = .listings
     @State private var selected = 0
     @State private var isExpanded = false
+    @State private var selectedListingId: String?
     enum Tab: Hashable {
         case listings, favorites, create, messages, profile
     }
@@ -81,7 +83,7 @@ struct ContentView: View {
                     selectedTab = .listings
                 }
             case .messages:
-                ConversationsView(userId: $userId)
+                MessagesHubView(userId: $userId)
             case .profile:
                 ProfileView(role: role ?? "Sitter")
             }
@@ -99,7 +101,8 @@ struct ContentView: View {
                 Text("Create")
                     .foregroundStyle(selectedTab == .create ? AppTheme.current.primary : .gray)
                 
-                TabBarItem(label: "Messages", iconName: "message.fill", isSelected: selectedTab == .messages, action: {
+                TabBarItem(label: "Messages", iconName: "message.fill", isSelected: selectedTab == .messages,
+                           badge: applicationService.pendingReceivedCount, action: {
                     selectedTab = .messages
                 })
                 TabBarItem(label: "Profile", iconName: "person.fill", isSelected: selectedTab == .profile, action: {
@@ -158,10 +161,7 @@ struct ContentView: View {
                     ScrollView {
                         ForEach(firestoreService.filteredListings.isEmpty ? firestoreService.listings : firestoreService.filteredListings) { listing in
                             VStack {
-                                NavigationLink(destination: ListingDetailView(listing: listing, userId: userId)) {
-                                    ImagesView(listing: listing, role: self.role, imageCache: imageCache)
-                                }
-                                .buttonStyle(.plain)
+                                ImagesView(listing: listing, role: self.role, imageCache: imageCache)
                                 Text(listing.title)
                                     .font(.system(.headline, design: .rounded))
                                     .foregroundStyle(AppTheme.current.text)
@@ -221,6 +221,9 @@ struct ContentView: View {
                                 .padding([.leading, .trailing])
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 }
+                            // The whole card opens the listing (the favorite button keeps its own tap).
+                            .contentShape(Rectangle())
+                            .onTapGesture { selectedListingId = listing.documentId }
                             .modifier(CollapsibleDestinationViewModifier())
                             }
                         }
@@ -256,6 +259,7 @@ struct ContentView: View {
                                 userProfileService.userProfile = profile
                                 firestoreService.fetchListings(for: profile.role)
                                 firestoreService.listenToFavorites()
+                                applicationService.startListening()
                             }
                         case .failure(let error):
                             print("Error fetching user profile: \(error.localizedDescription)")
@@ -267,6 +271,11 @@ struct ContentView: View {
             
             
             
+            .navigationDestination(item: $selectedListingId) { listingId in
+                if let listing = firestoreService.listings.first(where: { $0.documentId == listingId }) {
+                    ListingDetailView(listing: listing, userId: userId)
+                }
+            }
             .fullScreenCover(isPresented: $isMapViewPresented) {
                 MapContainerView(annotations: $mapViewModel.annotations, region: $region, listings: firestoreService.listings)
             }
@@ -285,6 +294,8 @@ struct ListingDetailView: View {
     @State private var selectedImageIndex: Int? = nil
     @State private var showingImageDetail = false
     @State private var isMessagingViewPresented = false
+    @State private var isApplySheetPresented = false
+    @EnvironmentObject var applicationService: ApplicationService
 
     private let theme = AppTheme.current
     
@@ -366,16 +377,8 @@ struct ListingDetailView: View {
                 .padding(18)
                 .themedCard()
                 
-                // No point in applying to (messaging) your own listing.
-                if listing.ownerId != userId {
-                    Button(action: {
-                        isMessagingViewPresented.toggle()
-                    }, label: {
-                        Label("Apply", systemImage: "paperplane.fill")
-                            .themedButton()
-                    })
+                applicationSection
                     .padding(.top, 4)
-                }
             }
             .padding()
         }
@@ -383,6 +386,47 @@ struct ListingDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $isMessagingViewPresented) {
             MessagingView(userId: userId, receiverId: listing.ownerId)
+        }
+        .sheet(isPresented: $isApplySheetPresented) {
+            ApplySheet(listing: listing)
+        }
+    }
+    
+    @ViewBuilder
+    private var applicationSection: some View {
+        if listing.ownerId == userId {
+            // Your own listing: show how many people applied instead of an Apply button.
+            let count = applicationService.received.filter { $0.listingId == listing.documentId && $0.status == .pending }.count
+            Label(count == 0 ? "No pending applications yet" : "\(count) pending application\(count == 1 ? "" : "s") – see Messages › Applications",
+                  systemImage: "tray.full.fill")
+                .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                .foregroundStyle(theme.text.opacity(0.75))
+        } else if let application = applicationService.application(for: listing),
+                  application.status != .withdrawn {
+            VStack(spacing: 12) {
+                HStack {
+                    Text("Your application")
+                        .font(.system(.headline, design: .rounded))
+                        .foregroundStyle(theme.text)
+                    Spacer()
+                    StatusBadge(status: application.status)
+                }
+                Button {
+                    isMessagingViewPresented = true
+                } label: {
+                    Label("Message \(listing.name.isEmpty ? "owner" : listing.name)", systemImage: "bubble.left.fill")
+                        .themedButton(theme.accent)
+                }
+            }
+            .padding(16)
+            .themedCard()
+        } else {
+            Button {
+                isApplySheetPresented = true
+            } label: {
+                Label("Apply", systemImage: "paperplane.fill")
+                    .themedButton()
+            }
         }
     }
     
