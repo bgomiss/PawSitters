@@ -6,6 +6,9 @@
 //
 import SwiftUI
 
+/// Main-actor isolated so the download tasks below never touch
+/// `loadingTasks` / `images` from several threads at once.
+@MainActor
 class ImageCacheViewModel: ObservableObject {
     private let cache = NSCache<NSString, UIImage>()
     private var loadingTasks: [String: Task<Void, Never>] = [:]
@@ -21,14 +24,12 @@ class ImageCacheViewModel: ObservableObject {
         
         // Check cache first
         if let cachedImage = cache.object(forKey: urlString as NSString) {
-            DispatchQueue.main.async {
-                self.images[urlString] = cachedImage
-            }
+            images[urlString] = cachedImage
             return
         }
         
-        // Cancel any existing task for this URL
-        loadingTasks[urlString]?.cancel()
+        // Already downloading this URL
+        if loadingTasks[urlString] != nil { return }
         
         // Create new task
         let task = Task {
@@ -37,10 +38,8 @@ class ImageCacheViewModel: ObservableObject {
             do {
                 let (data, _) = try await URLSession.shared.data(from: url)
                 if let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self.cache.setObject(image, forKey: urlString as NSString)
-                        self.images[urlString] = image
-                    }
+                    cache.setObject(image, forKey: urlString as NSString)
+                    images[urlString] = image
                 }
             } catch {
                 print("Failed to load image: \(error)")
