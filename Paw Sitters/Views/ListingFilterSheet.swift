@@ -121,27 +121,13 @@ struct ListingFilterSheet: View {
                 )
 
                 if !locationViewModel.citySuggestions.isEmpty && locationViewModel.location != pickedLocation {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(locationViewModel.citySuggestions.prefix(5)) { city in
-                            Button {
-                                pickedLocation = city.name
-                                locationViewModel.location = city.name
-                                draft.location = city.name
-                                locationViewModel.citySuggestions = []
-                                isLocationFocused = false
-                            } label: {
-                                Label(city.name, systemImage: "mappin")
-                                    .font(.system(.subheadline, design: .rounded))
-                                    .foregroundStyle(theme.text)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 10)
-                            }
-                            .buttonStyle(.plain)
-                            Divider().padding(.leading, 14)
-                        }
+                    CitySuggestionList(cities: locationViewModel.citySuggestions) { city in
+                        pickedLocation = city.name
+                        locationViewModel.location = city.name
+                        draft.location = city.name
+                        locationViewModel.citySuggestions = []
+                        isLocationFocused = false
                     }
-                    .background(Color.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     .padding(.top, 6)
                 }
             }

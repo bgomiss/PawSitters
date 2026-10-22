@@ -53,34 +53,84 @@ struct CreateListingView: View {
         self.role = role
     }
     
+    @FocusState private var focusedField: Field?
+    /// The suggestion the user picked; hides suggestions until they type again.
+    @State private var pickedLocation: String?
+    private let theme = AppTheme.current
+    
+    private enum Field: Hashable { case title, description, location }
+    
+    /// Scroll target a little below the top, so the open card clears the status
+    /// bar and the previous card's summary stays visible above it.
+    private static let scrollAnchor = UnitPoint(x: 0.5, y: 0.08)
+    
+    private static let petKinds: [(label: String, icon: String, keyPath: WritableKeyPath<PetCount, Int>)] = [
+        ("Dogs", "dog.fill", \.dogs), ("Cats", "cat.fill", \.cats), ("Birds", "bird.fill", \.birds), ("Rabbits", "hare.fill", \.hares),
+        ("Fish", "fish.fill", \.fish), ("Other pets", "pawprint.fill", \.others)
+    ]
+    
     var body: some View {
-        ScrollView {
-            VStack {
-                ForEach(ListingSection.allCases, id: \.self) { section in
-                    sectionView(for: section)
-                }
-                
-                imageSection
-                
-                Button {
-                    viewModel.publishListing(role: role ?? userProfileService.userProfile?.role ?? "Owner",
-                                             ownerName: userProfileService.userProfile?.name ?? "",
-                                             authService: authService, firestoreService: firestoreService, storageService: storageService)
-                } label: {
-                    Group {
-                        if viewModel.isPublishing {
-                            ProgressView().tint(.white)
-                        } else {
-                            Label("Publish", systemImage: "paperplane.fill")
-                        }
+        // Airbnb-style: one card open at a time, the others show a one-line summary.
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 12) {
+                    ForEach(ListingSection.allCases, id: \.self) { section in
+                        sectionCard(for: section)
+                            .id(section)
                     }
-                    .themedButton(AppTheme.current.accent)
+                    
+                    imageSection
+                    
+                    Button {
+                        focusedField = nil
+                        viewModel.publishListing(role: role ?? userProfileService.userProfile?.role ?? "Owner",
+                                                 ownerName: userProfileService.userProfile?.name ?? "",
+                                                 authService: authService, firestoreService: firestoreService, storageService: storageService)
+                    } label: {
+                        Group {
+                            if viewModel.isPublishing {
+                                ProgressView().tint(.white)
+                            } else {
+                                Label("Publish", systemImage: "paperplane.fill")
+                            }
+                        }
+                        .themedButton(AppTheme.current.accent)
+                    }
+                    .disabled(viewModel.isPublishing)
+                    .padding(.top, 8)
                 }
-                .disabled(viewModel.isPublishing)
-                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                // Room to scroll the last card above the keyboard and the tab bar.
+                .padding(.bottom, 140)
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .onChange(of: viewModel.selectedOption) { _, section in
+                focusedField = defaultField(for: section)
+                // Wait for the expand animation, then bring the open card to the top.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    withAnimation(.snappy) { proxy.scrollTo(section, anchor: Self.scrollAnchor) }
+                }
+            }
+            .onChange(of: focusedField) { _, field in
+                // The keyboard shrinks the visible area; keep the active card in view.
+                guard field != nil else { return }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    withAnimation(.snappy) { proxy.scrollTo(viewModel.selectedOption, anchor: Self.scrollAnchor) }
+                }
             }
         }
         .navigationBarTitle("Create Listing")
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                if let next = nextSection(after: viewModel.selectedOption) {
+                    Button("Next") { open(next) }
+                }
+                Spacer()
+                Button("Done") { focusedField = nil }
+                    .fontWeight(.semibold)
+            }
+        }
         .alert(isPresented: $viewModel.showingAlert) {
             Alert(title: Text(viewModel.alertTitle),
                   message: Text(viewModel.alertMessage),
@@ -88,6 +138,7 @@ struct CreateListingView: View {
                 if viewModel.alertTitle == "Success" {
                     viewModel.reset()
                     selectedDateRange = nil
+                    pickedLocation = nil
                     onPublished()
                 }
             })
@@ -97,156 +148,321 @@ struct CreateListingView: View {
         }
     }
     
+    // MARK: - Cards
+    
     @ViewBuilder
-    func sectionView(for section: ListingSection) -> some View {
-        VStack(alignment: .leading) {
-            Text(section.rawValue)
-                .font(.title2)
-                .fontWeight(.semibold)
-            
-            if viewModel.selectedOption == section {
+    private func sectionCard(for section: ListingSection) -> some View {
+        let isOpen = viewModel.selectedOption == section
+        VStack(alignment: .leading, spacing: 14) {
+            if isOpen {
+                Text(question(for: section))
+                    .font(.system(.title3, design: .rounded).weight(.bold))
+                    .foregroundStyle(theme.text)
                 switch section {
                 case .title: titleSection
-                case .date:  dateSection
-                case .pets:  petsSection
+                case .date: dateSection
+                case .pets: petsSection
                 case .description: descriptionSection
                 case .location: locationSection
                 case .environment: environmentSection
                 }
-                } else {
-                    CollapsedPickerView(headline: section.rawValue, placeholder: placeholderFor(section))
+                if let next = nextSection(after: section) {
+                    HStack {
+                        Spacer()
+                        Button {
+                            open(next)
+                        } label: {
+                            Label("Next", systemImage: "arrow.right")
+                                .labelStyle(TrailingIconLabelStyle())
+                                .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 9)
+                                .foregroundStyle(.white)
+                                .background(theme.text, in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
-            }
-            .modifier(CollapsibleDestinationViewModifier())
-            .frame(height: viewModel.selectedOption == section ? nil : 64)
-            .onTapGesture {
-                withAnimation(.snappy) {
-                    viewModel.selectedOption = section
+            } else {
+                Button {
+                    open(section)
+                } label: {
+                    CollapsedPickerView(headline: section.rawValue,
+                                        placeholder: summary(for: section) ?? placeholderFor(section),
+                                        isFilled: summary(for: section) != nil)
+                }
+                .buttonStyle(.plain)
             }
         }
+        .padding(isOpen ? 18 : 16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white, in: RoundedRectangle(cornerRadius: isOpen ? 22 : 16, style: .continuous))
+        .shadow(color: .black.opacity(isOpen ? 0.12 : 0.06), radius: isOpen ? 14 : 6, y: isOpen ? 6 : 2)
     }
     
     var titleSection: some View {
-        TextField("Enter Title", text: $viewModel.listingDetails.title)
-            .textFieldStyle(RoundedBorderTextFieldStyle())
+        // Single line so the return key moves on instead of adding a new line.
+        TextField("e.g. Dog sitter needed for two labradors", text: $viewModel.listingDetails.title)
+            .focused($focusedField, equals: .title)
+            .submitLabel(.next)
+            .onSubmit { open(.date) }
+            .modifier(ThemedInputModifier())
     }
     
     var dateSection: some View {
-        VStack {
-           // if viewModel.listingDetails.dateRange != nil {
-                HorizonCalendar(calendar: calendar, monthsLayout: .vertical, selectedDateRange: $selectedDateRange)
-           // }
+        VStack(alignment: .leading, spacing: 10) {
+            HorizonCalendar(calendar: calendar, monthsLayout: .vertical, selectedDateRange: $selectedDateRange)
+                .frame(height: 340)
+            if selectedDateRange != nil {
+                Button("Clear dates") { selectedDateRange = nil }
+                    .font(.system(.footnote, design: .rounded).weight(.semibold))
+                    .foregroundStyle(theme.accent)
+            }
         }
         .onChange(of: selectedDateRange) { _, newValue in
-                viewModel.listingDetails.dateRange = newValue
-            }
+            viewModel.listingDetails.dateRange = newValue
+        }
     }
     
     var petsSection: some View {
-        VStack(alignment: .leading) {
-            ForEach(["Dogs", "Birds", "Hares", "Fish", "Others"], id: \.self) { pet in
-                Stepper("\(pet): \(count(for: pet))", value: binding(for: pet), in: 0...10)
+        VStack(spacing: 0) {
+            ForEach(Self.petKinds, id: \.label) { kind in
+                HStack {
+                    Label(kind.label, systemImage: kind.icon)
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(theme.text)
+                    Spacer()
+                    Stepper(value: $viewModel.listingDetails.pets[dynamicMember: kind.keyPath], in: 0...20) {
+                        Text("\(viewModel.listingDetails.pets[keyPath: kind.keyPath])")
+                            .font(.system(.subheadline, design: .rounded).weight(.semibold).monospacedDigit())
+                            .foregroundStyle(theme.text)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    .frame(width: 150)
+                }
+                .padding(.vertical, 6)
+                if kind.label != Self.petKinds.last?.label { Divider() }
             }
         }
     }
     
     var descriptionSection: some View {
-        VStack(alignment: .leading) {
-            TextEditor(text: $viewModel.listingDetails.description)
-                .frame(height: 100)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.gray, lineWidth: 1)
-                )
-            }
-        .onTapGesture {
-            withAnimation(.snappy) { viewModel.selectedOption = .description }
-        }
+        TextField(role == "Sitter" ? "Your experience with pets and what you offer"
+                                   : "Your home, your pets and their routine",
+                  text: $viewModel.listingDetails.description, axis: .vertical)
+            .lineLimit(4...10)
+            .focused($focusedField, equals: .description)
+            .modifier(ThemedInputModifier())
     }
     
     var locationSection: some View {
-        VStack(alignment: .leading) {
-            TextField("Enter Location", text: $locationViewModel.location)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            
-            if !locationViewModel.citySuggestions.isEmpty {
-                List(locationViewModel.citySuggestions) { city in
-                    Text(city.name)
-                        .onTapGesture {
-                            locationViewModel.location = city.name
-                            locationViewModel.fetchCoordinates(for: city)
-                            locationViewModel.citySuggestions.removeAll()
-                        }
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 10) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(theme.text.opacity(0.5))
+                TextField("Search a city", text: $locationViewModel.location)
+                    .textInputAutocapitalization(.words)
+                    .autocorrectionDisabled()
+                    .focused($focusedField, equals: .location)
+                    .submitLabel(.done)
+                    .onSubmit { focusedField = nil }
+                if !locationViewModel.location.isEmpty {
+                    Button {
+                        locationViewModel.location = ""
+                        locationViewModel.selectedCityCoordinates = nil
+                        pickedLocation = nil
+                        focusedField = .location
+                    } label: {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(theme.text.opacity(0.35))
+                    }
+                    .accessibilityLabel("Clear city")
                 }
-                .frame(height: 100)
+            }
+            .modifier(ThemedInputModifier())
+            
+            if !locationViewModel.citySuggestions.isEmpty, locationViewModel.location != pickedLocation,
+               !locationViewModel.location.isEmpty {
+                CitySuggestionList(cities: locationViewModel.citySuggestions) { city in
+                    pickedLocation = city.name
+                    locationViewModel.location = city.name
+                    locationViewModel.fetchCoordinates(for: city)
+                    locationViewModel.citySuggestions = []
+                    focusedField = nil
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            } else if let pickedLocation, pickedLocation == locationViewModel.location {
+                Label("Shown around \(ListingFilters.city(from: pickedLocation)) on the map", systemImage: "checkmark.circle.fill")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(theme.primary)
             }
         }
+        .animation(.snappy, value: locationViewModel.citySuggestions.count)
     }
     
     var environmentSection: some View {
-        Picker("Environment", selection: $viewModel.listingDetails.environment) {
-            ForEach(["Beachside", "Countryside", "Forestside", "Urban", "Suburban", "Mountainous", "Lakeside", "Rural", "Coastal", "Desert"], id: \.self) { environment in
-                Text(environment).tag(environment)
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 8)], spacing: 8) {
+            ForEach(ListingFilters.environments, id: \.name) { option in
+                let isSelected = viewModel.listingDetails.environment == option.name
+                Button {
+                    viewModel.listingDetails.environment = isSelected ? "" : option.name
+                } label: {
+                    VStack(spacing: 6) {
+                        Image(systemName: option.icon).font(.system(size: 18))
+                        Text(option.name)
+                            .font(.system(.caption, design: .rounded).weight(.semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .foregroundStyle(isSelected ? .white : theme.text)
+                    .background(isSelected ? theme.primary : theme.background,
+                                in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+                .buttonStyle(.plain)
             }
         }
-        .pickerStyle(MenuPickerStyle())
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     var imageSection: some View {
-        VStack {
-            if !viewModel.listingDetails.images.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(viewModel.listingDetails.images, id: \.self) { image in
-                            Image(uiImage: image)
-                                .resizable()
-                                .frame(width: 100, height: 100)
-                                .scaledToFill()
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                .padding(4)
-                        }
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Photos")
+                .font(.system(.headline, design: .rounded))
+                .foregroundStyle(theme.text)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(viewModel.listingDetails.images.indices, id: \.self) { index in
+                        Image(uiImage: viewModel.listingDetails.images[index])
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 96, height: 96)
+                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .overlay(alignment: .topTrailing) {
+                                Button {
+                                    viewModel.listingDetails.images.remove(at: index)
+                                } label: {
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundStyle(.white)
+                                        .frame(width: 22, height: 22)
+                                        .background(.black.opacity(0.6), in: Circle())
+                                }
+                                .padding(5)
+                                .accessibilityLabel("Remove photo")
+                            }
                     }
+                    Button {
+                        viewModel.showingImagePicker = true
+                    } label: {
+                        VStack(spacing: 6) {
+                            Image(systemName: "plus").font(.system(size: 22, weight: .semibold))
+                            Text("Add").font(.caption.weight(.semibold))
+                        }
+                        .foregroundStyle(theme.primary)
+                        .frame(width: 96, height: 96)
+                        .background(theme.background, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .strokeBorder(theme.secondary, style: StrokeStyle(lineWidth: 1.5, dash: [5])))
+                    }
+                    .buttonStyle(.plain)
                 }
             }
-            
-            Button("Choose Listing Images") {
-                viewModel.showingImagePicker = true
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+    }
+    
+    // MARK: - Helpers
+    
+    private func open(_ section: ListingSection) {
+        withAnimation(.snappy) { viewModel.selectedOption = section }
+    }
+    
+    private func nextSection(after section: ListingSection) -> ListingSection? {
+        let all = ListingSection.allCases
+        guard let index = all.firstIndex(of: section), index + 1 < all.count else { return nil }
+        return all[index + 1]
+    }
+    
+    private func defaultField(for section: ListingSection) -> Field? {
+        switch section {
+        case .title: return .title
+        case .description: return .description
+        case .location: return .location
+        default: return nil
+        }
+    }
+    
+    private func question(for section: ListingSection) -> String {
+        switch section {
+        case .title: return "Give your listing a title"
+        case .date: return "When?"
+        case .pets: return role == "Sitter" ? "Which pets can you care for?" : "Which pets need care?"
+        case .description: return "Tell people more"
+        case .location: return "Where?"
+        case .environment: return "What's the area like?"
+        }
+    }
+    
+    /// One-line summary for a closed card, or nil when nothing is filled in yet.
+    private func summary(for section: ListingSection) -> String? {
+        let details = viewModel.listingDetails
+        switch section {
+        case .title:
+            let title = details.title.trimmingCharacters(in: .whitespacesAndNewlines)
+            return title.isEmpty ? nil : title
+        case .date:
+            guard let range = details.dateRange else { return nil }
+            return "\(range.lowerBound.formatted(.dateTime.day().month(.abbreviated))) – \(range.upperBound.formatted(.dateTime.day().month(.abbreviated)))"
+        case .pets:
+            let parts = Self.petKinds.compactMap { kind -> String? in
+                let count = details.pets[keyPath: kind.keyPath]
+                return count > 0 ? "\(count) \(kind.label.lowercased())" : nil
             }
-        }
-        .modifier(CollapsibleDestinationViewModifier())
-    }
-    
-    private func count(for pet: String) -> Int {
-        switch pet {
-        case "Dogs": return viewModel.listingDetails.pets.dogs
-        case "Birds": return viewModel.listingDetails.pets.birds
-        case "Hares": return viewModel.listingDetails.pets.hares
-        case "Fish": return viewModel.listingDetails.pets.fish
-        case "Others": return viewModel.listingDetails.pets.others
-        default: return 0
-        }
-    }
-    
-    private func binding(for pet: String) -> Binding<Int> {
-        switch pet {
-        case "Dogs": return $viewModel.listingDetails.pets.dogs
-        case "Birds": return $viewModel.listingDetails.pets.birds
-        case "Hares": return $viewModel.listingDetails.pets.hares
-        case "Fish": return $viewModel.listingDetails.pets.fish
-        case "Others": return $viewModel.listingDetails.pets.others
-        default: return .constant(0)
+            return parts.isEmpty ? nil : parts.joined(separator: ", ")
+        case .description:
+            let text = details.description.trimmingCharacters(in: .whitespacesAndNewlines)
+            return text.isEmpty ? nil : text
+        case .location:
+            let city = locationViewModel.location.trimmingCharacters(in: .whitespacesAndNewlines)
+            return city.isEmpty ? nil : city
+        case .environment:
+            return details.environment.isEmpty ? nil : details.environment
         }
     }
     
     private func placeholderFor(_ section: ListingSection) -> String {
         switch section {
-        case .title: return "Enter Title"
-        case .date: return "Choose Date"
-        case .pets: return "Number of Pets"
-        case .description: return "Write a Description"
-        case .location: return "Where's your Location?"
-        case .environment: return "Choose an Environment"
+        case .title: return "Add a title"
+        case .date: return "Add dates"
+        case .pets: return "Add pets"
+        case .description: return "Add details"
+        case .location: return "Add a city"
+        case .environment: return "Choose one"
+        }
+    }
+}
+
+/// Text field look used across the create-listing cards.
+struct ThemedInputModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.system(.body, design: .rounded))
+            .padding(12)
+            .background(AppTheme.current.background, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(AppTheme.current.secondary.opacity(0.6), lineWidth: 1))
+    }
+}
+
+/// Puts a label's icon after its title ("Next →").
+struct TrailingIconLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 6) {
+            configuration.title
+            configuration.icon
         }
     }
 }
@@ -274,27 +490,28 @@ struct CollapsibleDestinationViewModifier: ViewModifier {
 }
 
 struct CollapsedPickerView: View {
-    
     let headline: String
     let placeholder: String
-    @State private var title = ""
+    var isFilled = false
     
     var body: some View {
-        VStack(alignment: .leading) {
-           HStack {
-             Text(headline)
-                .foregroundStyle(.gray)
-               
-               Spacer()
-               
-               Text(placeholder)
-           }
-           .fontWeight(.semibold)
-           .font(.subheadline)
+        HStack(spacing: 12) {
+            Text(headline)
+                .foregroundStyle(AppTheme.current.text.opacity(0.55))
+            Spacer(minLength: 8)
+            Text(placeholder)
+                .foregroundStyle(isFilled ? AppTheme.current.text : AppTheme.current.text.opacity(0.4))
+                .lineLimit(1)
+            if isFilled {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(AppTheme.current.primary)
+            }
         }
+        .font(.system(.subheadline, design: .rounded).weight(.semibold))
+        .contentShape(Rectangle())
     }
 }
-            
+
 //                    if section.isEnabled {
 //                        switch section {
 //                        case .title:

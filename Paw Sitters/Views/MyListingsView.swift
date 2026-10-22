@@ -287,24 +287,12 @@ struct EditListingSheet: View {
                     .focused($focusedField, equals: .location)
             }
             if focusedField == .location && !locationViewModel.citySuggestions.isEmpty {
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(locationViewModel.citySuggestions.prefix(4)) { city in
-                        Button {
-                            locationViewModel.location = city.name
-                            locationViewModel.fetchCoordinates(for: city)
-                            locationViewModel.citySuggestions = []
-                            focusedField = nil
-                        } label: {
-                            Label(city.name, systemImage: "mappin")
-                                .font(.system(.subheadline, design: .rounded))
-                                .foregroundStyle(theme.text)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(10)
-                        }
-                        .buttonStyle(.plain)
-                    }
+                CitySuggestionList(cities: locationViewModel.citySuggestions) { city in
+                    locationViewModel.location = city.name
+                    locationViewModel.fetchCoordinates(for: city)
+                    locationViewModel.citySuggestions = []
+                    focusedField = nil
                 }
-                .background(Color.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .padding(.top, 6)
             }
         }

@@ -42,6 +42,7 @@ class CreateListingViewModel: ObservableObject {
         let pets = [
             "birds": listingDetails.pets.birds,
             "dogs": listingDetails.pets.dogs,
+            "cats": listingDetails.pets.cats,
             "hares": listingDetails.pets.hares,
             "fish": listingDetails.pets.fish,
             "others": listingDetails.pets.others
@@ -122,6 +123,7 @@ struct ListingDetails {
 
 struct PetCount {
     var dogs = 0
+    var cats = 0
     var birds = 0
     var hares = 0
     var fish = 0

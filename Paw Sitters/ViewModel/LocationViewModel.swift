@@ -20,6 +20,8 @@ class LocationViewModel: NSObject, ObservableObject {
     override init() {
         super.init()
         completer.resultTypes = .address
+        // Suggest cities and towns only, not streets.
+        completer.addressFilter = MKAddressFilter(including: [.locality, .administrativeArea])
         completer.delegate = self
 
         $location
@@ -52,7 +54,7 @@ class LocationViewModel: NSObject, ObservableObject {
 
 extension LocationViewModel: MKLocalSearchCompleterDelegate {
     func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
-        self.citySuggestions = completer.results.map { City(name: $0.title) }
+        self.citySuggestions = completer.results.map { City(name: $0.title, subtitle: $0.subtitle) }
     }
 
     func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {

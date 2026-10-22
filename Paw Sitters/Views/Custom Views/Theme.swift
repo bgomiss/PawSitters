@@ -204,3 +204,52 @@ struct EmptyStateView: View {
         .frame(maxWidth: .infinity)
     }
 }
+
+/// Themed list of city suggestions shown under a location field.
+struct CitySuggestionList: View {
+    let cities: [City]
+    var onSelect: (City) -> Void
+    private let theme = AppTheme.current
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(cities.prefix(5).enumerated()), id: \.element.id) { index, city in
+                Button {
+                    onSelect(city)
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "mappin.and.ellipse")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(theme.primary)
+                            .frame(width: 32, height: 32)
+                            .background(theme.secondary.opacity(0.35), in: Circle())
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(city.displayName)
+                                .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                                .foregroundStyle(theme.text)
+                            if !city.displaySubtitle.isEmpty {
+                                Text(city.displaySubtitle)
+                                    .font(.system(.caption, design: .rounded))
+                                    .foregroundStyle(theme.text.opacity(0.55))
+                            }
+                        }
+                        Spacer(minLength: 0)
+                        Image(systemName: "arrow.up.left")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(theme.text.opacity(0.3))
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 9)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                if index < min(cities.count, 5) - 1 {
+                    Divider().padding(.leading, 56)
+                }
+            }
+        }
+        .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(theme.secondary.opacity(0.6), lineWidth: 1))
+        .shadow(color: .black.opacity(0.06), radius: 6, y: 3)
+    }
+}
