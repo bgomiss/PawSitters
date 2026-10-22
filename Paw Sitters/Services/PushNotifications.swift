@@ -33,6 +33,16 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         PushNotifications.save(token: fcmToken)
     }
 
+    // Tapping a notification opens the matching screen (see NotificationRouter).
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let destination = NotificationRouter.Destination(userInfo: response.notification.request.content.userInfo)
+        DispatchQueue.main.async {
+            NotificationRouter.shared.pending = destination
+            completionHandler()
+        }
+    }
+    
     // Show notifications as banners even while the app is open.
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -81,5 +91,43 @@ enum PushNotifications {
             guard let token else { return }
             collection.document(uid).updateData(["tokens": FieldValue.arrayRemove([token])])
         }
+    }
+}
+
+/// Remembers which screen a tapped notification should open until the main
+/// screen is ready to show it (also covers launching the app from a notification).
+final class NotificationRouter: ObservableObject {
+    static let shared = NotificationRouter()
+    
+    enum Destination: Equatable {
+        case conversation(userId: String)
+        case applications(sent: Bool)
+        case reviews
+        case report(id: String)
+        
+        /// Matches the `data` the Cloud Functions attach to each notification.
+        init?(userInfo: [AnyHashable: Any]) {
+            switch userInfo["type"] as? String {
+            case "message":
+                guard let sender = userInfo["senderId"] as? String, !sender.isEmpty else { return nil }
+                self = .conversation(userId: sender)
+            case "application": self = .applications(sent: userInfo["box"] as? String == "sent")
+            case "review": self = .reviews
+            case "report":
+                guard let id = userInfo["reportId"] as? String else { return nil }
+                self = .report(id: id)
+            default: return nil
+            }
+        }
+    }
+    
+    @Published var pending: Destination?
+    /// Set when the Messages tab should open on its Applications section
+    /// (true: the user's sent applications, false: received ones).
+    @Published var showApplications: Bool?
+    
+    /// Firebase console page for a report, for moderators.
+    static func consoleURL(forReport id: String) -> URL {
+        URL(string: "https://console.firebase.google.com/project/pawsittersapp/firestore/databases/-default-/data/~2Freports~2F\(id)")!
     }
 }

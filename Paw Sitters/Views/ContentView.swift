@@ -32,6 +32,14 @@ struct ContentView: View {
     )
     @State private var selectedTab: Tab = .listings
     @State private var selectedListingId: String?
+    @ObservedObject private var notificationRouter = NotificationRouter.shared
+    @Environment(\.openURL) private var openURL
+    /// Conversation opened from a tapped message notification.
+    @State private var notificationChat: NotificationChat?
+    
+    struct NotificationChat: Identifiable {
+        let id: String
+    }
     enum Tab: Hashable {
         case listings, favorites, create, messages, profile
     }
@@ -49,6 +57,30 @@ struct ContentView: View {
                         .presentationDetents([.medium, .large])
                         .presentationDragIndicator(.visible)
                 }
+                .fullScreenCover(item: $notificationChat) { chat in
+                    MessagingView(userId: userId, receiverId: chat.id)
+                }
+                .onAppear { openPendingNotification() }
+                .onChange(of: notificationRouter.pending) { _, _ in openPendingNotification() }
+        }
+    }
+    
+    /// Opens the screen for a tapped push notification.
+    private func openPendingNotification() {
+        guard let destination = notificationRouter.pending else { return }
+        notificationRouter.pending = nil
+        isFilterSheetPresented = false
+        switch destination {
+        case .conversation(let senderId):
+            selectedTab = .messages
+            notificationChat = NotificationChat(id: senderId)
+        case .applications(let sent):
+            notificationRouter.showApplications = sent
+            selectedTab = .messages
+        case .reviews:
+            selectedTab = .profile
+        case .report(let id):
+            openURL(NotificationRouter.consoleURL(forReport: id))
         }
     }
     

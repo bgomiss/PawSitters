@@ -12,7 +12,9 @@ import SwiftUI
 struct MessagesHubView: View {
     @Binding var userId: String
     @EnvironmentObject var applicationService: ApplicationService
+    @ObservedObject private var notificationRouter = NotificationRouter.shared
     @State private var section: Section = .chats
+    @State private var requestedBox: ApplicationsView.Box?
 
     enum Section: String, CaseIterable {
         case chats = "Chats"
@@ -37,14 +39,25 @@ struct MessagesHubView: View {
             case .chats:
                 ConversationsView(userId: $userId, showsTitle: false)
             case .applications:
-                ApplicationsView(userId: userId)
+                ApplicationsView(userId: userId, requestedBox: $requestedBox)
             }
         }
+        .onAppear { showApplicationsIfRequested() }
+        .onChange(of: notificationRouter.showApplications) { _, _ in showApplicationsIfRequested() }
+    }
+    
+    private func showApplicationsIfRequested() {
+        guard let sent = notificationRouter.showApplications else { return }
+        notificationRouter.showApplications = nil
+        requestedBox = sent ? .sent : .received
+        section = .applications
     }
 }
 
 struct ApplicationsView: View {
     let userId: String
+    /// Box to switch to once (set when opening from a notification).
+    @Binding var requestedBox: Box?
     @EnvironmentObject var applicationService: ApplicationService
     @EnvironmentObject var moderationService: ModerationService
     @EnvironmentObject var messagingService: MessagingService
@@ -111,12 +124,22 @@ struct ApplicationsView: View {
                 }
             }
         }
+        .onAppear { applyRequestedBox() }
+        .onChange(of: requestedBox) { _, _ in applyRequestedBox() }
         .fullScreenCover(item: $chatPartner) { partner in
             MessagingView(userId: userId, receiverId: partner.id)
                 .environmentObject(messagingService)
                 .environmentObject(storageService)
                 .environmentObject(userProfileService)
         }
+    }
+}
+
+extension ApplicationsView {
+    fileprivate func applyRequestedBox() {
+        guard let requested = requestedBox else { return }
+        box = requested
+        requestedBox = nil
     }
 }
 

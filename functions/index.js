@@ -69,13 +69,13 @@ exports.onApplicationWritten = onDocumentWritten("applications/{applicationId}",
   if (after.status === "pending") {
     // New application, or re-applying after withdrawing: tell the listing owner.
     await notifyUser(after.listingOwnerId, "New application",
-      `${after.applicantName || "Someone"} applied to “${after.listingTitle}”`, data);
+      `${after.applicantName || "Someone"} applied to “${after.listingTitle}”`, { ...data, box: "received" });
   } else if (after.status === "accepted" || after.status === "declined") {
     // The owner decided: tell the applicant.
     const accepted = after.status === "accepted";
     await notifyUser(after.applicantId, accepted ? "Application accepted 🎉" : "Application declined",
       `${after.listingOwnerName || "The owner"} ${accepted ? "accepted" : "declined"} your application for “${after.listingTitle}”`,
-      data);
+      { ...data, box: "sent" });
   }
 });
 
