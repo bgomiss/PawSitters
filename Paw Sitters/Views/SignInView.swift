@@ -16,6 +16,7 @@ struct SignInView: View {
     @State private var showingAlert = false
     @State private var alertMessage = ""
     @State private var role: String?
+    @State private var isResetSheetPresented = false
     @EnvironmentObject var authService: AuthService
     @EnvironmentObject var userProfileService: UserProfileService
     
@@ -51,6 +52,13 @@ struct SignInView: View {
                         .textContentType(.emailAddress)
                     ThemedTextField(icon: "lock.fill", placeholder: "Password", text: $password, isSecure: true)
                         .textContentType(.password)
+                    
+                    Button("Forgot password?") {
+                        isResetSheetPresented = true
+                    }
+                    .font(.system(.footnote, design: .rounded).weight(.semibold))
+                    .foregroundStyle(theme.primary)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .padding(20)
                 .themedCard()
@@ -79,6 +87,11 @@ struct SignInView: View {
                 email = credentials.email
                 password = credentials.password
             }
+        }
+        .sheet(isPresented: $isResetSheetPresented) {
+            PasswordResetSheet(email: email.trimmingCharacters(in: .whitespacesAndNewlines))
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
         .alert("Sign In Failed", isPresented: $showingAlert) {
             Button("OK", role: .cancel) { }
@@ -116,6 +129,100 @@ struct SignInView: View {
                 alertMessage = error.localizedDescription
                 showingAlert = true
             }
+        }
+    }
+}
+
+/// Asks for the account's email and sends a password reset link.
+struct PasswordResetSheet: View {
+    @State var email: String
+    @EnvironmentObject var authService: AuthService
+    @Environment(\.dismiss) private var dismiss
+    @State private var isSending = false
+    @State private var sentTo: String?
+    @State private var errorMessage: String?
+    private let theme = AppTheme.current
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 18) {
+                if let sentTo {
+                    Image(systemName: "envelope.badge.fill")
+                        .font(.system(size: 50))
+                        .foregroundStyle(theme.primary)
+                    Text("Check your inbox")
+                        .font(.system(.title3, design: .rounded).weight(.bold))
+                        .foregroundStyle(theme.text)
+                    Text("If an account exists for \(sentTo), we've sent a link to reset your password. It can take a few minutes; check your spam folder too.")
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(theme.text.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                    Button("Back to sign in") { dismiss() }
+                        .themedButton()
+                } else {
+                    Text("Enter the email you signed up with and we'll send you a link to choose a new password.")
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(theme.text.opacity(0.75))
+                        .multilineTextAlignment(.center)
+                    ThemedTextField(icon: "envelope.fill", placeholder: "Email", text: $email)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .keyboardType(.emailAddress)
+                        .textContentType(.emailAddress)
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(.footnote)
+                            .foregroundStyle(.red)
+                    }
+                    Button(action: send) {
+                        Group {
+                            if isSending {
+                                ProgressView().tint(.white)
+                            } else {
+                                Text("Send reset link")
+                            }
+                        }
+                        .themedButton()
+                    }
+                    .disabled(isSending)
+                    Text("Signed up with Apple or Google? Use those buttons on the sign-in screen instead.")
+                        .font(.caption)
+                        .foregroundStyle(theme.text.opacity(0.55))
+                        .multilineTextAlignment(.center)
+                }
+            }
+            .padding(24)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .background(theme.background.ignoresSafeArea())
+            .navigationTitle("Reset password")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+        }
+    }
+    
+    private func send() {
+        let address = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard address.contains("@"), address.contains(".") else {
+            errorMessage = "Enter a valid email address."
+            return
+        }
+        errorMessage = nil
+        isSending = true
+        Task {
+            do {
+                try await authService.sendPasswordReset(to: address)
+                withAnimation { sentTo = address }
+            } catch let error as NSError where error.code == AuthErrorCode.userNotFound.rawValue {
+                // Don't reveal whether an account exists for this address.
+                withAnimation { sentTo = address }
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            isSending = false
         }
     }
 }

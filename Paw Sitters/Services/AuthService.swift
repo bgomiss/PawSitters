@@ -74,6 +74,12 @@ class AuthService: ObservableObject {
         try? Auth.auth().signOut()
     }
     
+    /// Emails a password reset link. Firebase sends it in the device's language.
+    func sendPasswordReset(to email: String) async throws {
+        Auth.auth().useAppLanguage()
+        try await Auth.auth().sendPasswordReset(withEmail: email)
+    }
+    
     func signOut() throws {
            try Auth.auth().signOut()
            //self.user = nil
