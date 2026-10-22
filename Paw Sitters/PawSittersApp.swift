@@ -19,6 +19,7 @@ struct PawSittersApp: App {
     @StateObject private var storageService = StorageService()
     @StateObject private var messagingService = MessagingService()
     @StateObject private var applicationService = ApplicationService()
+    @StateObject private var moderationService = ModerationService()
     @StateObject private var reviewService = ReviewService()
     @StateObject private var navigationPathManager = NavigationPathManager()
     @State private var isLoading = true // Define the loading state
@@ -64,6 +65,7 @@ struct PawSittersApp: App {
                 .environmentObject(navigationPathManager)
                 .environmentObject(messagingService)
                 .environmentObject(applicationService)
+                .environmentObject(moderationService)
                 .environmentObject(reviewService)
                 .onOpenURL { url in
                     // Google Sign-In returns to the app through its URL scheme.
@@ -109,6 +111,18 @@ enum FirebaseEmulator {
         Storage.storage().useEmulator(withHost: host, port: 9199)
         print("Using local Firebase emulators at \(host)")
         #endif
+    }
+    
+    /// URL of an HTTPS Cloud Function; the local Functions emulator when it's in use.
+    static func functionURL(named name: String) -> URL {
+        #if DEBUG
+        let defaults = UserDefaults.standard
+        if defaults.bool(forKey: "useFirebaseEmulator") {
+            let host = defaults.string(forKey: "emulatorHost") ?? "127.0.0.1"
+            return URL(string: "http://\(host):5001/pawsittersapp/europe-west1/\(name)")!
+        }
+        #endif
+        return URL(string: "https://europe-west1-pawsittersapp.cloudfunctions.net/\(name)")!
     }
     
     /// Debug + emulator only: credentials passed with `-emulatorEmail` / `-emulatorPassword`

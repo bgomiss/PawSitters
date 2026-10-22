@@ -13,6 +13,7 @@ struct MessagingView: View {
     @EnvironmentObject var messagingService: MessagingService
     @EnvironmentObject var storageService: StorageService
     @EnvironmentObject var userProfileService: UserProfileService
+    @EnvironmentObject var moderationService: ModerationService
     @Environment(\.dismiss) private var dismiss
     @State private var showingImagePicker = false
     @State private var selectedImage: [UIImage] = []
@@ -25,10 +26,22 @@ struct MessagingView: View {
         NavigationView {
             VStack {
                 MessageList(messages: viewModel.messages, userId: viewModel.userId)
-                ChatBottomBar(viewModel: viewModel, showingImagePicker: $showingImagePicker)
+                if moderationService.isBlocked(viewModel.receiverId) {
+                    // Blocked conversations are read-only; unblocking from the menu re-enables them.
+                    Label("You blocked this person. Unblock them from the menu to send messages.",
+                          systemImage: "hand.raised.fill")
+                        .font(.system(.footnote, design: .rounded))
+                        .foregroundStyle(AppTheme.current.text.opacity(0.7))
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color(.systemBackground))
+                } else {
+                    ChatBottomBar(viewModel: viewModel, showingImagePicker: $showingImagePicker)
+                }
             }
-            .navigationBarTitle("MESSAGES", displayMode: .inline)
-            .navigationBarItems(leading: backButton)
+            .navigationBarTitle(viewModel.receiverName.isEmpty ? "Messages" : viewModel.receiverName, displayMode: .inline)
+            .navigationBarItems(leading: backButton,
+                                trailing: ModerationMenu(target: .user(id: viewModel.receiverId, name: viewModel.receiverName)))
             .pawBackground()
         }
         .onAppear {

@@ -59,6 +59,21 @@ class AuthService: ObservableObject {
         Auth.auth().currentUser?.isEmailVerified ?? false
     }
     
+    /// Permanently deletes the account and everything that belongs to it
+    /// (done server-side by the `deleteAccount` Cloud Function), then signs out.
+    func deleteAccount() async throws {
+        guard let user = Auth.auth().currentUser else { return }
+        let idToken = try await user.getIDToken()
+        var request = URLRequest(url: FirebaseEmulator.functionURL(named: "deleteAccount"))
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(idToken)", forHTTPHeaderField: "Authorization")
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+            throw AppError.networkError("Couldn't delete your account. Check your connection and try again.")
+        }
+        try? Auth.auth().signOut()
+    }
+    
     func signOut() throws {
            try Auth.auth().signOut()
            //self.user = nil

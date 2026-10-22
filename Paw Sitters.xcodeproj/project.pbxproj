@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B1F318A25E5956BABE343451 /* ReportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647555B3B1F318A25E5956BA /* ReportSheet.swift */; };
+		81B12A06E502C857EB7F4E35 /* ModerationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D892EBA581B12A06E502C857 /* ModerationService.swift */; };
 		1569E757FAE4A9601283E532 /* SocialSignInSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D9B8B71569E757FAE4A960 /* SocialSignInSection.swift */; };
 		E3FC6A1045626A628EFC6940 /* SocialSignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0F9C31E3FC6A1045626A62 /* SocialSignIn.swift */; };
 		5744B38EDA0D8A2CFF419904 /* ListingFilterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F196579D5744B38EDA0D8A2C /* ListingFilterSheet.swift */; };
@@ -91,6 +93,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		647555B3B1F318A25E5956BA /* ReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportSheet.swift; sourceTree = "<group>"; };
+		D892EBA581B12A06E502C857 /* ModerationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModerationService.swift; sourceTree = "<group>"; };
 		19D9B8B71569E757FAE4A960 /* SocialSignInSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialSignInSection.swift; sourceTree = "<group>"; };
 		CE0F9C31E3FC6A1045626A62 /* SocialSignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialSignIn.swift; sourceTree = "<group>"; };
 		F196579D5744B38EDA0D8A2C /* ListingFilterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingFilterSheet.swift; sourceTree = "<group>"; };
@@ -284,6 +288,7 @@
 			isa = PBXGroup;
 			children = (
 				1C786E2B2C25BBA60012A179 /* AuthService.swift */,
+				D892EBA581B12A06E502C857 /* ModerationService.swift */,
 				CE0F9C31E3FC6A1045626A62 /* SocialSignIn.swift */,
 				7F555C318ECC8A5AA3316C6F /* PushNotifications.swift */,
 				01E722AC7BDB03AEC6C9A195 /* ReviewService.swift */,
@@ -316,6 +321,7 @@
 				E680590F04300D68E0BD1228 /* ApplicationsView.swift */,
 				1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */,
 				1C786E382C25BEDF0012A179 /* SignInView.swift */,
+				647555B3B1F318A25E5956BA /* ReportSheet.swift */,
 				19D9B8B71569E757FAE4A960 /* SocialSignInSection.swift */,
 				1C786E362C25BDAE0012A179 /* SignUpView.swift */,
 				1C5DE4882C7CCDE000FF8835 /* FavoritesView.swift */,
@@ -448,6 +454,7 @@
 				1C7BEEDC2D576413007DC3DB /* LoadingView 2.swift in Sources */,
 				1C448C3B2C30328A00E78668 /* NavigationDestination.swift in Sources */,
 				1C786E392C25BEDF0012A179 /* SignInView.swift in Sources */,
+				B1F318A25E5956BABE343451 /* ReportSheet.swift in Sources */,
 				1569E757FAE4A9601283E532 /* SocialSignInSection.swift in Sources */,
 				1C786E302C25BC530012A179 /* StorageService.swift in Sources */,
 				1C786E3B2C25BF070012A179 /* ProfileView.swift in Sources */,
@@ -458,6 +465,7 @@
 				1C786E3F2C25C0EA0012A179 /* MessagingView.swift in Sources */,
 				1C5DE4892C7CCDE000FF8835 /* FavoritesView.swift in Sources */,
 				1C786E2C2C25BBA60012A179 /* AuthService.swift in Sources */,
+				81B12A06E502C857EB7F4E35 /* ModerationService.swift in Sources */,
 				E3FC6A1045626A628EFC6940 /* SocialSignIn.swift in Sources */,
 				8ECC8A5AA3316C6F697A0938 /* PushNotifications.swift in Sources */,
 				7BDB03AEC6C9A1957A2EB98E /* ReviewService.swift in Sources */,

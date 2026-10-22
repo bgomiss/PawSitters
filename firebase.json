@@ -23,7 +23,11 @@
       "port": 4000,
       "host": "0.0.0.0"
     },
-    "singleProjectMode": true
+    "singleProjectMode": true,
+    "functions": {
+      "port": 5001,
+      "host": "0.0.0.0"
+    }
   },
   "functions": [
     {
@@ -35,5 +39,13 @@
         "*.log"
       ]
     }
-  ]
+  ],
+  "hosting": {
+    "public": "hosting",
+    "ignore": [
+      "firebase.json",
+      "**/.*"
+    ],
+    "cleanUrls": true
+  }
 }

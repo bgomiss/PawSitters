@@ -19,6 +19,9 @@ struct ProfileView: View {
     @State private var showingImagePicker = false
     @State private var showingEditForm = false
     @State private var verificationMessage: String?
+    @State private var showDeleteConfirmation = false
+    @State private var isDeletingAccount = false
+    @State private var deleteError: String?
     @State private var isCheckingVerification = false
     var role: String
     
@@ -93,6 +96,17 @@ struct ProfileView: View {
                         .padding(.horizontal)
                 }
                 
+                BlockedUsersSection()
+                    .padding(.horizontal)
+                
+                HStack(spacing: 18) {
+                    Link("Terms", destination: AppLinks.terms)
+                    Link("Privacy", destination: AppLinks.privacy)
+                    Link("Support", destination: AppLinks.support)
+                }
+                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .foregroundStyle(theme.primary)
+                
                 Button {
                     showingEditForm = true
                 } label: {
@@ -114,7 +128,21 @@ struct ProfileView: View {
                         .font(.system(.subheadline, design: .rounded).weight(.semibold))
                         .foregroundStyle(.red)
                 }
-                .padding(.bottom, 24)
+                
+                Button {
+                    showDeleteConfirmation = true
+                } label: {
+                    if isDeletingAccount {
+                        ProgressView()
+                    } else {
+                        Text("Delete account")
+                            .font(.system(.footnote, design: .rounded))
+                            .foregroundStyle(theme.text.opacity(0.5))
+                            .underline()
+                    }
+                }
+                .disabled(isDeletingAccount)
+                .padding(.bottom, 100)
             }
             .onAppear {
                 if let user = authService.user {
@@ -133,6 +161,17 @@ struct ProfileView: View {
                 }
             }
         }
+        .alert("Delete your account?", isPresented: $showDeleteConfirmation) {
+            Button("Delete", role: .destructive) { deleteAccount() }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Your profile, listings, applications, reviews and messages will be permanently deleted. This can't be undone.")
+        }
+        .alert("Couldn't delete account", isPresented: Binding(get: { deleteError != nil }, set: { if !$0 { deleteError = nil } })) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(deleteError ?? "")
+        }
         .sheet(isPresented: $showingImagePicker) {
             ImagePicker(images: $images, isForMessaging: false)
         }
@@ -144,6 +183,21 @@ struct ProfileView: View {
 }
 
 extension ProfileView {
+    private func deleteAccount() {
+        isDeletingAccount = true
+        Task {
+            do {
+                PushNotifications.unregisterCurrentUser()
+                try await authService.deleteAccount()
+                SocialSignIn.signOut()
+                navigationPathManager.popToRoot()
+            } catch {
+                deleteError = (error as? AppError)?.errorDescription ?? error.localizedDescription
+            }
+            isDeletingAccount = false
+        }
+    }
+    
     /// Prompts the user to verify their email, which earns the "Verified" badge.
     private var verifyEmailCard: some View {
         VStack(alignment: .leading, spacing: 10) {

@@ -185,10 +185,11 @@ struct ReviewsSection: View {
     var title = "Reviews"
     var limit: Int?
     @EnvironmentObject var reviewService: ReviewService
+    @EnvironmentObject var moderationService: ModerationService
     private let theme = AppTheme.current
 
     var body: some View {
-        let reviews = reviewService.reviews(for: userId)
+        let reviews = reviewService.reviews(for: userId).filter { !moderationService.isBlocked($0.reviewerId) }
         let summary = reviewService.summary(for: userId)
 
         VStack(alignment: .leading, spacing: 12) {
@@ -219,6 +220,7 @@ struct ReviewsSection: View {
 
 struct ReviewRow: View {
     let review: Review
+    @EnvironmentObject var authService: AuthService
     private let theme = AppTheme.current
 
     var body: some View {
@@ -229,6 +231,10 @@ struct ReviewRow: View {
                     .foregroundStyle(theme.text)
                 Spacer()
                 StarRatingView(rating: Double(review.rating), size: 12)
+                if review.reviewerId != authService.user?.uid {
+                    ModerationMenu(target: .review(review), tint: theme.text.opacity(0.4))
+                        .scaleEffect(0.8)
+                }
             }
             if !review.comment.isEmpty {
                 Text(review.comment)

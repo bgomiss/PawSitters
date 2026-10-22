@@ -46,6 +46,7 @@ struct MessagesHubView: View {
 struct ApplicationsView: View {
     let userId: String
     @EnvironmentObject var applicationService: ApplicationService
+    @EnvironmentObject var moderationService: ModerationService
     @EnvironmentObject var messagingService: MessagingService
     @EnvironmentObject var storageService: StorageService
     @EnvironmentObject var userProfileService: UserProfileService
@@ -63,7 +64,8 @@ struct ApplicationsView: View {
     }
 
     private var applications: [Application] {
-        box == .received ? applicationService.received : applicationService.sent
+        (box == .received ? applicationService.received : applicationService.sent)
+            .filter { !moderationService.isBlocked(box == .received ? $0.applicantId : $0.listingOwnerId) }
     }
 
     var body: some View {

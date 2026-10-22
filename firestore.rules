@@ -3,6 +3,11 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function isUser(uid) { return signedIn() && request.auth.uid == uid; }
+    // True when `uid` has blocked the signed-in user.
+    function blockedBy(uid) {
+      return exists(/databases/$(database)/documents/blocks/$(uid))
+        && request.auth.uid in get(/databases/$(database)/documents/blocks/$(uid)).data.userIds;
+    }
 
     // User profiles. `emailVerified: true` is only accepted from a token whose
     // email Firebase Auth has actually verified, so the badge can't be faked.
@@ -47,7 +52,8 @@ service cloud.firestore {
         && request.resource.data.applicantId == request.auth.uid
         && request.resource.data.listingOwnerId != request.auth.uid
         && request.resource.data.status == 'pending'
-        && applicationId == request.resource.data.listingId + '_' + request.auth.uid;
+        && applicationId == request.resource.data.listingId + '_' + request.auth.uid
+        && !blockedBy(request.resource.data.listingOwnerId);
       allow update: if signedIn() && (
         (resource.data.listingOwnerId == request.auth.uid
           && resource.data.status == 'pending'
@@ -92,11 +98,30 @@ service cloud.firestore {
       allow read: if isUser(ownerId);
       allow create: if signedIn()
         && request.resource.data.senderId == request.auth.uid
-        && (request.auth.uid == ownerId || request.auth.uid == otherId);
+        && (request.auth.uid == ownerId || request.auth.uid == otherId)
+        && !blockedBy(request.resource.data.receiverId);
     }
     match /recent_messages/{ownerId}/messages/{otherId} {
       allow read: if isUser(ownerId);
-      allow write: if isUser(ownerId) || isUser(otherId);
+      allow write: if isUser(ownerId) || (isUser(otherId) && !blockedBy(ownerId));
+    }
+
+    // Each user's block list: blocks/{uid} { userIds: [...] }
+    match /blocks/{uid} {
+      allow read, write: if isUser(uid);
+    }
+
+    // Reports are write-only for users; the team reviews them in the console.
+    match /reports/{reportId} {
+      allow create: if signedIn()
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.reason is string
+        && request.resource.data.details is string && request.resource.data.details.size() <= 2000;
+    }
+
+    // Moderation settings (admin list); only Cloud Functions read it.
+    match /config/{docId} {
+      allow read, write: if false;
     }
   }
 }

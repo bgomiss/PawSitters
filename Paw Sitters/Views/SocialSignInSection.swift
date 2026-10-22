@@ -62,6 +62,9 @@ struct SocialSignInSection: View {
                     .foregroundStyle(.red)
                     .multilineTextAlignment(.center)
             }
+            
+            TermsNotice()
+                .padding(.top, 4)
         }
         .buttonStyle(.plain)
         .disabled(isWorking)
@@ -173,5 +176,24 @@ private struct GoogleMark: View {
                                          Color(hex: 0xEA4335), Color(hex: 0x4285F4)],
                                 center: .center)
             )
+    }
+}
+
+/// Public web pages (Firebase Hosting) linked from the app and App Store Connect.
+enum AppLinks {
+    static let terms = URL(string: "https://pawsittersapp.web.app/terms")!
+    static let privacy = URL(string: "https://pawsittersapp.web.app/privacy")!
+    static let support = URL(string: "https://pawsittersapp.web.app")!
+}
+
+/// Shown wherever an account can be created: signing up means accepting the terms.
+struct TermsNotice: View {
+    var body: some View {
+        Text("By continuing you agree to our [Terms of Use](\(AppLinks.terms.absoluteString)), including zero tolerance for objectionable content and abusive users, and our [Privacy Policy](\(AppLinks.privacy.absoluteString)).")
+            .font(.system(.caption, design: .rounded))
+            .foregroundStyle(AppTheme.current.text.opacity(0.6))
+            .tint(AppTheme.current.primary)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 8)
     }
 }

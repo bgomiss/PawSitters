@@ -10,6 +10,7 @@ import Firebase
 
 struct ConversationsView: View {
     @EnvironmentObject var messagingService: MessagingService
+    @EnvironmentObject var moderationService: ModerationService
     @EnvironmentObject var userProfileService: UserProfileService
     @EnvironmentObject var authService: AuthService
     @EnvironmentObject var storageService: StorageService
@@ -56,7 +57,9 @@ struct ConversationsView: View {
     
     private var conversationList: some View {
         LazyVStack(spacing: 10) {
-            ForEach(messagingService.filteredMessages.sorted { $0.timestamp.dateValue() > $1.timestamp.dateValue() }) { message in
+            ForEach(messagingService.filteredMessages
+                .filter { !moderationService.isBlocked(userId == $0.senderId ? $0.receiverId : $0.senderId) }
+                .sorted { $0.timestamp.dateValue() > $1.timestamp.dateValue() }) { message in
                 Button {
                     self.message = message
                     receiverId = userId == message.senderId ? message.receiverId : message.senderId

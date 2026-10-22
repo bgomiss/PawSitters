@@ -19,6 +19,7 @@ struct ContentView: View {
     @EnvironmentObject var navigationPathManager: NavigationPathManager
     @EnvironmentObject var applicationService: ApplicationService
     @EnvironmentObject var reviewService: ReviewService
+    @EnvironmentObject var moderationService: ModerationService
     @State private var listings: [PetSittingListing] = []
     @State private var isFullScreenCoverPresented = false
     @State private var filters = ListingFilters()
@@ -53,7 +54,7 @@ struct ContentView: View {
     
     /// Listings after applying the filters chosen in the filter sheet.
     private var visibleListings: [PetSittingListing] {
-        firestoreService.listings.filter { filters.matches($0) }
+        firestoreService.listings.filter { filters.matches($0) && !moderationService.isBlocked($0.ownerId) }
     }
     
     private var safeAreaBottomInset: CGFloat {
@@ -289,6 +290,7 @@ struct ContentView: View {
                                 firestoreService.fetchListings(for: profile.role)
                                 firestoreService.listenToFavorites()
                                 applicationService.startListening()
+                                moderationService.startListening()
                                 reviewService.startListening()
                                 PushNotifications.registerForSignedInUser()
                             }
@@ -426,6 +428,13 @@ struct ListingDetailView: View {
         }
         .pawBackground()
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if listing.ownerId != userId {
+                ToolbarItem(placement: .topBarTrailing) {
+                    ModerationMenu(target: .listing(listing))
+                }
+            }
+        }
         .fullScreenCover(isPresented: $isMessagingViewPresented) {
             MessagingView(userId: userId, receiverId: listing.ownerId)
         }
