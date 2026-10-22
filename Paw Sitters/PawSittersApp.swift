@@ -8,6 +8,7 @@
 import SwiftUI
 import Firebase
 import FirebaseStorage
+import GoogleSignIn
 
 @main
 struct PawSittersApp: App {
@@ -65,6 +66,8 @@ struct PawSittersApp: App {
                 .environmentObject(applicationService)
                 .environmentObject(reviewService)
                 .onOpenURL { url in
+                    // Google Sign-In returns to the app through its URL scheme.
+                    if GIDSignIn.sharedInstance.handle(url) { return }
                     // Handle deep links
                     if url.scheme == "pawsitters" {
                         handleDeepLink(url)

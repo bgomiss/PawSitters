@@ -120,7 +120,9 @@ struct SignUpView: View {
                         .themedButton()
                 }
                 .disabled(isSubmitting)
-                .padding(.bottom, 24)
+                
+                SocialSignInSection(role: role)
+                    .padding(.bottom, 24)
             }
             .padding(.horizontal, 20)
         }

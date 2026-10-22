@@ -3,10 +3,22 @@
 <plist version="1.0">
 <!--
   Debug builds only (see INFOPLIST_FILE for the Debug configuration).
+  Keep CFBundleURLTypes in sync with Info.plist (used by Release).
   Lets a physical device talk to the Firebase emulators on your Mac over
   plain HTTP on the local network. Release builds don't include this.
 -->
 <dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>GoogleSignIn</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.547793100140-3qr9gf7bkkocchp52eiajb7tjhfjkvr8</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>

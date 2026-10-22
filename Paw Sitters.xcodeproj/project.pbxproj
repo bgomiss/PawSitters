@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1569E757FAE4A9601283E532 /* SocialSignInSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D9B8B71569E757FAE4A960 /* SocialSignInSection.swift */; };
+		E3FC6A1045626A628EFC6940 /* SocialSignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0F9C31E3FC6A1045626A62 /* SocialSignIn.swift */; };
 		5744B38EDA0D8A2CFF419904 /* ListingFilterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F196579D5744B38EDA0D8A2C /* ListingFilterSheet.swift */; };
 		1CAFB4D7E28284A012F7C518 /* ListingFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A105D521CAFB4D7E28284A0 /* ListingFilters.swift */; };
 		8ECC8A5AA3316C6F697A0938 /* PushNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F555C318ECC8A5AA3316C6F /* PushNotifications.swift */; };
@@ -41,6 +43,7 @@
 		1C786E172C25B88E0012A179 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1C786E162C25B88E0012A179 /* FirebaseAnalytics */; };
 		1C786E192C25B88E0012A179 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 1C786E182C25B88E0012A179 /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		1C786E1B2C25B88E0012A179 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 1C786E1A2C25B88E0012A179 /* FirebaseAuth */; };
+		1CA0000000000000000000A3 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 1CA0000000000000000000A2 /* GoogleSignIn */; };
 		1C786E1D2C25B88E0012A179 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1C786E1C2C25B88E0012A179 /* FirebaseDatabase */; };
 		1C786E1F2C25B88E0012A179 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1C786E1E2C25B88E0012A179 /* FirebaseDatabaseSwift */; };
 		1C786E212C25B88E0012A179 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1C786E202C25B88E0012A179 /* FirebaseFirestore */; };
@@ -88,6 +91,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		19D9B8B71569E757FAE4A960 /* SocialSignInSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialSignInSection.swift; sourceTree = "<group>"; };
+		CE0F9C31E3FC6A1045626A62 /* SocialSignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialSignIn.swift; sourceTree = "<group>"; };
 		F196579D5744B38EDA0D8A2C /* ListingFilterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingFilterSheet.swift; sourceTree = "<group>"; };
 		3A105D521CAFB4D7E28284A0 /* ListingFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingFilters.swift; sourceTree = "<group>"; };
 		7F555C318ECC8A5AA3316C6F /* PushNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotifications.swift; sourceTree = "<group>"; };
@@ -170,6 +175,7 @@
 				1C786E412C25C2550012A179 /* FirebaseFirestoreSwift in Frameworks */,
 				1C786E172C25B88E0012A179 /* FirebaseAnalytics in Frameworks */,
 				1C786E1B2C25B88E0012A179 /* FirebaseAuth in Frameworks */,
+				1CA0000000000000000000A3 /* GoogleSignIn in Frameworks */,
 				1C786E1D2C25B88E0012A179 /* FirebaseDatabase in Frameworks */,
 				1C786E192C25B88E0012A179 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				1C851E542C53BB55009A93A9 /* HorizonCalendar in Frameworks */,
@@ -278,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				1C786E2B2C25BBA60012A179 /* AuthService.swift */,
+				CE0F9C31E3FC6A1045626A62 /* SocialSignIn.swift */,
 				7F555C318ECC8A5AA3316C6F /* PushNotifications.swift */,
 				01E722AC7BDB03AEC6C9A195 /* ReviewService.swift */,
 				5271268F58CED4A4B568E564 /* ApplicationService.swift */,
@@ -309,6 +316,7 @@
 				E680590F04300D68E0BD1228 /* ApplicationsView.swift */,
 				1C9E25A92C25D2D400351632 /* RoleSelectionView.swift */,
 				1C786E382C25BEDF0012A179 /* SignInView.swift */,
+				19D9B8B71569E757FAE4A960 /* SocialSignInSection.swift */,
 				1C786E362C25BDAE0012A179 /* SignUpView.swift */,
 				1C5DE4882C7CCDE000FF8835 /* FavoritesView.swift */,
 			);
@@ -370,6 +378,7 @@
 				1C786E282C25B88E0012A179 /* FirebaseStorage */,
 				1C786E402C25C2550012A179 /* FirebaseFirestoreSwift */,
 				1C851E532C53BB55009A93A9 /* HorizonCalendar */,
+				1CA0000000000000000000A2 /* GoogleSignIn */,
 			);
 			productName = "Paw Sitters";
 			productReference = 1C786E022C25B6860012A179 /* Paw Sitters.app */;
@@ -402,6 +411,7 @@
 			packageReferences = (
 				1C786E152C25B88E0012A179 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				1C851E522C53BB55009A93A9 /* XCRemoteSwiftPackageReference "HorizonCalendar" */,
+				1CA0000000000000000000A1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			productRefGroup = 1C786E032C25B6860012A179 /* Products */;
 			projectDirPath = "";
@@ -438,6 +448,7 @@
 				1C7BEEDC2D576413007DC3DB /* LoadingView 2.swift in Sources */,
 				1C448C3B2C30328A00E78668 /* NavigationDestination.swift in Sources */,
 				1C786E392C25BEDF0012A179 /* SignInView.swift in Sources */,
+				1569E757FAE4A9601283E532 /* SocialSignInSection.swift in Sources */,
 				1C786E302C25BC530012A179 /* StorageService.swift in Sources */,
 				1C786E3B2C25BF070012A179 /* ProfileView.swift in Sources */,
 				5744B38EDA0D8A2CFF419904 /* ListingFilterSheet.swift in Sources */,
@@ -447,6 +458,7 @@
 				1C786E3F2C25C0EA0012A179 /* MessagingView.swift in Sources */,
 				1C5DE4892C7CCDE000FF8835 /* FavoritesView.swift in Sources */,
 				1C786E2C2C25BBA60012A179 /* AuthService.swift in Sources */,
+				E3FC6A1045626A628EFC6940 /* SocialSignIn.swift in Sources */,
 				8ECC8A5AA3316C6F697A0938 /* PushNotifications.swift in Sources */,
 				7BDB03AEC6C9A1957A2EB98E /* ReviewService.swift in Sources */,
 				58CED4A4B568E5648BAF76C5 /* ApplicationService.swift in Sources */,
@@ -655,6 +667,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Paw Sitters/Paw Sitters.entitlements";
+				INFOPLIST_FILE = "Paw Sitters/Info.plist";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -721,9 +734,22 @@
 				kind = branch;
 			};
 		};
+		1CA0000000000000000000A1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1CA0000000000000000000A2 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1CA0000000000000000000A1 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
 		1C786E162C25B88E0012A179 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1C786E152C25B88E0012A179 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

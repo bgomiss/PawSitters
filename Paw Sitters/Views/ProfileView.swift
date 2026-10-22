@@ -103,6 +103,7 @@ struct ProfileView: View {
                 Button(role: .destructive) {
                     do {
                         PushNotifications.unregisterCurrentUser()
+                        SocialSignIn.signOut()
                         try authService.signOut()
                         navigationPathManager.popToRoot() // Clear the navigation stack
                     } catch let error {
