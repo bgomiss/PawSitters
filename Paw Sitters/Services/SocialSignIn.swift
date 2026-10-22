@@ -72,6 +72,37 @@ enum SocialSignIn {
                                   email: appleCredential.email ?? authResult.user.email)
     }
 
+    /// Whether the signed-in account uses Sign in with Apple.
+    static var usesApple: Bool {
+        Auth.auth().currentUser?.providerData.contains { $0.providerID == "apple.com" } ?? false
+    }
+    
+    /// Revokes the app's Sign in with Apple tokens (required by Apple before an
+    /// account is deleted). Asks the user to confirm with Apple once more to get
+    /// a fresh authorization code, which Firebase exchanges and revokes.
+    @MainActor
+    static func revokeAppleToken() async throws {
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        request.requestedScopes = []
+        let credential = try await AppleSignInCoordinator().perform(request)
+        guard let codeData = credential.authorizationCode,
+              let code = String(data: codeData, encoding: .utf8) else {
+            throw AppError.authError("Apple didn't return an authorization code.")
+        }
+        try await Auth.auth().revokeToken(withAuthorizationCode: code)
+    }
+    
+    /// Best effort: removes the app's access to the user's Google account
+    /// (not required by Google, but the account is going away anyway).
+    @MainActor
+    static func disconnectGoogleIfNeeded() async {
+        guard Auth.auth().currentUser?.providerData.contains(where: { $0.providerID == "google.com" }) == true else { return }
+        if GIDSignIn.sharedInstance.currentUser == nil {
+            _ = try? await GIDSignIn.sharedInstance.restorePreviousSignIn()
+        }
+        try? await GIDSignIn.sharedInstance.disconnect()
+    }
+    
     /// True when the user backed out of the provider's sheet (not an error to show).
     static func isCancellation(_ error: Error) -> Bool {
         if let error = error as? ASAuthorizationError, error.code == .canceled { return true }

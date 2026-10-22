@@ -190,10 +190,17 @@ extension ProfileView {
         isDeletingAccount = true
         Task {
             do {
+                // Apple requires revoking Sign in with Apple tokens when an account is deleted.
+                if SocialSignIn.usesApple {
+                    try await SocialSignIn.revokeAppleToken()
+                }
+                await SocialSignIn.disconnectGoogleIfNeeded()
                 PushNotifications.unregisterCurrentUser()
                 try await authService.deleteAccount()
                 SocialSignIn.signOut()
                 navigationPathManager.popToRoot()
+            } catch where SocialSignIn.isCancellation(error) {
+                // The user closed the Apple confirmation; nothing was deleted.
             } catch {
                 deleteError = (error as? AppError)?.errorDescription ?? error.localizedDescription
             }
