@@ -6,6 +6,7 @@
 //
 
 import FirebaseFirestore
+import FirebaseStorage
 import FirebaseFirestoreSwift
 import Firebase
 
@@ -302,6 +303,57 @@ class FirestoreService: ObservableObject {
         }
     }
     
+    // MARK: - The signed-in user's own listings
+    
+    /// Listings the signed-in user published (sitters publish to `sittersListings`,
+    /// owners to `ownersListings`; the feed only shows the other side's listings).
+    @Published var myListings: [PetSittingListing] = []
+    private var myListingsListener: ListenerRegistration?
+    
+    static func listingsCollection(forAuthorRole role: String) -> String {
+        role == "Sitter" ? "sittersListings" : "ownersListings"
+    }
+    
+    func listenToMyListings(role: String) {
+        myListingsListener?.remove()
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        myListingsListener = db.collection(Self.listingsCollection(forAuthorRole: role))
+            .whereField("ownerId", isEqualTo: uid)
+            .addSnapshotListener { [weak self] snapshot, error in
+                if let error = error {
+                    print("Failed to listen for own listings: \(error.localizedDescription)")
+                    return
+                }
+                let listings = (snapshot?.documents ?? [])
+                    .map { PetSittingListing(documentId: $0.documentID, data: $0.data()) }
+                    .sorted { $0.timestamp.dateValue() > $1.timestamp.dateValue() }
+                DispatchQueue.main.async { self?.myListings = listings }
+            }
+    }
+    
+    func updateListing(_ listing: PetSittingListing, role: String, fields: [String: Any]) async throws {
+        try await db.collection(Self.listingsCollection(forAuthorRole: role))
+            .document(listing.documentId)
+            .updateData(fields)
+    }
+    
+    /// Deletes a listing and its photos, and closes its pending applications.
+    func deleteListing(_ listing: PetSittingListing, role: String) async throws {
+        try await db.collection(Self.listingsCollection(forAuthorRole: role)).document(listing.documentId).delete()
+        for url in listing.imageUrls ?? [] where url.contains("firebasestorage") {
+            try? await Storage.storage().reference(forURL: url).delete()
+        }
+        if let uid = Auth.auth().currentUser?.uid {
+            let pending = try? await db.collection("applications")
+                .whereField("listingOwnerId", isEqualTo: uid)
+                .whereField("listingId", isEqualTo: listing.documentId)
+                .getDocuments()
+            for document in pending?.documents ?? [] where document.data()["status"] as? String == "pending" {
+                try? await document.reference.updateData(["status": "declined", "updatedAt": Timestamp(date: Date())])
+            }
+        }
+    }
+    
     func isFavorite(_ listing: PetSittingListing) -> Bool {
         favoriteIds.contains(listing.documentId)
     }
@@ -349,6 +401,9 @@ class FirestoreService: ObservableObject {
     
     /// Removes all listeners and clears cached data (used on sign-out).
     func stopListening() {
+        myListingsListener?.remove()
+        myListingsListener = nil
+        myListings.removeAll()
         listener?.remove()
         listener = nil
         favoritesListener?.remove()

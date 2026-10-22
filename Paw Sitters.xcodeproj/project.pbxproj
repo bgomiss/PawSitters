@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C9E469013841ED7F7B717CD4 /* MyListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85079DF7C9E469013841ED7F /* MyListingsView.swift */; };
 		CCBAAFDBA1F7AE3B5A3DA423 /* ListingsMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A4404F7CCBAAFDBA1F7AE3B /* ListingsMapView.swift */; };
 		1CA0000000000000000000B2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1CA0000000000000000000B1 /* PrivacyInfo.xcprivacy */; };
 		B1F318A25E5956BABE343451 /* ReportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647555B3B1F318A25E5956BA /* ReportSheet.swift */; };
@@ -90,6 +91,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		85079DF7C9E469013841ED7F /* MyListingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyListingsView.swift; sourceTree = "<group>"; };
 		1A4404F7CCBAAFDBA1F7AE3B /* ListingsMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingsMapView.swift; sourceTree = "<group>"; };
 		1CA0000000000000000000B1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		647555B3B1F318A25E5956BA /* ReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportSheet.swift; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 				1C786E3E2C25C0EA0012A179 /* MessagingView.swift */,
 				1C786E3A2C25BF070012A179 /* ProfileView.swift */,
 				F196579D5744B38EDA0D8A2C /* ListingFilterSheet.swift */,
+				85079DF7C9E469013841ED7F /* MyListingsView.swift */,
 				1A4404F7CCBAAFDBA1F7AE3B /* ListingsMapView.swift */,
 				B044DEB0A7BE2A5B336F4782 /* ReviewsView.swift */,
 				E680590F04300D68E0BD1228 /* ApplicationsView.swift */,
@@ -450,6 +453,7 @@
 				1C786E302C25BC530012A179 /* StorageService.swift in Sources */,
 				1C786E3B2C25BF070012A179 /* ProfileView.swift in Sources */,
 				5744B38EDA0D8A2CFF419904 /* ListingFilterSheet.swift in Sources */,
+				C9E469013841ED7F7B717CD4 /* MyListingsView.swift in Sources */,
 				CCBAAFDBA1F7AE3B5A3DA423 /* ListingsMapView.swift in Sources */,
 				A7BE2A5B336F4782E0F4AE64 /* ReviewsView.swift in Sources */,
 				04300D68E0BD122896C27965 /* ApplicationsView.swift in Sources */,

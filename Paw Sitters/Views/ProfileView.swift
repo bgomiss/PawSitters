@@ -91,6 +91,9 @@ struct ProfileView: View {
                 .themedCard()
                 .padding(.horizontal)
                 
+                MyListingsSection(role: role)
+                    .padding(.horizontal)
+                
                 if let uid = authService.user?.uid {
                     ReviewsSection(userId: uid, title: "Your reviews")
                         .padding(.horizontal)

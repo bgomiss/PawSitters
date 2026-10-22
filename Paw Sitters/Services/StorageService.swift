@@ -11,6 +11,11 @@ import FirebaseStorage
 class StorageService: ObservableObject {
     private var storage = Storage.storage()
     
+    /// Deletes a file by its Firebase download URL.
+    static func delete(url: String) async throws {
+        try await Storage.storage().reference(forURL: url).delete()
+    }
+    
     func uploadImage(_ image: UIImage, path: String, completion: @escaping (Result<String, Error>) -> Void) {
         let storageRef = storage.reference().child(path)
         
