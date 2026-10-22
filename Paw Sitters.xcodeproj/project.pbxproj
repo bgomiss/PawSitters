@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1CA0000000000000000000B2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1CA0000000000000000000B1 /* PrivacyInfo.xcprivacy */; };
 		B1F318A25E5956BABE343451 /* ReportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647555B3B1F318A25E5956BA /* ReportSheet.swift */; };
 		81B12A06E502C857EB7F4E35 /* ModerationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D892EBA581B12A06E502C857 /* ModerationService.swift */; };
 		1569E757FAE4A9601283E532 /* SocialSignInSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D9B8B71569E757FAE4A960 /* SocialSignInSection.swift */; };
@@ -93,6 +94,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1CA0000000000000000000B1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		647555B3B1F318A25E5956BA /* ReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportSheet.swift; sourceTree = "<group>"; };
 		D892EBA581B12A06E502C857 /* ModerationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModerationService.swift; sourceTree = "<group>"; };
 		19D9B8B71569E757FAE4A960 /* SocialSignInSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialSignInSection.swift; sourceTree = "<group>"; };
@@ -267,6 +269,7 @@
 				1C786E352C25BD9F0012A179 /* Views */,
 				1C786E2A2C25BB980012A179 /* Services */,
 				1C786E052C25B6860012A179 /* PawSittersApp.swift */,
+				1CA0000000000000000000B1 /* PrivacyInfo.xcprivacy */,
 				1C786E3C2C25C00B0012A179 /* ImagePicker.swift */,
 				1C786E092C25B6880012A179 /* Assets.xcassets */,
 				1C786E0B2C25B6880012A179 /* Preview Content */,
@@ -436,6 +439,7 @@
 				1C786E0D2C25B6880012A179 /* Preview Assets.xcassets in Resources */,
 				1C786E0A2C25B6880012A179 /* Assets.xcassets in Resources */,
 				1C786E142C25B7400012A179 /* GoogleService-Info.plist in Resources */,
+				1CA0000000000000000000B2 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -666,7 +670,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -698,7 +702,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
