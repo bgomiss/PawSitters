@@ -25,11 +25,6 @@ struct ContentView: View {
     @State private var filters = ListingFilters()
     @State private var isFilterSheetPresented = false
     @State private var isMapViewPresented = false
-    @ObservedObject var mapViewModel = MapViewModel()
-    @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
-        span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)
-    )
     @State private var selectedTab: Tab = .listings
     @State private var selectedListingId: String?
     @ObservedObject private var notificationRouter = NotificationRouter.shared
@@ -303,9 +298,7 @@ struct ContentView: View {
                         }
                         .overlay(alignment: .bottom) {
                             Button(action: {
-                                let zoomLevel = region.span.latitudeDelta
-                                mapViewModel.createAnnotations(from: visibleListings, zoomLevel: zoomLevel)
-                                isMapViewPresented.toggle()
+                                isMapViewPresented = true
                             }, label: {
                                 Label("Map", systemImage: "map.fill")
                                     .font(.system(.subheadline, design: .rounded).weight(.semibold))
@@ -349,7 +342,7 @@ struct ContentView: View {
                 }
             }
             .fullScreenCover(isPresented: $isMapViewPresented) {
-                MapContainerView(annotations: $mapViewModel.annotations, region: $region, listings: visibleListings)
+                ListingsMapView(listings: visibleListings, userId: userId)
             }
         }
     }
