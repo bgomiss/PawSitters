@@ -18,6 +18,7 @@ struct ReportSheet: View {
     @State private var isSending = false
     @State private var errorMessage: String?
     @State private var didSend = false
+    @FocusState private var isDetailsFocused: Bool
     private let theme = AppTheme.current
 
     private var title: String {
@@ -62,8 +63,14 @@ struct ReportSheet: View {
                         Button("Cancel") { dismiss() }
                     }
                 }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { isDetailsFocused = false }
+                }
             }
         }
+        // Don't lose a half-written report to an accidental swipe.
+        .interactiveDismissDisabled(!didSend && (reason != nil || !details.isEmpty))
     }
 
     private var form: some View {
@@ -98,6 +105,7 @@ struct ReportSheet: View {
 
                 TextField("Add details (optional)", text: $details, axis: .vertical)
                     .lineLimit(3...6)
+                    .focused($isDetailsFocused)
                     .padding(12)
                     .background(Color.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 

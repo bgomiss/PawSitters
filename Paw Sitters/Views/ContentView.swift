@@ -170,6 +170,13 @@ struct ContentView: View {
                                    message: role == "Sitter"
                                        ? "When owners post a pet-sitting request, it'll show up here."
                                        : "When sitters offer their help, they'll show up here.")
+                } else if visibleListings.isEmpty && filters.isEmpty {
+                    // Everything left is from people the user blocked.
+                    EmptyStateView(icon: "dog.fill",
+                                   title: "No listings yet",
+                                   message: role == "Sitter"
+                                       ? "When owners post a pet-sitting request, it'll show up here."
+                                       : "When sitters offer their help, they'll show up here.")
                 } else if visibleListings.isEmpty {
                     VStack(spacing: 16) {
                         EmptyStateView(icon: "magnifyingglass",
@@ -466,6 +473,8 @@ struct ListingDetailView: View {
                     isMessagingViewPresented = true
                 } label: {
                     Label("Message \(listing.name.isEmpty ? "owner" : listing.name)", systemImage: "bubble.left.fill")
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                         .themedButton(theme.accent)
                 }
             }
